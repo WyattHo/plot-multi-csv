@@ -1,12 +1,12 @@
-import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
 # assign directory
-csv_directory = 'D:\\my-analysis\\kubota-package-7-module\\data\\output\\freq_1_200\\modal_linear_50'
-csv_names = os.listdir(csv_directory)
+directory = Path('D:\\my-analysis\\komatsu-xm25\\test\\tie_small_contact_lids_housing')
+csvs = list(directory.glob('*.csv'))
 
 
 # initial the figure
@@ -16,8 +16,8 @@ ax = plt.axes()
 
 # plot data
 labels = ['excite-x', 'excite-y', 'excite-z']
-for label_idx, name in enumerate(csv_names):
-    path = os.path.join(csv_directory, name)
+for label_idx, csv in enumerate(csvs):
+    path = str(csv)
     df = pd.read_csv(path)
     ax.semilogx(df['frequency'], df['max_stress'], label=labels[label_idx])
 
