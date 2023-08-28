@@ -7,12 +7,14 @@ from tkinter import ttk
 import main
 
 
-def open_dir():
+def open_dir(stringvar: tk.StringVar):
     dir_name = filedialog.askopenfilename(title='Choose the directory')
     stringvar.set(dir_name)
 
 
-def read_csv():
+def read_csv(
+        treeview_read: ttk.Treeview, stringvar: tk.StringVar, 
+        scrollbar_ver_left: tk.Scrollbar, scrollbar_hor_left: tk.Scrollbar):
     # Clear items first
     for item in treeview_read.get_children():
         treeview_read.delete(item)
@@ -56,41 +58,11 @@ def read_csv():
 
 
 def draw():
-    total_num = len(treeview_read.get_children())
-
-    try:
-        main.Draw(totalNum=total_num, usedIdxList=used_indices)
-    except Exception as e:
-        tk.messagebox.showerror("Error", e.args[0])
-        insert_values = False
-    else:
-        lucky_guy = used_indices[-1]
-        insert_values = True
-
-    # Set fields for treeviewDraw
-    if treeview_draw['columns'] != treeview_read['columns']:
-        treeview_draw['columns'] = treeview_read['columns']
-    
-        for fieldname in treeview_read['columns']:
-            treeview_draw.column(fieldname, anchor=tk.W, width=10*max_widths[fieldname], stretch=0)
-            treeview_draw.heading(fieldname, text=fieldname, anchor=tk.W)
-
-        # Reset scrollbars
-        scrollbar_ver_right.config(command=treeview_draw.yview)
-        scrollbar_hor_right.config(command=treeview_draw.xview)
-
-    # Insert values
-    if insert_values:
-        for idx, item in enumerate(treeview_read.get_children()):
-            if idx == lucky_guy:
-                values = treeview_read.item(item, 'values')
-                treeview_draw.insert(parent='', index=0, values=values, tags=str(idx))
+    ...
 
 
 def clear():
-    used_indices.clear()
-    for item in treeview_draw.get_children():
-        treeview_draw.delete(item)
+    ...
 
 
 if __name__ == '__main__':
@@ -117,7 +89,7 @@ if __name__ == '__main__':
     tgtdir_entry = tk.Entry(frame_up_up, width=50, textvariable=stringvar)
     tgtdir_entry.grid(row=0, column=0, padx=5, pady=5)
 
-    choose_btn = tk.Button(frame_up_right, text='Choose', command=lambda: open_dir(), width=6)
+    choose_btn = tk.Button(frame_up_right, text='Choose', command=lambda: open_dir(stringvar), width=6)
     choose_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
     choose_btn['font'] = font_btn
 
@@ -163,7 +135,12 @@ if __name__ == '__main__':
     frame_dw_left_2.propagate(0)
 
     max_widths = {}
-    read_btn = tk.Button(frame_dw_left_2, text='Read', command=lambda: read_csv(), width=6)
+    read_btn = tk.Button(
+        frame_dw_left_2, 
+        text='Read', 
+        command=lambda: read_csv(treeview_read, stringvar, scrollbar_ver_left, scrollbar_hor_left), 
+        width=6
+    )
     read_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
     read_btn['font'] = font_btn
 
