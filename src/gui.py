@@ -117,7 +117,7 @@ if __name__ == '__main__':
     tgtdir_entry = tk.Entry(frame_up_up, width=50, textvariable=stringvar)
     tgtdir_entry.grid(row=0, column=0, padx=5, pady=5)
 
-    choose_btn = tk.Button(frame_up_right, text='Choose', command=open_dir, width=6)
+    choose_btn = tk.Button(frame_up_right, text='Choose', command=lambda: open_dir(), width=6)
     choose_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
     choose_btn['font'] = font_btn
 
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     frame_dw_left_2.propagate(0)
 
     max_widths = {}
-    read_btn = tk.Button(frame_dw_left_2, text='Read', command=read_csv, width=6)
+    read_btn = tk.Button(frame_dw_left_2, text='Read', command=lambda: read_csv(), width=6)
     read_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
     read_btn['font'] = font_btn
 
@@ -202,11 +202,11 @@ if __name__ == '__main__':
 
     used_indices = []
     clear_state = False
-    draw_btn = tk.Button(frame_dw_right_2, text='Draw', command=draw, width=6)
+    draw_btn = tk.Button(frame_dw_right_2, text='Draw', command=lambda: draw(), width=6)
     draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
     draw_btn['font'] = font_btn
     
-    clear_btn = tk.Button(frame_dw_right_2, text='Clear', command=clear, width=6)
+    clear_btn = tk.Button(frame_dw_right_2, text='Clear', command=lambda: clear(), width=6)
     clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
     clear_btn['font'] = font_btn
     
