@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import font
 from tkinter import ttk
+from typing import Tuple
 
 import kernel
 
@@ -111,6 +112,25 @@ def create_directory_frame(
     return stringvar
 
 
+def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
+    subframe_left_1 = tk.Frame(frame, width=250, height=300)
+    subframe_left_1.grid(row=0, column=0, padx=5, pady=5)
+    subframe_left_1.propagate(0)
+
+    subframe_left_2 = tk.Frame(frame)
+    subframe_left_2.grid(row=1, column=0)
+    subframe_left_2.propagate(0)
+
+    subframe_right_1 = tk.Frame(frame, width=250, height=300)
+    subframe_right_1.grid(row=0, column=1, padx=5, pady=5)
+    subframe_right_1.propagate(0)
+
+    subframe_right_2 = tk.Frame(frame)
+    subframe_right_2.grid(row=1, column=1)
+    subframe_right_2.propagate(0)
+    return subframe_left_1, subframe_left_2, subframe_right_1, subframe_right_2
+
+
 def create_working_frame(
         root: tk.Tk, font_label: font.Font,
         font_btn: font.Font, stringvar: tk.StringVar):
@@ -119,11 +139,10 @@ def create_working_frame(
     frame.propagate(0)
     frame['font'] = font_label
 
-    # frame down left 1
-    subframe_left_1 = tk.Frame(frame, width=250, height=300)
-    subframe_left_1.grid(row=0, column=0, padx=5, pady=5)
-    subframe_left_1.propagate(0)
+    subframe_left_1, subframe_left_2, subframe_right_1, subframe_right_2\
+        = create_working_subframes(frame)
 
+    # frame down left 1
     scrollbar_ver_left = tk.Scrollbar(subframe_left_1)
     scrollbar_ver_left.pack(side=tk.RIGHT, fill=tk.Y)
 
@@ -149,10 +168,6 @@ def create_working_frame(
     treeview_read.heading('1', text='')
 
     # frame down left 2
-    subframe_left_2 = tk.Frame(frame)
-    subframe_left_2.grid(row=1, column=0)
-    subframe_left_2.propagate(0)
-
     read_btn = tk.Button(
         subframe_left_2,
         text='Read',
@@ -164,10 +179,6 @@ def create_working_frame(
     read_btn['font'] = font_btn
 
     # frame down right 1
-    subframe_right_1 = tk.Frame(frame, width=250, height=300)
-    subframe_right_1.grid(row=0, column=1, padx=5, pady=5)
-    subframe_right_1.propagate(0)
-
     scrollbar_ver_right = tk.Scrollbar(subframe_right_1)
     scrollbar_ver_right.pack(side=tk.RIGHT, fill=tk.Y)
 
@@ -193,9 +204,6 @@ def create_working_frame(
     treeview_draw.heading('1', text='')
 
     # frame down right 2
-    subframe_right_2 = tk.Frame(frame)
-    subframe_right_2.grid(row=1, column=1)
-
     draw_btn = tk.Button(subframe_right_2, text='Draw',
                          command=lambda: draw(), width=6)
     draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
