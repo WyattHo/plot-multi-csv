@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter import font
 from tkinter import ttk
 
-import main
+import kernel
 
 
 def open_dir(stringvar: tk.StringVar):
