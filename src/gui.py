@@ -173,6 +173,43 @@ def fill_subframe_left_2(
     read_btn['font'] = font_btn
 
 
+def fill_subframe_right_1(subframe: tk.Frame):
+    scrollbar_ver_right = tk.Scrollbar(subframe)
+    scrollbar_ver_right.pack(side=tk.RIGHT, fill=tk.Y)
+    scrollbar_hor_right = tk.Scrollbar(subframe, orient='horizontal')
+    scrollbar_hor_right.pack(side=tk.BOTTOM, fill=tk.X)
+    treeview_draw = ttk.Treeview(
+        subframe,
+        yscrollcommand=scrollbar_ver_right.set,
+        xscrollcommand=scrollbar_hor_right.set,
+        height=15
+    )
+    treeview_draw.pack(fill='both')
+    treeview_draw.propagate(0)
+    scrollbar_ver_right.config(command=treeview_draw.yview)
+    scrollbar_hor_right.config(command=treeview_draw.xview)
+    treeview_draw['columns'] = ('1', )
+    treeview_draw['show'] = 'headings'
+    treeview_draw.column('1')
+    treeview_draw.heading('1', text='')
+
+
+def fill_subframe_right_2(subframe: tk.Frame, font_btn: font.Font):
+    draw_btn = tk.Button(subframe, text='Draw',
+                         command=lambda: draw(), width=6)
+    draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
+    draw_btn['font'] = font_btn
+
+    clear_btn = tk.Button(
+        subframe,
+        text='Clear',
+        command=lambda: clear(),
+        width=6
+    )
+    clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
+    clear_btn['font'] = font_btn
+
+
 def create_working_frame(
         root: tk.Tk, font_label: font.Font,
         font_btn: font.Font, stringvar: tk.StringVar):
@@ -187,7 +224,6 @@ def create_working_frame(
 
     treeview_read, scrollbar_ver_left, scrollbar_hor_left\
         = fill_subframe_left_1(subframe_left_1)
-
     fill_subframe_left_2(
         subframe_left_2,
         treeview_read,
@@ -196,46 +232,8 @@ def create_working_frame(
         scrollbar_hor_left,
         font_btn
     )
-
-    # frame down right 1
-    scrollbar_ver_right = tk.Scrollbar(subframe_right_1)
-    scrollbar_ver_right.pack(side=tk.RIGHT, fill=tk.Y)
-
-    scrollbar_hor_right = tk.Scrollbar(subframe_right_1, orient='horizontal')
-    scrollbar_hor_right.pack(side=tk.BOTTOM, fill=tk.X)
-
-    treeview_draw = ttk.Treeview(
-        subframe_right_1,
-        yscrollcommand=scrollbar_ver_right.set,
-        xscrollcommand=scrollbar_hor_right.set,
-        height=15
-    )
-
-    treeview_draw.pack(fill='both')
-    treeview_draw.propagate(0)
-
-    scrollbar_ver_right.config(command=treeview_draw.yview)
-    scrollbar_hor_right.config(command=treeview_draw.xview)
-    treeview_draw['columns'] = ('1', )
-    treeview_draw['show'] = 'headings'
-
-    treeview_draw.column('1')
-    treeview_draw.heading('1', text='')
-
-    # frame down right 2
-    draw_btn = tk.Button(subframe_right_2, text='Draw',
-                         command=lambda: draw(), width=6)
-    draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    draw_btn['font'] = font_btn
-
-    clear_btn = tk.Button(
-        subframe_right_2,
-        text='Clear',
-        command=lambda: clear(),
-        width=6
-    )
-    clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
-    clear_btn['font'] = font_btn
+    fill_subframe_right_1(subframe_right_1)
+    fill_subframe_right_2(subframe_right_2, font_btn)
 
 
 def main():
