@@ -27,6 +27,7 @@ def read_csv(
         treeview_read['columns'] = fieldnames
 
         # Analyze best-fit width for each field
+        max_widths = {}
         for fieldname in fieldnames:
             max_widths[fieldname] = len(fieldname)
 
@@ -65,7 +66,7 @@ def clear():
     ...
 
 
-if __name__ == '__main__':
+def main():
     root = tk.Tk()
     root.title('PlotCSV')
     root.resizable(width=0, height=0)
@@ -134,7 +135,6 @@ if __name__ == '__main__':
     frame_dw_left_2.grid(row=1, column=0)
     frame_dw_left_2.propagate(0)
 
-    max_widths = {}
     read_btn = tk.Button(
         frame_dw_left_2, 
         text='Read', 
@@ -189,3 +189,6 @@ if __name__ == '__main__':
     
     root.mainloop()
     
+
+if __name__ == '__main__':
+    main()
