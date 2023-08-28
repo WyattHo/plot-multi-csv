@@ -9,7 +9,7 @@ import main
 
 def open_dir():
     dir_name = filedialog.askopenfilename(title='Choose the directory')
-    dir_variable.set(dir_name)
+    stringvar.set(dir_name)
 
 
 def read_csv():
@@ -18,7 +18,7 @@ def read_csv():
         treeview_read.delete(item)
 
     # Read csv
-    tgtfile_name = dir_variable.get()
+    tgtfile_name = stringvar.get()
     with open(tgtfile_name, 'r') as f:
         csv_data = csv.DictReader(f)
         fieldnames = csv_data.fieldnames
@@ -95,17 +95,17 @@ def clear():
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title('LuckyGuy')
+    root.title('PlotCSV')
     root.resizable(width=0, height=0)
     root.configure()
 
-    label_font = font.Font(family='Helvetica', size=10)
-    btn_font = font.Font(family='Helvetica', size=10)
+    font_label = font.Font(family='Helvetica', size=10)
+    font_btn = font.Font(family='Helvetica', size=10)
     
     # frame up
-    frame_up = tk.LabelFrame(root, text='Choose a csv source')
+    frame_up = tk.LabelFrame(root, text='Choose the csv file')
     frame_up.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1, sticky=tk.W)
-    frame_up['font'] = label_font
+    frame_up['font'] = font_label
     
     frame_up_up = tk.Frame(frame_up)
     frame_up_up.grid(row=0, column=0)
@@ -113,22 +113,22 @@ if __name__ == '__main__':
     frame_up_right = tk.Frame(frame_up)
     frame_up_right.grid(row=0, column=1, rowspan=2)
 
-    dir_variable = tk.StringVar()
-    tgtdir_entry = tk.Entry(frame_up_up, width=50, textvariable=dir_variable)
+    stringvar = tk.StringVar()
+    tgtdir_entry = tk.Entry(frame_up_up, width=50, textvariable=stringvar)
     tgtdir_entry.grid(row=0, column=0, padx=5, pady=5)
 
     choose_btn = tk.Button(frame_up_right, text='Choose', command=open_dir, width=6)
     choose_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    choose_btn['font'] = btn_font
+    choose_btn['font'] = font_btn
 
 
     # frame down
     frame_dw = tk.LabelFrame(root, text='Working area')
     frame_dw.grid(row=1, column=0, padx=5, pady=5)
     frame_dw.propagate(0)
-    frame_dw['font'] = label_font
+    frame_dw['font'] = font_label
     
-    ## frame down left 1
+    # frame down left 1
     frame_dw_left_1 = tk.Frame(frame_dw, width=250, height=300)
     frame_dw_left_1.grid(row=0, column=0, padx=5, pady=5)
     frame_dw_left_1.propagate(0)
@@ -157,7 +157,7 @@ if __name__ == '__main__':
     treeview_read.column('1')
     treeview_read.heading('1', text='')
     
-    ## frame down left 2
+    # frame down left 2
     frame_dw_left_2 = tk.Frame(frame_dw)
     frame_dw_left_2.grid(row=1, column=0)
     frame_dw_left_2.propagate(0)
@@ -165,9 +165,9 @@ if __name__ == '__main__':
     max_widths = {}
     read_btn = tk.Button(frame_dw_left_2, text='Read', command=read_csv, width=6)
     read_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    read_btn['font'] = btn_font
+    read_btn['font'] = font_btn
 
-    ## frame down right 1
+    # frame down right 1
     frame_dw_right_1 = tk.Frame(frame_dw, width=250, height=300)
     frame_dw_right_1.grid(row=0, column=1, padx=5, pady=5)
     frame_dw_right_1.propagate(0)
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     treeview_draw.column('1')
     treeview_draw.heading('1', text='')
 
-    ## frame down right 2
+    # frame down right 2
     frame_dw_right_2 = tk.Frame(frame_dw)
     frame_dw_right_2.grid(row=1, column=1)
 
@@ -204,11 +204,11 @@ if __name__ == '__main__':
     clear_state = False
     draw_btn = tk.Button(frame_dw_right_2, text='Draw', command=draw, width=6)
     draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    draw_btn['font'] = btn_font
+    draw_btn['font'] = font_btn
     
     clear_btn = tk.Button(frame_dw_right_2, text='Clear', command=clear, width=6)
     clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
-    clear_btn['font'] = btn_font
+    clear_btn['font'] = font_btn
     
     root.mainloop()
     
