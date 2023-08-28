@@ -154,24 +154,12 @@ def fill_subframe_left_1(
     return treeview_read, scrollbar_ver_left, scrollbar_hor_left
 
 
-def create_working_frame(
-        root: tk.Tk, font_label: font.Font,
-        font_btn: font.Font, stringvar: tk.StringVar):
-    
-    frame = tk.LabelFrame(root, text='Working area')
-    frame.grid(row=1, column=0, padx=5, pady=5)
-    frame.propagate(0)
-    frame['font'] = font_label
-
-    subframe_left_1, subframe_left_2, subframe_right_1, subframe_right_2\
-        = create_working_subframes(frame)
-
-    treeview_read, scrollbar_ver_left, scrollbar_hor_left\
-        = fill_subframe_left_1(subframe_left_1)
-
-    # frame down left 2
+def fill_subframe_left_2(
+        subframe: tk.Frame, treeview_read: ttk.Treeview,
+        stringvar: tk.StringVar, scrollbar_ver_left: tk.Scrollbar,
+        scrollbar_hor_left: tk.Scrollbar, font_btn: font.Font):
     read_btn = tk.Button(
-        subframe_left_2,
+        subframe,
         text='Read',
         command=lambda: read_csv(
             treeview_read,
@@ -183,6 +171,31 @@ def create_working_frame(
     )
     read_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
     read_btn['font'] = font_btn
+
+
+def create_working_frame(
+        root: tk.Tk, font_label: font.Font,
+        font_btn: font.Font, stringvar: tk.StringVar):
+
+    frame = tk.LabelFrame(root, text='Working area')
+    frame.grid(row=1, column=0, padx=5, pady=5)
+    frame.propagate(0)
+    frame['font'] = font_label
+
+    subframe_left_1, subframe_left_2, subframe_right_1, subframe_right_2\
+        = create_working_subframes(frame)
+
+    treeview_read, scrollbar_ver_left, scrollbar_hor_left\
+        = fill_subframe_left_1(subframe_left_1)
+
+    fill_subframe_left_2(
+        subframe_left_2,
+        treeview_read,
+        stringvar,
+        scrollbar_ver_left,
+        scrollbar_hor_left,
+        font_btn
+    )
 
     # frame down right 1
     scrollbar_ver_right = tk.Scrollbar(subframe_right_1)
