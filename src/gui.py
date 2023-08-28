@@ -1,95 +1,96 @@
 import csv
-import kernel
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import font
 from tkinter import ttk
 
-
-def openDir():
-    dirName = filedialog.askopenfilename(title='Choose the directory')
-    dirVariable.set(dirName)
+import main
 
 
-def readCsv():
+def open_dir():
+    dir_name = filedialog.askopenfilename(title='Choose the directory')
+    dir_variable.set(dir_name)
+
+
+def read_csv():
     # Clear items first
-    for item in treeviewRead.get_children():
-        treeviewRead.delete(item)
+    for item in treeview_read.get_children():
+        treeview_read.delete(item)
 
     # Read csv
-    tgtFileName = dirVariable.get()
-    with open(tgtFileName, 'r') as f:
-        csvData = csv.DictReader(f)
-        fieldNames = csvData.fieldnames
-        treeviewRead['columns'] = fieldNames
+    tgtfile_name = dir_variable.get()
+    with open(tgtfile_name, 'r') as f:
+        csv_data = csv.DictReader(f)
+        fieldnames = csv_data.fieldnames
+        treeview_read['columns'] = fieldnames
 
         # Analyze best-fit width for each field
-        for fieldName in fieldNames:
-            maxWidths[fieldName] = len(fieldName)
+        for fieldname in fieldnames:
+            max_widths[fieldname] = len(fieldname)
 
-        for rowIdx, rowData in enumerate(csvData):
-            for fieldName in fieldNames:
-                dataWidth = len(rowData[fieldName])
+        for row_idx, row_data in enumerate(csv_data):
+            for fieldname in fieldnames:
+                data_width = len(row_data[fieldname])
 
-                if dataWidth > maxWidths[fieldName]:
-                    maxWidths[fieldName] = dataWidth
+                if data_width > max_widths[fieldname]:
+                    max_widths[fieldname] = data_width
 
         # Set fields
-        for fieldName in fieldNames:
-            treeviewRead.column(fieldName, anchor=tk.W, width=10*maxWidths[fieldName], stretch=0)
-            treeviewRead.heading(fieldName, text=fieldName, anchor=tk.W)
+        for fieldname in fieldnames:
+            treeview_read.column(fieldname, anchor=tk.W, width=10*max_widths[fieldname], stretch=0)
+            treeview_read.heading(fieldname, text=fieldname, anchor=tk.W)
 
         # Reset scrollbars
-        scrollBarVerL.config(command=treeviewRead.yview)
-        scrollBarHorL.config(command=treeviewRead.xview)
+        scrollbar_ver_left.config(command=treeview_read.yview)
+        scrollbar_hor_left.config(command=treeview_read.xview)
         
         # The entire file has been iterated at the first time,
         # so it is needed to seek to the beginning.
         f.seek(0)
-        next(csvData)
+        next(csv_data)
 
         # Insert values
-        for rowIdx, rowData in enumerate(csvData):
-            values = [rowData[fieldName] for fieldName in fieldNames]
-            treeviewRead.insert(parent='', index=rowIdx, values=values, tags=str(rowIdx))
+        for row_idx, row_data in enumerate(csv_data):
+            values = [row_data[fieldName] for fieldName in fieldnames]
+            treeview_read.insert(parent='', index=row_idx, values=values, tags=str(row_idx))
 
 
-def Draw():
-    totalNum = len(treeviewRead.get_children())
+def draw():
+    total_num = len(treeview_read.get_children())
 
     try:
-        kernel.Draw(totalNum=totalNum, usedIdxList=usedIdxList)
+        main.Draw(totalNum=total_num, usedIdxList=used_indices)
     except Exception as e:
         tk.messagebox.showerror("Error", e.args[0])
-        insertValues = False
+        insert_values = False
     else:
-        luckyGuy = usedIdxList[-1]
-        insertValues = True
+        lucky_guy = used_indices[-1]
+        insert_values = True
 
     # Set fields for treeviewDraw
-    if treeviewDraw['columns'] != treeviewRead['columns']:
-        treeviewDraw['columns'] = treeviewRead['columns']
+    if treeview_draw['columns'] != treeview_read['columns']:
+        treeview_draw['columns'] = treeview_read['columns']
     
-        for fieldName in treeviewRead['columns']:
-            treeviewDraw.column(fieldName, anchor=tk.W, width=10*maxWidths[fieldName], stretch=0)
-            treeviewDraw.heading(fieldName, text=fieldName, anchor=tk.W)
+        for fieldname in treeview_read['columns']:
+            treeview_draw.column(fieldname, anchor=tk.W, width=10*max_widths[fieldname], stretch=0)
+            treeview_draw.heading(fieldname, text=fieldname, anchor=tk.W)
 
         # Reset scrollbars
-        scrollBarVerR.config(command=treeviewDraw.yview)
-        scrollBarHorR.config(command=treeviewDraw.xview)
+        scrollbar_ver_right.config(command=treeview_draw.yview)
+        scrollbar_hor_right.config(command=treeview_draw.xview)
 
     # Insert values
-    if insertValues:
-        for idx, item in enumerate(treeviewRead.get_children()):
-            if idx == luckyGuy:
-                values = treeviewRead.item(item, 'values')
-                treeviewDraw.insert(parent='', index=0, values=values, tags=str(idx))
+    if insert_values:
+        for idx, item in enumerate(treeview_read.get_children()):
+            if idx == lucky_guy:
+                values = treeview_read.item(item, 'values')
+                treeview_draw.insert(parent='', index=0, values=values, tags=str(idx))
 
 
-def Clear():
-    usedIdxList.clear()
-    for item in treeviewDraw.get_children():
-        treeviewDraw.delete(item)
+def clear():
+    used_indices.clear()
+    for item in treeview_draw.get_children():
+        treeview_draw.delete(item)
 
 
 if __name__ == '__main__':
@@ -98,112 +99,116 @@ if __name__ == '__main__':
     root.resizable(width=0, height=0)
     root.configure()
 
-    labelFont = font.Font(family='Helvetica', size=10)
-    btnFont = font.Font(family='Helvetica', size=10)
+    label_font = font.Font(family='Helvetica', size=10)
+    btn_font = font.Font(family='Helvetica', size=10)
     
     # frame up
-    frameUp = tk.LabelFrame(root, text='Choose a csv source')
-    frameUp.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1, sticky=tk.W)
-    frameUp['font'] = labelFont
+    frame_up = tk.LabelFrame(root, text='Choose a csv source')
+    frame_up.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1, sticky=tk.W)
+    frame_up['font'] = label_font
     
-    frameUpUp = tk.Frame(frameUp)
-    frameUpUp.grid(row=0, column=0)
+    frame_up_up = tk.Frame(frame_up)
+    frame_up_up.grid(row=0, column=0)
 
-    frameUpRight = tk.Frame(frameUp)
-    frameUpRight.grid(row=0, column=1, rowspan=2)
+    frame_up_right = tk.Frame(frame_up)
+    frame_up_right.grid(row=0, column=1, rowspan=2)
 
-    dirVariable = tk.StringVar()
-    tgtDirStrEntry = tk.Entry(frameUpUp, width=50, textvariable=dirVariable)
-    tgtDirStrEntry.grid(row=0, column=0, padx=5, pady=5)
+    dir_variable = tk.StringVar()
+    tgtdir_entry = tk.Entry(frame_up_up, width=50, textvariable=dir_variable)
+    tgtdir_entry.grid(row=0, column=0, padx=5, pady=5)
 
-    chooseBtn = tk.Button(frameUpRight, text='Choose', command=openDir, width=6)
-    chooseBtn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    chooseBtn['font'] = btnFont
+    choose_btn = tk.Button(frame_up_right, text='Choose', command=open_dir, width=6)
+    choose_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
+    choose_btn['font'] = btn_font
 
 
     # frame down
-    frameDw = tk.LabelFrame(root, text='Working area')
-    frameDw.grid(row=1, column=0, padx=5, pady=5)
-    frameDw.propagate(0)
-    frameDw['font'] = labelFont
+    frame_dw = tk.LabelFrame(root, text='Working area')
+    frame_dw.grid(row=1, column=0, padx=5, pady=5)
+    frame_dw.propagate(0)
+    frame_dw['font'] = label_font
     
     ## frame down left 1
-    frameDwLeft1 = tk.Frame(frameDw, width=250, height=300)
-    frameDwLeft1.grid(row=0, column=0, padx=5, pady=5)
-    frameDwLeft1.propagate(0)
+    frame_dw_left_1 = tk.Frame(frame_dw, width=250, height=300)
+    frame_dw_left_1.grid(row=0, column=0, padx=5, pady=5)
+    frame_dw_left_1.propagate(0)
 
-    scrollBarVerL = tk.Scrollbar(frameDwLeft1)
-    scrollBarVerL.pack(side=tk.RIGHT, fill=tk.Y)
+    scrollbar_ver_left = tk.Scrollbar(frame_dw_left_1)
+    scrollbar_ver_left.pack(side=tk.RIGHT, fill=tk.Y)
 
-    scrollBarHorL = tk.Scrollbar(frameDwLeft1, orient='horizontal')
-    scrollBarHorL.pack(side=tk.BOTTOM, fill=tk.X)
+    scrollbar_hor_left = tk.Scrollbar(frame_dw_left_1, orient='horizontal')
+    scrollbar_hor_left.pack(side=tk.BOTTOM, fill=tk.X)
 
-    treeviewRead = ttk.Treeview(frameDwLeft1, 
-                               yscrollcommand=scrollBarVerL.set, 
-                               xscrollcommand=scrollBarHorL.set,
-                               height=15)
+    treeview_read = ttk.Treeview(
+        frame_dw_left_1, 
+        yscrollcommand=scrollbar_ver_left.set, 
+        xscrollcommand=scrollbar_hor_left.set,
+        height=15
+    )
     
-    treeviewRead.pack(fill='both')
-    treeviewRead.propagate(0)
+    treeview_read.pack(fill='both')
+    treeview_read.propagate(0)
 
-    scrollBarVerL.config(command=treeviewRead.yview)
-    scrollBarHorL.config(command=treeviewRead.xview)
-    treeviewRead['columns'] = ('1', )
-    treeviewRead['show'] = 'headings'
+    scrollbar_ver_left.config(command=treeview_read.yview)
+    scrollbar_hor_left.config(command=treeview_read.xview)
+    treeview_read['columns'] = ('1', )
+    treeview_read['show'] = 'headings'
 
-    treeviewRead.column('1')
-    treeviewRead.heading('1', text='')
+    treeview_read.column('1')
+    treeview_read.heading('1', text='')
     
     ## frame down left 2
-    frameDwLeft2 = tk.Frame(frameDw)
-    frameDwLeft2.grid(row=1, column=0)
-    frameDwLeft2.propagate(0)
+    frame_dw_left_2 = tk.Frame(frame_dw)
+    frame_dw_left_2.grid(row=1, column=0)
+    frame_dw_left_2.propagate(0)
 
-    maxWidths = {}
-    readBtn = tk.Button(frameDwLeft2, text='Read', command=readCsv, width=6)
-    readBtn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    readBtn['font'] = btnFont
+    max_widths = {}
+    read_btn = tk.Button(frame_dw_left_2, text='Read', command=read_csv, width=6)
+    read_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
+    read_btn['font'] = btn_font
 
     ## frame down right 1
-    frameDwRight1 = tk.Frame(frameDw, width=250, height=300)
-    frameDwRight1.grid(row=0, column=1, padx=5, pady=5)
-    frameDwRight1.propagate(0)
+    frame_dw_right_1 = tk.Frame(frame_dw, width=250, height=300)
+    frame_dw_right_1.grid(row=0, column=1, padx=5, pady=5)
+    frame_dw_right_1.propagate(0)
 
-    scrollBarVerR = tk.Scrollbar(frameDwRight1)
-    scrollBarVerR.pack(side=tk.RIGHT, fill=tk.Y)
+    scrollbar_ver_right = tk.Scrollbar(frame_dw_right_1)
+    scrollbar_ver_right.pack(side=tk.RIGHT, fill=tk.Y)
 
-    scrollBarHorR = tk.Scrollbar(frameDwRight1, orient='horizontal')
-    scrollBarHorR.pack(side=tk.BOTTOM, fill=tk.X)
+    scrollbar_hor_right = tk.Scrollbar(frame_dw_right_1, orient='horizontal')
+    scrollbar_hor_right.pack(side=tk.BOTTOM, fill=tk.X)
 
-    treeviewDraw = ttk.Treeview(frameDwRight1, 
-                               yscrollcommand=scrollBarVerR.set, 
-                               xscrollcommand=scrollBarHorR.set,
-                               height=15)
+    treeview_draw = ttk.Treeview(
+        frame_dw_right_1, 
+        yscrollcommand=scrollbar_ver_right.set, 
+        xscrollcommand=scrollbar_hor_right.set,
+        height=15
+    )
 
-    treeviewDraw.pack(fill='both')
-    treeviewDraw.propagate(0)
+    treeview_draw.pack(fill='both')
+    treeview_draw.propagate(0)
 
-    scrollBarVerR.config(command=treeviewDraw.yview)
-    scrollBarHorR.config(command=treeviewDraw.xview)
-    treeviewDraw['columns'] = ('1', )
-    treeviewDraw['show'] = 'headings'
+    scrollbar_ver_right.config(command=treeview_draw.yview)
+    scrollbar_hor_right.config(command=treeview_draw.xview)
+    treeview_draw['columns'] = ('1', )
+    treeview_draw['show'] = 'headings'
 
-    treeviewDraw.column('1')
-    treeviewDraw.heading('1', text='')
+    treeview_draw.column('1')
+    treeview_draw.heading('1', text='')
 
     ## frame down right 2
-    frameDwRight2 = tk.Frame(frameDw)
-    frameDwRight2.grid(row=1, column=1)
+    frame_dw_right_2 = tk.Frame(frame_dw)
+    frame_dw_right_2.grid(row=1, column=1)
 
-    usedIdxList = []
-    clearState = False
-    drawBtn = tk.Button(frameDwRight2, text='Draw', command=Draw, width=6)
-    drawBtn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    drawBtn['font'] = btnFont
+    used_indices = []
+    clear_state = False
+    draw_btn = tk.Button(frame_dw_right_2, text='Draw', command=draw, width=6)
+    draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
+    draw_btn['font'] = btn_font
     
-    clearBtn = tk.Button(frameDwRight2, text='Clear', command=Clear, width=6)
-    clearBtn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
-    clearBtn['font'] = btnFont
+    clear_btn = tk.Button(frame_dw_right_2, text='Clear', command=clear, width=6)
+    clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
+    clear_btn['font'] = btn_font
     
     root.mainloop()
     
