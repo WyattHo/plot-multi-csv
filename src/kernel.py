@@ -34,12 +34,20 @@ def plot_data(ax: plt.Axes, csvs: Sequence[str], labels: Sequence[str]):
 
 
 def set_axes(ax: plt.Axes, misc_config: Dict):
-    ax.set_title(misc_config['title'])
-    ax.set_xlabel(misc_config['xlabel'])
-    ax.set_ylabel(misc_config['ylabel'])
-    ax.set_xlim(misc_config['xlim'])
-    ax.grid(visible=True, axis='both')
-    ax.legend()
+    if misc_config['title']:
+        ax.set_title(misc_config['title'])
+    if misc_config['xlabel']:
+        ax.set_xlabel(misc_config['xlabel'])
+    if misc_config['ylabel']:
+        ax.set_ylabel(misc_config['ylabel'])
+    if misc_config['xlim']:
+        ax.set_xlim(misc_config['xlim'])
+    if misc_config['ylim']:
+        ax.set_ylim(misc_config['ylim'])
+    if misc_config['grid_visible']:
+        ax.grid(visible=True, axis='both')
+    if misc_config['legend_visible']:
+        ax.legend()
 
 
 def main(config_name: str = 'config.json'):
