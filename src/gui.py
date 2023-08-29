@@ -6,14 +6,6 @@ from typing import Tuple
 import kernel
 
 
-def draw():
-    ...
-
-
-def clear():
-    ...
-
-
 def initial_main_window() -> tk.Tk:
     root = tk.Tk()
     root.title('PlotCSV')
@@ -132,18 +124,21 @@ def fill_subframe_right_1(subframe: tk.Frame):
 
 
 def fill_subframe_right_2(subframe: tk.Frame, font_btn: font.Font):
-    draw_btn = tk.Button(subframe, text='Draw',
-                         command=lambda: draw(), width=6)
-    draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    draw_btn['font'] = font_btn
-
+    draw_btn = tk.Button(
+        subframe, 
+        text='Draw',
+        command=lambda: kernel.draw(), 
+        width=6
+    )
     clear_btn = tk.Button(
         subframe,
         text='Clear',
-        command=lambda: clear(),
+        command=lambda: kernel.clear(),
         width=6
     )
+    draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
     clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
+    draw_btn['font'] = font_btn
     clear_btn['font'] = font_btn
 
 

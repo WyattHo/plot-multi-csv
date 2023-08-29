@@ -74,5 +74,13 @@ def read_csv(
         # so it is needed to seek to the beginning.
         f.seek(0)
         next(csv_data)
-        
+
         insert_values(treeview, fieldnames, csv_data)
+
+
+def draw():
+    ...
+
+
+def clear():
+    ...
