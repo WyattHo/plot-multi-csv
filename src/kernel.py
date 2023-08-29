@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Sequence, Tuple
 
@@ -5,8 +6,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def collect_csvs_from_directory(tgt_dir: str) -> Sequence[str]:
-    path_obj = Path(tgt_dir)
+def read_configurations(config_name: str):
+    parent = Path(__file__).parent
+    config_path = parent.joinpath(config_name)
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    return config
+
+
+def collect_csvs_from_directory(data_dir: str) -> Sequence[str]:
+    path_obj = Path(data_dir)
     csvs = list(path_obj.glob('*.csv'))
     return csvs
 
@@ -34,8 +43,12 @@ def set_axes(ax: plt.Axes):
     ax.legend()
 
 
-def main(tgt_dir: str, figsize: Tuple[float]):
-    csvs = collect_csvs_from_directory(tgt_dir)
+def main(config_name: str = 'config.json'):
+    config = read_configurations(config_name)
+    data_dir = config['plot']['data_dir']
+    figsize = config['plot']['figsize']
+
+    csvs = collect_csvs_from_directory(data_dir)
     fig, ax = initialize_figure(figsize)
     plot_data(csvs, ax)
     set_axes(ax)
@@ -43,6 +56,4 @@ def main(tgt_dir: str, figsize: Tuple[float]):
 
 
 if __name__ == '__main__':
-    tgt_dir = 'D:\\my-analysis\\komatsu-xm25\\test\\tie_small_contact_lids_housing'
-    figsize = (4.8, 2.4)
-    main(tgt_dir, figsize)
+    main()
