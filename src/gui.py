@@ -5,8 +5,6 @@ from tkinter import font
 from tkinter import ttk
 from typing import Tuple
 
-import kernel
-
 
 def open_dir(stringvar: tk.StringVar):
     dir_name = filedialog.askopenfilename(title='Choose the directory')
