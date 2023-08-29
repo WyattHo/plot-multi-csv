@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Sequence, Tuple
+from typing import Sequence, Tuple, Dict
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -26,32 +26,33 @@ def initialize_figure(figsize: Sequence[float]) -> Tuple[plt.Figure, plt.Axes]:
     return fig, ax
 
 
-def plot_data(csvs: Sequence[str], ax: plt.Axes) -> plt.Axes:
-    labels = ['excite-x', 'excite-y', 'excite-z']
-    for label_idx, csv in enumerate(csvs):
+def plot_data(ax: plt.Axes, csvs: Sequence[str], labels: Sequence[str]):
+    for csv, label in zip(csvs, labels):
         path = str(csv)
         df = pd.read_csv(path)
-        ax.semilogx(df['frequency'], df['max_stress'], label=labels[label_idx])
+        ax.semilogx(df['frequency'], df['max_stress'], label=label)
 
 
-def set_axes(ax: plt.Axes):
-    ax.set_title(f'Maximum Stress Distribution')
-    ax.set_ylabel('Stress, MPa')
-    ax.set_xlabel('Frequency, Hz')
-    ax.set_xlim([10, 200])
+def set_axes(ax: plt.Axes, misc_config: Dict):
+    ax.set_title(misc_config['title'])
+    ax.set_xlabel(misc_config['xlabel'])
+    ax.set_ylabel(misc_config['ylabel'])
+    ax.set_xlim(misc_config['xlim'])
     ax.grid(visible=True, axis='both')
     ax.legend()
 
 
 def main(config_name: str = 'config.json'):
     config = read_configurations(config_name)
-    data_dir = config['plot']['data_dir']
-    figsize = config['plot']['figsize']
+    DATA_DIR = config['plot']['data_dir']
+    FIG_SIZE = config['plot']['figsize']
+    LABELS = config['plot']['labels']
+    misc_config = config['plot']['misc']
 
-    csvs = collect_csvs_from_directory(data_dir)
-    fig, ax = initialize_figure(figsize)
-    plot_data(csvs, ax)
-    set_axes(ax)
+    csvs = collect_csvs_from_directory(DATA_DIR)
+    fig, ax = initialize_figure(FIG_SIZE)
+    plot_data(ax, csvs, LABELS)
+    set_axes(ax, misc_config)
     plt.show()
 
 
