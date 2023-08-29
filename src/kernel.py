@@ -19,7 +19,6 @@ def analyze_best_fit_width(
         fieldnames: Sequence[str],
         csv_data: csv.DictReader) -> Dict[str, int]:
     max_widths = {fieldname: len(fieldname) for fieldname in fieldnames}
-    print(type(max_widths))
     for row_data in csv_data:
         for fieldname in fieldnames:
             data_width = len(row_data[fieldname])
@@ -57,7 +56,6 @@ def insert_values(
 def read_csv(
         treeview: ttk.Treeview, stringvar: tk.StringVar,
         scrollbar_ver_left: tk.Scrollbar, scrollbar_hor_left: tk.Scrollbar):
-    clear_treeview(treeview)
     with open(stringvar.get(), 'r') as f:
         csv_data = csv.DictReader(f)
         fieldnames = csv_data.fieldnames
@@ -79,8 +77,4 @@ def read_csv(
 
 
 def draw():
-    ...
-
-
-def clear():
     ...

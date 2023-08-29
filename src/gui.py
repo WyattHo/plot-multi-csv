@@ -98,8 +98,18 @@ def fill_subframe_left_2(
         ),
         width=6
     )
+    clear_btn = tk.Button(
+        subframe,
+        text='clear',
+        command=lambda: kernel.clear_treeview(
+            treeview_read
+        ),
+        width=6
+    )
     read_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
+    clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
     read_btn['font'] = font_btn
+    clear_btn['font'] = font_btn
 
 
 def fill_subframe_right_1(subframe: tk.Frame):
