@@ -61,9 +61,7 @@ def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
     return subframe_left_1, subframe_left_2, subframe_right_1, subframe_right_2
 
 
-def fill_subframe_left_1(
-        subframe: tk.Frame) -> Tuple[ttk.Treeview, tk.Scrollbar, tk.Scrollbar]:
-    
+def fill_subframe_left_1(subframe: tk.Frame) -> ttk.Treeview:
     scrollbar_ver_left = tk.Scrollbar(subframe)
     scrollbar_ver_left.pack(side=tk.RIGHT, fill=tk.Y)
     scrollbar_hor_left = tk.Scrollbar(subframe, orient='horizontal')
@@ -82,22 +80,19 @@ def fill_subframe_left_1(
     treeview_read['show'] = 'headings'
     treeview_read.column('1')
     treeview_read.heading('1', text='')
-    return treeview_read, scrollbar_ver_left, scrollbar_hor_left
+    return treeview_read
 
 
 def fill_subframe_left_2(
         subframe: tk.Frame, treeview_read: ttk.Treeview,
-        stringvar: tk.StringVar, scrollbar_ver_left: tk.Scrollbar,
-        scrollbar_hor_left: tk.Scrollbar, font_btn: font.Font):
+        stringvar: tk.StringVar, font_btn: font.Font):
     
     read_btn = tk.Button(
         subframe,
         text='Read',
         command=lambda: kernel.read_csv(
             treeview_read,
-            stringvar,
-            scrollbar_ver_left,
-            scrollbar_hor_left
+            stringvar
         ),
         width=6
     )
@@ -167,14 +162,11 @@ def create_working_frame(
     subframe_left_1, subframe_left_2, subframe_right_1, subframe_right_2\
         = create_working_subframes(frame)
 
-    treeview_read, scrollbar_ver_left, scrollbar_hor_left\
-        = fill_subframe_left_1(subframe_left_1)
+    treeview_read = fill_subframe_left_1(subframe_left_1)
     fill_subframe_left_2(
         subframe_left_2,
         treeview_read,
         stringvar,
-        scrollbar_ver_left,
-        scrollbar_hor_left,
         font_btn
     )
     fill_subframe_right_1(subframe_right_1)
