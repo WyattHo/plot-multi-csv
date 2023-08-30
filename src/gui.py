@@ -17,6 +17,7 @@ def initial_main_window() -> tk.Tk:
 def create_directory_frame(
         root: tk.Tk, font_label: font.Font,
         font_btn: font.Font) -> tk.StringVar:
+    
     frame = tk.LabelFrame(root, text='Choose the csv file')
     frame.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1, sticky=tk.W)
     frame['font'] = font_label
@@ -62,6 +63,7 @@ def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
 
 def fill_subframe_left_1(
         subframe: tk.Frame) -> Tuple[ttk.Treeview, tk.Scrollbar, tk.Scrollbar]:
+    
     scrollbar_ver_left = tk.Scrollbar(subframe)
     scrollbar_ver_left.pack(side=tk.RIGHT, fill=tk.Y)
     scrollbar_hor_left = tk.Scrollbar(subframe, orient='horizontal')
@@ -87,6 +89,7 @@ def fill_subframe_left_2(
         subframe: tk.Frame, treeview_read: ttk.Treeview,
         stringvar: tk.StringVar, scrollbar_ver_left: tk.Scrollbar,
         scrollbar_hor_left: tk.Scrollbar, font_btn: font.Font):
+    
     read_btn = tk.Button(
         subframe,
         text='Read',

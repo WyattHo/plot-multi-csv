@@ -18,6 +18,7 @@ def clear_treeview(treeview: ttk.Treeview):
 def analyze_best_fit_width(
         fieldnames: Sequence[str],
         csv_data: csv.DictReader) -> Dict[str, int]:
+    
     max_widths = {fieldname: len(fieldname) for fieldname in fieldnames}
     for row_data in csv_data:
         for fieldname in fieldnames:
@@ -30,6 +31,7 @@ def analyze_best_fit_width(
 def adjust_field_width(
         treeview: ttk.Treeview, fieldnames: Sequence[str],
         max_widths: Dict[str, int]):
+    
     for fieldname in fieldnames:
         treeview.column(
             fieldname,
@@ -43,6 +45,7 @@ def adjust_field_width(
 def insert_values(
         treeview: ttk.Treeview, fieldnames: Sequence[str],
         csv_data: csv.DictReader):
+    
     for row_idx, row_data in enumerate(csv_data):
         values = [row_data[fieldName] for fieldName in fieldnames]
         treeview.insert(
@@ -56,6 +59,7 @@ def insert_values(
 def read_csv(
         treeview: ttk.Treeview, stringvar: tk.StringVar,
         scrollbar_ver_left: tk.Scrollbar, scrollbar_hor_left: tk.Scrollbar):
+    
     with open(stringvar.get(), 'r') as f:
         csv_data = csv.DictReader(f)
         fieldnames = csv_data.fieldnames
