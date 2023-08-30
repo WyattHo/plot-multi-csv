@@ -27,12 +27,22 @@ def initialize_figure(figsize: Sequence[float]) -> Tuple[plt.Figure, plt.Axes]:
 
 def plot_data(
         ax: plt.Axes, csvs: Sequence[str], labels: Sequence[str],
-        fieldnames: Sequence[Dict[str, str]]):
+        fieldnames: Sequence[Dict[str, str]], scale: Dict[str, str]):
+
+    if scale['x'] == 'linear' and scale['y'] == 'linear':
+        plot_function = ax.plot
+    elif scale['x'] == 'log' and scale['y'] == 'linear':
+        plot_function = ax.semilogx
+    elif scale['x'] == 'linear' and scale['y'] == 'log':
+        plot_function = ax.semilogy
+    elif scale['x'] == 'log' and scale['y'] == 'log':
+        plot_function = ax.loglog
+
     for csv, fieldname, label in zip(csvs, fieldnames, labels):
         df = pd.read_csv(csv)
         values_x = df[fieldname['x']]
         values_y = df[fieldname['y']]
-        ax.semilogx(values_x, values_y, label=label)
+        plot_function(values_x, values_y, label=label)
 
 
 def set_axes(ax: plt.Axes, misc_config: Dict):
@@ -50,13 +60,14 @@ def main(config_name: str = 'config.json'):
     config = read_configurations(config_name)
     data_dir = config['plot']['data_dir']
     figsize = config['plot']['figsize']
+    scale = config['plot']['scale']
     labels = config['plot']['labels']
     fieldnames = config['plot']['fieldnames']
     misc_config = config['plot']['misc']
 
     csvs = collect_csvs_from_directory(data_dir)
     fig, ax = initialize_figure(figsize)
-    plot_data(ax, csvs, labels, fieldnames)
+    plot_data(ax, csvs, labels, fieldnames, scale)
     set_axes(ax, misc_config)
     plt.show()
 

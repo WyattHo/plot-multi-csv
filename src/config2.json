@@ -1,0 +1,22 @@
+{
+    "plot": {
+        "data_dir": "D:\\my-analysis\\komatsu-xm25\\test\\zz",
+        "figsize": [4.8, 2.4],
+        "labels": ["N138783"],
+        "fieldnames": [
+            {
+                "x": "angle",
+                "y": "stress"
+            }
+        ],
+        "misc": {
+            "title": "",
+            "xlabel": "Angle, deg",
+            "ylabel": "Stress (ZZ), MPa",
+            "xlim": null,
+            "ylim": null,
+            "grid_visible": true,
+            "legend_visible": true
+        }
+    }
+}
