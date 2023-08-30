@@ -2,7 +2,6 @@ import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from typing import Dict
 
 
 def open_dir(stringvar: tk.StringVar):
