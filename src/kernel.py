@@ -2,7 +2,7 @@ import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from typing import Sequence, Dict
+from typing import Dict
 
 
 def open_dir(stringvar: tk.StringVar):
@@ -15,24 +15,22 @@ def clear_treeview(treeview: ttk.Treeview):
         treeview.delete(item)
 
 
-def analyze_best_fit_width(
-        fieldnames: Sequence[str],
-        csv_data: csv.DictReader) -> Dict[str, int]:
-    
-    max_widths = {fieldname: len(fieldname) for fieldname in fieldnames}
+def analyze_best_fit_width(csv_data: csv.DictReader) -> Dict[str, int]:
+    max_widths = {
+        fieldname: len(fieldname) 
+        for fieldname in csv_data.fieldnames
+    }
     for row_data in csv_data:
-        for fieldname in fieldnames:
+        for fieldname in csv_data.fieldnames:
             data_width = len(row_data[fieldname])
             if data_width > max_widths[fieldname]:
                 max_widths[fieldname] = data_width
     return max_widths
 
 
-def adjust_field_width(
-        treeview: ttk.Treeview, fieldnames: Sequence[str],
-        max_widths: Dict[str, int]):
-    
-    for fieldname in fieldnames:
+def adjust_field_width(treeview: ttk.Treeview, csv_data: csv.DictReader):
+    max_widths = analyze_best_fit_width(csv_data)
+    for fieldname in csv_data.fieldnames:
         treeview.column(
             fieldname,
             anchor=tk.W,
@@ -42,12 +40,9 @@ def adjust_field_width(
         treeview.heading(fieldname, text=fieldname, anchor=tk.W)
 
 
-def insert_values(
-        treeview: ttk.Treeview, fieldnames: Sequence[str],
-        csv_data: csv.DictReader):
-    
+def insert_values(treeview: ttk.Treeview, csv_data: csv.DictReader):
     for row_idx, row_data in enumerate(csv_data):
-        values = [row_data[fieldName] for fieldName in fieldnames]
+        values = [row_data[fieldName] for fieldName in csv_data.fieldnames]
         treeview.insert(
             parent='',
             index=row_idx,
@@ -58,26 +53,22 @@ def insert_values(
 
 def read_csv(
         treeview: ttk.Treeview, stringvar: tk.StringVar,
-        scrollbar_ver_left: tk.Scrollbar, scrollbar_hor_left: tk.Scrollbar):
+        scrollbar_ver: tk.Scrollbar, scrollbar_hor: tk.Scrollbar):
     
     with open(stringvar.get(), 'r') as f:
         csv_data = csv.DictReader(f)
-        fieldnames = csv_data.fieldnames
-
-        treeview['columns'] = fieldnames
-        max_widths = analyze_best_fit_width(fieldnames, csv_data)
-        adjust_field_width(treeview, fieldnames, max_widths)
+        treeview['columns'] = csv_data.fieldnames
+        adjust_field_width(treeview, csv_data)
 
         # Reset scrollbars
-        scrollbar_ver_left.config(command=treeview.yview)
-        scrollbar_hor_left.config(command=treeview.xview)
+        scrollbar_ver.config(command=treeview.yview)
+        scrollbar_hor.config(command=treeview.xview)
 
         # The entire file has been iterated at the first time,
         # so it is needed to seek to the beginning.
         f.seek(0)
         next(csv_data)
-
-        insert_values(treeview, fieldnames, csv_data)
+        insert_values(treeview, csv_data)
 
 
 def draw():
