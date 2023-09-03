@@ -9,17 +9,25 @@ import kernel
 def initial_main_window() -> tk.Tk:
     root = tk.Tk()
     root.title('PlotCSV')
-    root.resizable(width=0, height=0)
+    w = root.winfo_screenwidth()
+    h = root.winfo_screenheight()
+    root.geometry(f"{w:d}x{h:d}+0+0")
     root.configure()
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
+    root.rowconfigure(1, weight=1)
     return root
 
 
 def create_directory_frame(
         root: tk.Tk, font_label: font.Font,
         font_btn: font.Font) -> tk.StringVar:
-    
+
     frame = tk.LabelFrame(root, text='Choose the csv file')
-    frame.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1, sticky=tk.W)
+    frame.grid(
+        row=0, column=0, padx=5, pady=5,
+        ipadx=1, ipady=1, sticky=tk.NSEW
+    )
     frame['font'] = font_label
 
     subframe_left = tk.Frame(frame)
@@ -86,7 +94,7 @@ def fill_subframe_left_1(subframe: tk.Frame) -> ttk.Treeview:
 def fill_subframe_left_2(
         subframe: tk.Frame, treeview_read: ttk.Treeview,
         stringvar: tk.StringVar, font_btn: font.Font):
-    
+
     read_btn = tk.Button(
         subframe,
         text='Read',
@@ -133,9 +141,9 @@ def fill_subframe_right_1(subframe: tk.Frame):
 
 def fill_subframe_right_2(subframe: tk.Frame, font_btn: font.Font):
     draw_btn = tk.Button(
-        subframe, 
+        subframe,
         text='Draw',
-        command=lambda: kernel.draw(), 
+        command=lambda: kernel.draw(),
         width=6
     )
     clear_btn = tk.Button(
@@ -155,7 +163,10 @@ def create_working_frame(
         font_btn: font.Font, stringvar: tk.StringVar):
 
     frame = tk.LabelFrame(root, text='Working area')
-    frame.grid(row=1, column=0, padx=5, pady=5)
+    frame.grid(
+        row=1, column=0, padx=5, pady=5,
+        ipadx=1, ipady=1, sticky=tk.NSEW
+    )
     frame.propagate(0)
     frame['font'] = font_label
 
