@@ -17,6 +17,7 @@ def insert_values(treeview: ttk.Treeview, data: Sequence):
 
 
 def open_files(treeview: ttk.Treeview):
+    clear_treeview(treeview)
     filenames = filedialog.askopenfilenames(
         title='Choose csv files',
         filetypes=[('csv files', '*.csv')]
@@ -28,6 +29,11 @@ def open_files(treeview: ttk.Treeview):
 def clear_treeview(treeview: ttk.Treeview):
     for item in treeview.get_children():
         treeview.delete(item)
+
+
+def reset_fieldnames(treeview: ttk.Treeview):
+    treeview['columns'] = ('1', )
+    treeview.heading('1', anchor=tk.W)
 
 
 def insert_fieldnames(treeview: ttk.Treeview, csv_data: csv.DictReader):
@@ -71,6 +77,8 @@ def adjust_column_width(treeview: ttk.Treeview):
 
 
 def read_csv(treeview_data: ttk.Treeview, treeview_filenames: ttk.Treeview):
+    clear_treeview(treeview_data)
+    reset_fieldnames(treeview_data)
     for line in treeview_filenames.get_children():
         path = treeview_filenames.item(line)['values'][-1]
         with open(path, 'r') as f:
