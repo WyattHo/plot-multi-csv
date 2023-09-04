@@ -45,7 +45,7 @@ def create_directory_frame(
     button = tk.Button(
         subframe_right,
         text='Choose',
-        command=lambda: kernel.open_dir(stringvar),
+        command=lambda: kernel.open_files(stringvar),
         width=6
     )
     button.grid(row=0, column=0, **PADS)
@@ -77,7 +77,7 @@ def fill_subframe_left_1(subframe: tk.Frame) -> ttk.Treeview:
     scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
     scrollbar_hor = tk.Scrollbar(subframe, orient='horizontal')
     scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
-    
+
     treeview = ttk.Treeview(
         subframe,
         yscrollcommand=scrollbar_ver.set,
@@ -127,7 +127,7 @@ def fill_subframe_right_1(subframe: tk.Frame):
     scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
     scrollbar_hor = tk.Scrollbar(subframe, orient='horizontal')
     scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
-    
+
     treeview = ttk.Treeview(
         subframe,
         yscrollcommand=scrollbar_ver.set,

@@ -4,8 +4,11 @@ from tkinter import filedialog
 from tkinter import ttk
 
 
-def open_dir(stringvar: tk.StringVar):
-    dir_name = filedialog.askopenfilename(title='Choose the directory')
+def open_files(stringvar: tk.StringVar):
+    dir_name = filedialog.askopenfilenames(
+        title='Choose csv files',
+        filetypes=[('csv files', '*.csv')]
+    )
     stringvar.set(dir_name)
 
 
@@ -60,7 +63,7 @@ def read_csv(treeview: ttk.Treeview, stringvar: tk.StringVar):
         insert_fieldnames(treeview, csv_data)
         insert_values(treeview, csv_data)
         adjust_column_width(treeview)
-        
+
 
 def draw():
     ...
