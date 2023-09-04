@@ -25,9 +25,32 @@ def initial_main_window() -> tk.Tk:
     return root
 
 
+def create_directory_table(subframe: tk.Frame) -> ttk.Treeview:
+    scrollbar_ver = tk.Scrollbar(subframe)
+    scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
+    scrollbar_hor = tk.Scrollbar(subframe, orient='horizontal')
+    scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
+
+    treeview = ttk.Treeview(
+        subframe,
+        yscrollcommand=scrollbar_ver.set,
+        xscrollcommand=scrollbar_hor.set,
+        height=15
+    )
+    treeview.pack(fill='both')
+    treeview.propagate(0)
+    scrollbar_ver.config(command=treeview.yview)
+    scrollbar_hor.config(command=treeview.xview)
+    treeview['columns'] = ('Number', 'Path')
+    treeview['show'] = 'headings'
+    treeview.heading('Number', text='Number', anchor=tk.W)
+    treeview.heading('Path', text='Path', anchor=tk.W)
+    return treeview
+
+
 def create_directory_frame(
         root: tk.Tk, font_label: font.Font,
-        font_btn: font.Font) -> tk.StringVar:
+        font_btn: font.Font):
 
     frame = tk.LabelFrame(root, text='Choose the csv file')
     frame.grid(row=0, column=0, sticky=tk.NSEW, **PADS)
@@ -38,19 +61,15 @@ def create_directory_frame(
     subframe_right = tk.Frame(frame)
     subframe_right.grid(row=0, column=1, rowspan=2)
 
-    stringvar = tk.StringVar()
-    entry = tk.Entry(subframe_left, width=50, textvariable=stringvar)
-    entry.grid(row=0, column=0, **PADS)
-
+    table = create_directory_table(subframe_left)
     button = tk.Button(
         subframe_right,
         text='Choose',
-        command=lambda: kernel.open_files(stringvar),
+        command=lambda: kernel.open_files(table),
         width=6
     )
     button.grid(row=0, column=0, **PADS)
     button['font'] = font_btn
-    return stringvar
 
 
 def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:

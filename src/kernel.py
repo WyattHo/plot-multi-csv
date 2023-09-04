@@ -2,14 +2,27 @@ import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
+from typing import Sequence
 
 
-def open_files(stringvar: tk.StringVar):
-    dir_name = filedialog.askopenfilenames(
+def insert_values(treeview: ttk.Treeview, data: Sequence):
+    for row_idx, row_data in enumerate(data):
+        values = [row_idx, row_data]
+        treeview.insert(
+            parent='',
+            index=row_idx,
+            values=values,
+            tags=str(row_idx)
+        )
+
+
+def open_files(treeview: ttk.Treeview):
+    filenames = filedialog.askopenfilenames(
         title='Choose csv files',
         filetypes=[('csv files', '*.csv')]
     )
-    stringvar.set(dir_name)
+    insert_values(treeview, filenames)
+    adjust_column_width(treeview)
 
 
 def clear_treeview(treeview: ttk.Treeview):
@@ -23,7 +36,7 @@ def insert_fieldnames(treeview: ttk.Treeview, csv_data: csv.DictReader):
         treeview.heading(fieldname, text=fieldname, anchor=tk.W)
 
 
-def insert_values(treeview: ttk.Treeview, csv_data: csv.DictReader):
+def insert_csv_values(treeview: ttk.Treeview, csv_data: csv.DictReader):
     for row_idx, row_data in enumerate(csv_data):
         values = [
             row_data[fieldName].strip() for fieldName in csv_data.fieldnames
@@ -45,7 +58,7 @@ def adjust_column_width(treeview: ttk.Treeview):
         fieldnames = treeview['columns']
         values = treeview.item(line)['values']
         for fieldname, value in zip(fieldnames, values):
-            lengths[fieldname].append(len(value))
+            lengths[fieldname].append(len(str(value)))
 
     for fieldname in treeview['columns']:
         width = COLUMN_WIDTH_RATIO * max(lengths[fieldname])
@@ -61,7 +74,7 @@ def read_csv(treeview: ttk.Treeview, stringvar: tk.StringVar):
     with open(stringvar.get(), 'r') as f:
         csv_data = csv.DictReader(f)
         insert_fieldnames(treeview, csv_data)
-        insert_values(treeview, csv_data)
+        insert_csv_values(treeview, csv_data)
         adjust_column_width(treeview)
 
 
