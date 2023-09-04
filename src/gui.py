@@ -39,17 +39,17 @@ def create_directory_frame(
     subframe_right.grid(row=0, column=1, rowspan=2)
 
     stringvar = tk.StringVar()
-    tgtdir_entry = tk.Entry(subframe_left, width=50, textvariable=stringvar)
-    tgtdir_entry.grid(row=0, column=0, **PADS)
+    entry = tk.Entry(subframe_left, width=50, textvariable=stringvar)
+    entry.grid(row=0, column=0, **PADS)
 
-    choose_btn = tk.Button(
+    button = tk.Button(
         subframe_right,
         text='Choose',
         command=lambda: kernel.open_dir(stringvar),
         width=6
     )
-    choose_btn.grid(row=0, column=0, **PADS)
-    choose_btn['font'] = font_btn
+    button.grid(row=0, column=0, **PADS)
+    button['font'] = font_btn
     return stringvar
 
 
@@ -73,25 +73,26 @@ def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
 
 
 def fill_subframe_left_1(subframe: tk.Frame) -> ttk.Treeview:
-    scrollbar_ver_left = tk.Scrollbar(subframe)
-    scrollbar_ver_left.pack(side=tk.RIGHT, fill=tk.Y)
-    scrollbar_hor_left = tk.Scrollbar(subframe, orient='horizontal')
-    scrollbar_hor_left.pack(side=tk.BOTTOM, fill=tk.X)
-    treeview_read = ttk.Treeview(
+    scrollbar_ver = tk.Scrollbar(subframe)
+    scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
+    scrollbar_hor = tk.Scrollbar(subframe, orient='horizontal')
+    scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
+    
+    treeview = ttk.Treeview(
         subframe,
-        yscrollcommand=scrollbar_ver_left.set,
-        xscrollcommand=scrollbar_hor_left.set,
+        yscrollcommand=scrollbar_ver.set,
+        xscrollcommand=scrollbar_hor.set,
         height=15
     )
-    treeview_read.pack(fill='both')
-    treeview_read.propagate(0)
-    scrollbar_ver_left.config(command=treeview_read.yview)
-    scrollbar_hor_left.config(command=treeview_read.xview)
-    treeview_read['columns'] = ('1', )
-    treeview_read['show'] = 'headings'
-    treeview_read.column('1')
-    treeview_read.heading('1', text='')
-    return treeview_read
+    treeview.pack(fill='both')
+    treeview.propagate(0)
+    scrollbar_ver.config(command=treeview.yview)
+    scrollbar_hor.config(command=treeview.xview)
+    treeview['columns'] = ('1', )
+    treeview['show'] = 'headings'
+    treeview.column('1')
+    treeview.heading('1', text='')
+    return treeview
 
 
 def fill_subframe_left_2(
@@ -122,24 +123,25 @@ def fill_subframe_left_2(
 
 
 def fill_subframe_right_1(subframe: tk.Frame):
-    scrollbar_ver_right = tk.Scrollbar(subframe)
-    scrollbar_ver_right.pack(side=tk.RIGHT, fill=tk.Y)
-    scrollbar_hor_right = tk.Scrollbar(subframe, orient='horizontal')
-    scrollbar_hor_right.pack(side=tk.BOTTOM, fill=tk.X)
-    treeview_draw = ttk.Treeview(
+    scrollbar_ver = tk.Scrollbar(subframe)
+    scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
+    scrollbar_hor = tk.Scrollbar(subframe, orient='horizontal')
+    scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
+    
+    treeview = ttk.Treeview(
         subframe,
-        yscrollcommand=scrollbar_ver_right.set,
-        xscrollcommand=scrollbar_hor_right.set,
+        yscrollcommand=scrollbar_ver.set,
+        xscrollcommand=scrollbar_hor.set,
         height=15
     )
-    treeview_draw.pack(fill='both')
-    treeview_draw.propagate(0)
-    scrollbar_ver_right.config(command=treeview_draw.yview)
-    scrollbar_hor_right.config(command=treeview_draw.xview)
-    treeview_draw['columns'] = ('1', )
-    treeview_draw['show'] = 'headings'
-    treeview_draw.column('1')
-    treeview_draw.heading('1', text='')
+    treeview.pack(fill='both')
+    treeview.propagate(0)
+    scrollbar_ver.config(command=treeview.yview)
+    scrollbar_hor.config(command=treeview.xview)
+    treeview['columns'] = ('1', )
+    treeview['show'] = 'headings'
+    treeview.column('1')
+    treeview.heading('1', text='')
 
 
 def fill_subframe_right_2(subframe: tk.Frame, font_btn: font.Font):
