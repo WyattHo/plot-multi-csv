@@ -12,6 +12,10 @@ PADS = {
     'ipadx': 1,
     'ipady': 1,
 }
+ROOT_MINSIZE = {
+    'width': 400,
+    'height': 400
+}
 
 
 def initial_main_window() -> tk.Tk:
@@ -21,6 +25,7 @@ def initial_main_window() -> tk.Tk:
     root.rowconfigure(0, weight=1)
     root.rowconfigure(1, weight=1)
     root.state('zoomed')
+    root.minsize(**ROOT_MINSIZE)
     root.configure()
     return root
 
@@ -58,12 +63,11 @@ def create_directory_frame(
 
     frame.rowconfigure(0, weight=1)
     frame.columnconfigure(0, weight=1)
-    frame.columnconfigure(1, weight=1)
 
     subframe_directory = tk.Frame(frame)
-    subframe_action = tk.Frame(frame)
+    subframe_directory.grid(row=0, column=0, sticky=tk.NSEW)
 
-    subframe_directory.grid(row=0, column=0)
+    subframe_action = tk.Frame(frame)
     subframe_action.grid(row=0, column=1)
 
     treeview = create_directory_table(subframe_directory)
@@ -79,18 +83,14 @@ def create_directory_frame(
 
 
 def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
-    subframe_data = tk.Frame(frame, width=250, height=300)
-    subframe_data.grid(row=0, column=0, **PADS)
-    subframe_data.propagate(0)
+    subframe_data = tk.Frame(frame)
+    subframe_data.grid(row=0, column=0, sticky=tk.NSEW)
 
     subframe_data_action = tk.Frame(frame)
     subframe_data_action.grid(row=1, column=0)
-    subframe_data_action.propagate(0)
 
-    subframe_plot = tk.Frame(frame, width=250, height=300)
-    subframe_plot.grid(row=0, column=1, **PADS)
-    subframe_plot.propagate(0)
-
+    subframe_plot = tk.Frame(frame)
+    subframe_plot.grid(row=0, column=1)
     return subframe_data, subframe_data_action, subframe_plot
 
 
@@ -165,7 +165,6 @@ def create_working_frame(
 
     frame.rowconfigure(0, weight=1)
     frame.columnconfigure(0, weight=1)
-    frame.columnconfigure(1, weight=1)
 
     subframe_data, subframe_data_action, subframe_plot\
         = create_working_subframes(frame)
