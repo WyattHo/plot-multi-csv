@@ -9,13 +9,11 @@ import kernel
 def initial_main_window() -> tk.Tk:
     root = tk.Tk()
     root.title('PlotCSV')
-    w = root.winfo_screenwidth()
-    h = root.winfo_screenheight()
-    root.geometry(f"{w:d}x{h:d}+0+0")
-    root.configure()
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
     root.rowconfigure(1, weight=1)
+    root.state('zoomed')
+    root.configure()
     return root
 
 
