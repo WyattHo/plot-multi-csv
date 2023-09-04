@@ -6,6 +6,14 @@ from typing import Tuple
 import kernel
 
 
+PADS = {
+    'padx': 5,
+    'pady': 5,
+    'ipadx': 1,
+    'ipady': 1,
+}
+
+
 def initial_main_window() -> tk.Tk:
     root = tk.Tk()
     root.title('PlotCSV')
@@ -22,10 +30,7 @@ def create_directory_frame(
         font_btn: font.Font) -> tk.StringVar:
 
     frame = tk.LabelFrame(root, text='Choose the csv file')
-    frame.grid(
-        row=0, column=0, padx=5, pady=5,
-        ipadx=1, ipady=1, sticky=tk.NSEW
-    )
+    frame.grid(row=0, column=0, sticky=tk.NSEW, **PADS)
     frame['font'] = font_label
 
     subframe_left = tk.Frame(frame)
@@ -35,7 +40,7 @@ def create_directory_frame(
 
     stringvar = tk.StringVar()
     tgtdir_entry = tk.Entry(subframe_left, width=50, textvariable=stringvar)
-    tgtdir_entry.grid(row=0, column=0, padx=5, pady=5)
+    tgtdir_entry.grid(row=0, column=0, **PADS)
 
     choose_btn = tk.Button(
         subframe_right,
@@ -43,14 +48,14 @@ def create_directory_frame(
         command=lambda: kernel.open_dir(stringvar),
         width=6
     )
-    choose_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
+    choose_btn.grid(row=0, column=0, **PADS)
     choose_btn['font'] = font_btn
     return stringvar
 
 
 def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
     subframe_left_1 = tk.Frame(frame, width=250, height=300)
-    subframe_left_1.grid(row=0, column=0, padx=5, pady=5)
+    subframe_left_1.grid(row=0, column=0, **PADS)
     subframe_left_1.propagate(0)
 
     subframe_left_2 = tk.Frame(frame)
@@ -58,7 +63,7 @@ def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
     subframe_left_2.propagate(0)
 
     subframe_right_1 = tk.Frame(frame, width=250, height=300)
-    subframe_right_1.grid(row=0, column=1, padx=5, pady=5)
+    subframe_right_1.grid(row=0, column=1, **PADS)
     subframe_right_1.propagate(0)
 
     subframe_right_2 = tk.Frame(frame)
@@ -110,8 +115,8 @@ def fill_subframe_left_2(
         ),
         width=6
     )
-    read_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
+    read_btn.grid(row=0, column=0, **PADS)
+    clear_btn.grid(row=0, column=1, **PADS)
     read_btn['font'] = font_btn
     clear_btn['font'] = font_btn
 
@@ -150,8 +155,8 @@ def fill_subframe_right_2(subframe: tk.Frame, font_btn: font.Font):
         command=lambda: kernel.clear(),
         width=6
     )
-    draw_btn.grid(row=0, column=0, padx=5, pady=5, ipadx=1, ipady=1)
-    clear_btn.grid(row=0, column=1, padx=5, pady=5, ipadx=1, ipady=1)
+    draw_btn.grid(row=0, column=0, **PADS)
+    clear_btn.grid(row=0, column=1, **PADS)
     draw_btn['font'] = font_btn
     clear_btn['font'] = font_btn
 
@@ -161,10 +166,7 @@ def create_working_frame(
         font_btn: font.Font, stringvar: tk.StringVar):
 
     frame = tk.LabelFrame(root, text='Working area')
-    frame.grid(
-        row=1, column=0, padx=5, pady=5,
-        ipadx=1, ipady=1, sticky=tk.NSEW
-    )
+    frame.grid(row=1, column=0, sticky=tk.NSEW, **PADS)
     frame.propagate(0)
     frame['font'] = font_label
 
