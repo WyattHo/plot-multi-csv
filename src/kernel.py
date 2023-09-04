@@ -70,12 +70,14 @@ def adjust_column_width(treeview: ttk.Treeview):
         )
 
 
-def read_csv(treeview: ttk.Treeview, stringvar: tk.StringVar):
-    with open(stringvar.get(), 'r') as f:
-        csv_data = csv.DictReader(f)
-        insert_fieldnames(treeview, csv_data)
-        insert_csv_values(treeview, csv_data)
-        adjust_column_width(treeview)
+def read_csv(treeview_data: ttk.Treeview, treeview_filenames: ttk.Treeview):
+    for line in treeview_filenames.get_children():
+        path = treeview_filenames.item(line)['values'][-1]
+        with open(path, 'r') as f:
+            csv_data = csv.DictReader(f)
+            insert_fieldnames(treeview_data, csv_data)
+            insert_csv_values(treeview_data, csv_data)
+            adjust_column_width(treeview_data)
 
 
 def draw():
