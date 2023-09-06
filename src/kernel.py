@@ -2,7 +2,7 @@ import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from typing import Sequence
+from typing import Sequence, Union
 
 
 def clear_treeview(treeview: ttk.Treeview):
@@ -75,7 +75,7 @@ def create_tab(
 
 
 def create_treeview(
-        frame: tk.Frame | ttk.Frame,
+        frame: Union[tk.Frame, ttk.Frame],
         columns: Sequence[str], height: int) -> ttk.Treeview:
 
     scrollbar_ver = tk.Scrollbar(frame)
@@ -115,8 +115,7 @@ def initial_tabs(notebook: ttk.Notebook):
     create_treeview(tab, columns=('',), height=15)
 
 
-def import_csv(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
-    clear_tabs(notebook)
+def create_and_populate_tab(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
     for line in treeview_filenames.get_children():
         tab_id, path = treeview_filenames.item(line)['values']
         tab = create_tab(notebook, tab_id)
@@ -125,6 +124,17 @@ def import_csv(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
             treeview_data = create_treeview(tab, csv_data.fieldnames, 15)
             insert_csv_values(treeview_data, csv_data)
             adjust_column_width(treeview_data)
+
+
+def import_csv(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
+    try:
+        if not treeview_filenames.get_children():
+            raise Exception('No CSV file chosen.')
+    except Exception as e:
+        tk.messagebox.showerror(title='Error', message=e)
+    else:
+        clear_tabs(notebook)
+        create_and_populate_tab(treeview_filenames, notebook)
 
 
 def draw():
