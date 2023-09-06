@@ -121,17 +121,26 @@ def fill_subframe_setting(subframe: tk.Frame):
     frame_curve.columnconfigure(0, weight=1)
     frame_curve.columnconfigure(1, weight=1)
 
-    label = tk.Label(frame_curve, text='Curve numbers')
-    label.grid(row=0, column=0, sticky=tk.W, **PADS)
-
-    spinbox = tk.Spinbox(frame_curve, from_=1, to=20, width=3)
-    spinbox.grid(row=0, column=0, sticky=tk.E, **PADS)
-
     frame_treeview = tk.Frame(frame_curve)
     frame_treeview.grid(row=1, column=0, columnspan=2)
 
     columns = ('Curve Index', 'CSV Index', 'Field X', 'Field Y', 'Label')
     treeview = kernel.create_treeview(frame_treeview, columns, 5)
+    treeview.insert(
+        parent='',
+        index=0,
+        values=(1,),
+        tags='0'
+    )
+
+    label = tk.Label(frame_curve, text='Curve numbers')
+    label.grid(row=0, column=0, sticky=tk.W, **PADS)
+
+    spinbox = tk.Spinbox(
+        frame_curve, from_=1, to=20, width=3,
+        command=lambda: kernel.create_curve_setting(treeview, spinbox)
+    )
+    spinbox.grid(row=0, column=0, sticky=tk.E, **PADS)
     kernel.adjust_column_width(treeview)
 
 
