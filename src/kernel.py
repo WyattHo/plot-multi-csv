@@ -138,22 +138,21 @@ def import_csv(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
 
 
 def create_curve_setting(treeview: ttk.Treeview, spinbox: tk.Spinbox):
-    row_num = len(treeview.get_children())
-    curve_num = int(spinbox.get())
-    if curve_num > row_num:
-        for curve_idx in range(1, curve_num + 1):
-            if curve_idx > row_num:
-                treeview.insert(
-                    parent='',
-                    index=curve_idx,
-                    values=(curve_idx, ),
-                    tags=str(curve_idx)
-                )
+    exist_num = len(treeview.get_children())
+    tgt_num = int(spinbox.get())
+    if tgt_num > exist_num:
+        for row_idx in range(exist_num, tgt_num):
+            treeview.insert(
+                parent='',
+                index=row_idx,
+                values=(row_idx + 1, ),
+                tags=str(row_idx + 1)
+            )
 
-    elif curve_num < row_num:
+    elif tgt_num < exist_num:
         lines = treeview.get_children()
-        for curve_idx in range(curve_num + 1, row_num + 1):
-            treeview.delete(lines[curve_idx - 1])
+        for row_idx in range(tgt_num, exist_num):
+            treeview.delete(lines[row_idx])
 
 
 def draw():
