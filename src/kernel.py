@@ -7,7 +7,7 @@ from typing import Sequence
 
 def insert_values(treeview: ttk.Treeview, data: Sequence):
     for row_idx, row_data in enumerate(data):
-        values = [row_idx, row_data]
+        values = [row_idx + 1, row_data]
         treeview.insert(
             parent='',
             index=row_idx,
@@ -29,17 +29,6 @@ def open_files(treeview: ttk.Treeview):
 def clear_treeview(treeview: ttk.Treeview):
     for item in treeview.get_children():
         treeview.delete(item)
-
-
-def reset_fieldnames(treeview: ttk.Treeview):
-    treeview['columns'] = ('1', )
-    treeview.heading('1', anchor=tk.W)
-
-
-def insert_fieldnames(treeview: ttk.Treeview, csv_data: csv.DictReader):
-    treeview['columns'] = csv_data.fieldnames
-    for fieldname in csv_data.fieldnames:
-        treeview.heading(fieldname, text=fieldname, anchor=tk.W)
 
 
 def insert_csv_values(treeview: ttk.Treeview, csv_data: csv.DictReader):
@@ -76,14 +65,64 @@ def adjust_column_width(treeview: ttk.Treeview):
         )
 
 
-def read_csv(treeview_data: ttk.Treeview, treeview_filenames: ttk.Treeview):
-    clear_treeview(treeview_data)
-    reset_fieldnames(treeview_data)
+def create_tab(
+        notebook: ttk.Notebook,
+        tabname: str) -> Sequence[ttk.Frame]:
+    
+    tab = ttk.Frame(notebook)
+    notebook.add(tab, text=tabname)
+    return tab
+
+
+def create_treeview(
+        frame: tk.Frame | ttk.Frame,
+        columns: Sequence[str]) -> ttk.Treeview:
+
+    scrollbar_ver = tk.Scrollbar(frame)
+    scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
+    scrollbar_hor = tk.Scrollbar(frame, orient='horizontal')
+    scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
+
+    treeview = ttk.Treeview(
+        frame,
+        yscrollcommand=scrollbar_ver.set,
+        xscrollcommand=scrollbar_hor.set,
+        height=15
+    )
+
+    treeview.pack(fill='both')
+    treeview.propagate(0)
+    scrollbar_ver.config(command=treeview.yview)
+    scrollbar_hor.config(command=treeview.xview)
+
+    treeview['columns'] = columns
+    treeview['show'] = 'headings'
+
+    for column in columns:
+        treeview.heading(column, text=column, anchor=tk.W)
+
+    return treeview
+
+
+def clear_tabs(notebook: ttk.Notebook):
+    while notebook.index('end') > 0:
+        notebook.forget(0)
+
+
+def initial_tabs(notebook: ttk.Notebook) :
+    clear_tabs(notebook)
+    tab = create_tab(notebook, tabname='1')
+    create_treeview(tab, columns=('',))
+
+
+def import_csv(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
+    clear_tabs(notebook)
     for line in treeview_filenames.get_children():
-        path = treeview_filenames.item(line)['values'][-1]
+        tab_id, path = treeview_filenames.item(line)['values']
+        tab = create_tab(notebook, tab_id)
         with open(path, 'r') as f:
             csv_data = csv.DictReader(f)
-            insert_fieldnames(treeview_data, csv_data)
+            treeview_data = create_treeview(tab, csv_data.fieldnames)
             insert_csv_values(treeview_data, csv_data)
             adjust_column_width(treeview_data)
 

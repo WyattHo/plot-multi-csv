@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import font
 from tkinter import ttk
-from typing import Tuple, Sequence
+from typing import Tuple
 
 import kernel
 
@@ -30,36 +30,6 @@ def initial_main_window() -> tk.Tk:
     return root
 
 
-def create_treeview(
-        frame: tk.Frame | ttk.Frame,
-        columns: Sequence[str]) -> ttk.Treeview:
-
-    scrollbar_ver = tk.Scrollbar(frame)
-    scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
-    scrollbar_hor = tk.Scrollbar(frame, orient='horizontal')
-    scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
-
-    treeview = ttk.Treeview(
-        frame,
-        yscrollcommand=scrollbar_ver.set,
-        xscrollcommand=scrollbar_hor.set,
-        height=15
-    )
-
-    treeview.pack(fill='both')
-    treeview.propagate(0)
-    scrollbar_ver.config(command=treeview.yview)
-    scrollbar_hor.config(command=treeview.xview)
-
-    treeview['columns'] = columns
-    treeview['show'] = 'headings'
-
-    for column in columns:
-        treeview.heading(column, text=column, anchor=tk.W)
-
-    return treeview
-
-
 def create_directory_frame(
         root: tk.Tk, font_label: font.Font,
         font_btn: font.Font) -> ttk.Treeview:
@@ -77,8 +47,8 @@ def create_directory_frame(
     subframe_action = tk.Frame(frame)
     subframe_action.grid(row=0, column=1)
 
-    columns = ('Number', 'Path')
-    treeview = create_treeview(subframe_directory, columns)
+    columns = ('Index', 'Path')
+    treeview = kernel.create_treeview(subframe_directory, columns)
     button = tk.Button(
         subframe_action,
         text='Choose',
@@ -102,49 +72,37 @@ def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
     return subframe_data, subframe_data_action, subframe_plot
 
 
-def create_tabs(
-        notebook: ttk.Notebook,
-        tabnames: Sequence[str]) -> Sequence[ttk.Frame]:
-
-    tabs = [ttk.Frame(notebook) for tabname in tabnames]
-    [notebook.add(tab, text=tabname) for tab, tabname in zip(tabs, tabnames)]
-    return tabs
-
-
-def fill_subframe_data(subframe: tk.Frame) -> ttk.Treeview:
+def fill_subframe_data(subframe: tk.Frame) -> ttk.Notebook:
     subframe.rowconfigure(0, weight=1)
     subframe.columnconfigure(0, weight=1)
     notebook = ttk.Notebook(subframe)
     notebook.grid(row=0, column=0, sticky=tk.NSEW)
-    tabs = create_tabs(notebook, tabnames=['1', ])
-    treeview = create_treeview(tabs[0], ('',))
-    return treeview
+    kernel.initial_tabs(notebook)
+    return notebook
 
 
 def fill_subframe_data_action(
-        subframe: tk.Frame, treeview_data: ttk.Treeview,
-        treeview_filenames: ttk.Treeview, font_btn: font.Font):
+        subframe: tk.Frame, treeview_filenames: ttk.Treeview,
+        font_btn: font.Font, notebook: ttk.Notebook):
 
-    read_btn = tk.Button(
+    import_btn = tk.Button(
         subframe,
-        text='Read',
-        command=lambda: kernel.read_csv(
-            treeview_data,
-            treeview_filenames
+        text='Import',
+        command=lambda: kernel.import_csv(
+            treeview_filenames,
+            notebook
         ),
         width=6
     )
     clear_btn = tk.Button(
         subframe,
-        text='clear',
-        command=lambda: kernel.clear_treeview(
-            treeview_data
-        ),
+        text='Clear',
+        command=lambda: kernel.initial_tabs(notebook),
         width=6
     )
-    read_btn.grid(row=0, column=0, **PADS)
+    import_btn.grid(row=0, column=0, **PADS)
     clear_btn.grid(row=0, column=1, **PADS)
-    read_btn['font'] = font_btn
+    import_btn['font'] = font_btn
     clear_btn['font'] = font_btn
 
 
@@ -173,12 +131,12 @@ def create_working_frame(
     subframe_data, subframe_data_action, subframe_plot\
         = create_working_subframes(frame)
 
-    treeview_data = fill_subframe_data(subframe_data)
+    notebook = fill_subframe_data(subframe_data)
     fill_subframe_data_action(
         subframe_data_action,
-        treeview_data,
         treeview_filenames,
-        font_btn
+        font_btn,
+        notebook,
     )
     fill_subframe_plot(subframe_plot, font_btn)
 
