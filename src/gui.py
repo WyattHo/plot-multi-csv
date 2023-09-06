@@ -68,7 +68,7 @@ def create_review_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
     subframe_review.grid(row=1, column=0)
 
     subframe_setting = tk.Frame(frame)
-    subframe_setting.grid(row=0, column=1)
+    subframe_setting.grid(row=0, column=1, sticky=tk.NSEW)
 
     subframe_plot = tk.Frame(frame)
     subframe_plot.grid(row=1, column=1)
@@ -114,7 +114,7 @@ def fill_subframe_setting(subframe: tk.Frame):
     subframe.columnconfigure(0, weight=1)
 
     frame_curve = tk.LabelFrame(subframe, text='Curve settings')
-    frame_curve.grid(row=0, column=0)
+    frame_curve.grid(row=0, column=0, sticky=tk.NSEW)
 
     frame_curve.rowconfigure(0, weight=1)
     frame_curve.rowconfigure(1, weight=1)
