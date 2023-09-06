@@ -5,42 +5,19 @@ from tkinter import ttk
 from typing import Sequence
 
 
-def insert_values(treeview: ttk.Treeview, data: Sequence):
-    for row_idx, row_data in enumerate(data):
-        values = [row_idx + 1, row_data]
-        treeview.insert(
-            parent='',
-            index=row_idx,
-            values=values,
-            tags=str(row_idx)
-        )
-
-
-def open_files(treeview: ttk.Treeview):
-    clear_treeview(treeview)
-    filenames = filedialog.askopenfilenames(
-        title='Choose csv files',
-        filetypes=[('csv files', '*.csv')]
-    )
-    insert_values(treeview, filenames)
-    adjust_column_width(treeview)
-
-
 def clear_treeview(treeview: ttk.Treeview):
     for item in treeview.get_children():
         treeview.delete(item)
 
 
-def insert_csv_values(treeview: ttk.Treeview, csv_data: csv.DictReader):
-    for row_idx, row_data in enumerate(csv_data):
-        values = [
-            row_data[fieldName].strip() for fieldName in csv_data.fieldnames
-        ]
+def insert_filenames(treeview: ttk.Treeview, filenames: Sequence):
+    for idx, filename in enumerate(filenames):
+        values = [idx + 1, filename]
         treeview.insert(
             parent='',
-            index=row_idx,
+            index=idx,
             values=values,
-            tags=str(row_idx)
+            tags=str(idx)
         )
 
 
@@ -65,10 +42,33 @@ def adjust_column_width(treeview: ttk.Treeview):
         )
 
 
+def open_files(treeview: ttk.Treeview):
+    clear_treeview(treeview)
+    filenames = filedialog.askopenfilenames(
+        title='Choose csv files',
+        filetypes=[('csv files', '*.csv')]
+    )
+    insert_filenames(treeview, filenames)
+    adjust_column_width(treeview)
+
+
+def insert_csv_values(treeview: ttk.Treeview, csv_data: csv.DictReader):
+    for row_idx, row_data in enumerate(csv_data):
+        values = [
+            row_data[fieldName].strip() for fieldName in csv_data.fieldnames
+        ]
+        treeview.insert(
+            parent='',
+            index=row_idx,
+            values=values,
+            tags=str(row_idx)
+        )
+
+
 def create_tab(
         notebook: ttk.Notebook,
         tabname: str) -> Sequence[ttk.Frame]:
-    
+
     tab = ttk.Frame(notebook)
     notebook.add(tab, text=tabname)
     return tab
@@ -109,7 +109,7 @@ def clear_tabs(notebook: ttk.Notebook):
         notebook.forget(0)
 
 
-def initial_tabs(notebook: ttk.Notebook) :
+def initial_tabs(notebook: ttk.Notebook):
     clear_tabs(notebook)
     tab = create_tab(notebook, tabname='1')
     create_treeview(tab, columns=('',))

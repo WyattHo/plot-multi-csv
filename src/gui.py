@@ -34,7 +34,7 @@ def create_directory_frame(
         root: tk.Tk, font_label: font.Font,
         font_btn: font.Font) -> ttk.Treeview:
 
-    frame = tk.LabelFrame(root, text='Choose the csv file')
+    frame = tk.LabelFrame(root, text='Choose csv files')
     frame.grid(row=0, column=0, sticky=tk.NSEW, **PADS)
     frame['font'] = font_label
 
@@ -60,16 +60,16 @@ def create_directory_frame(
     return treeview
 
 
-def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
+def create_review_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
     subframe_data = tk.Frame(frame)
     subframe_data.grid(row=0, column=0, sticky=tk.NSEW)
 
-    subframe_data_action = tk.Frame(frame)
-    subframe_data_action.grid(row=1, column=0)
+    subframe_review = tk.Frame(frame)
+    subframe_review.grid(row=1, column=0)
 
     subframe_plot = tk.Frame(frame)
     subframe_plot.grid(row=0, column=1)
-    return subframe_data, subframe_data_action, subframe_plot
+    return subframe_data, subframe_review, subframe_plot
 
 
 def fill_subframe_data(subframe: tk.Frame) -> ttk.Notebook:
@@ -81,7 +81,7 @@ def fill_subframe_data(subframe: tk.Frame) -> ttk.Notebook:
     return notebook
 
 
-def fill_subframe_data_action(
+def fill_subframe_review(
         subframe: tk.Frame, treeview_filenames: ttk.Treeview,
         font_btn: font.Font, notebook: ttk.Notebook):
 
@@ -117,23 +117,23 @@ def fill_subframe_plot(subframe: tk.Frame, font_btn: font.Font):
     button['font'] = font_btn
 
 
-def create_working_frame(
+def create_review_frame(
         root: tk.Tk, font_label: font.Font,
         font_btn: font.Font, treeview_filenames: ttk.Treeview):
 
-    frame = tk.LabelFrame(root, text='Working area')
+    frame = tk.LabelFrame(root, text='Review data')
     frame.grid(row=1, column=0, sticky=tk.NSEW, **PADS)
     frame['font'] = font_label
 
     frame.rowconfigure(0, weight=1)
     frame.columnconfigure(0, weight=1)
 
-    subframe_data, subframe_data_action, subframe_plot\
-        = create_working_subframes(frame)
+    subframe_data, subframe_review, subframe_plot\
+        = create_review_subframes(frame)
 
     notebook = fill_subframe_data(subframe_data)
-    fill_subframe_data_action(
-        subframe_data_action,
+    fill_subframe_review(
+        subframe_review,
         treeview_filenames,
         font_btn,
         notebook,
@@ -146,7 +146,7 @@ def main():
     font_label = font.Font(family='Helvetica', size=10)
     font_btn = font.Font(family='Helvetica', size=10)
     treeview_filenames = create_directory_frame(root, font_label, font_btn)
-    create_working_frame(root, font_label, font_btn, treeview_filenames)
+    create_review_frame(root, font_label, font_btn, treeview_filenames)
     root.mainloop()
 
 
