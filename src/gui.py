@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import font
 from tkinter import ttk
-from typing import Tuple
+from typing import Tuple, Sequence
 
 import kernel
 
@@ -30,26 +30,33 @@ def initial_main_window() -> tk.Tk:
     return root
 
 
-def create_directory_table(subframe: tk.Frame) -> ttk.Treeview:
-    scrollbar_ver = tk.Scrollbar(subframe)
+def create_treeview(
+        frame: tk.Frame | ttk.Frame,
+        columns: Sequence[str]) -> ttk.Treeview:
+
+    scrollbar_ver = tk.Scrollbar(frame)
     scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
-    scrollbar_hor = tk.Scrollbar(subframe, orient='horizontal')
+    scrollbar_hor = tk.Scrollbar(frame, orient='horizontal')
     scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
 
     treeview = ttk.Treeview(
-        subframe,
+        frame,
         yscrollcommand=scrollbar_ver.set,
         xscrollcommand=scrollbar_hor.set,
         height=15
     )
+
     treeview.pack(fill='both')
     treeview.propagate(0)
     scrollbar_ver.config(command=treeview.yview)
     scrollbar_hor.config(command=treeview.xview)
-    treeview['columns'] = ('Number', 'Path')
+
+    treeview['columns'] = columns
     treeview['show'] = 'headings'
-    treeview.heading('Number', text='Number', anchor=tk.W)
-    treeview.heading('Path', text='Path', anchor=tk.W)
+
+    for column in columns:
+        treeview.heading(column, text=column, anchor=tk.W)
+
     return treeview
 
 
@@ -70,7 +77,8 @@ def create_directory_frame(
     subframe_action = tk.Frame(frame)
     subframe_action.grid(row=0, column=1)
 
-    treeview = create_directory_table(subframe_directory)
+    columns = ('Number', 'Path')
+    treeview = create_treeview(subframe_directory, columns)
     button = tk.Button(
         subframe_action,
         text='Choose',
@@ -94,35 +102,22 @@ def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
     return subframe_data, subframe_data_action, subframe_plot
 
 
+def create_tabs(
+        notebook: ttk.Notebook,
+        tabnames: Sequence[str]) -> Sequence[ttk.Frame]:
+
+    tabs = [ttk.Frame(notebook) for tabname in tabnames]
+    [notebook.add(tab, text=tabname) for tab, tabname in zip(tabs, tabnames)]
+    return tabs
+
+
 def fill_subframe_data(subframe: tk.Frame) -> ttk.Treeview:
     subframe.rowconfigure(0, weight=1)
     subframe.columnconfigure(0, weight=1)
-
     notebook = ttk.Notebook(subframe)
     notebook.grid(row=0, column=0, sticky=tk.NSEW)
-
-    tab1 = ttk.Frame(notebook)
-    notebook.add(tab1, text='1')
-    
-    scrollbar_ver = tk.Scrollbar(tab1)
-    scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
-    scrollbar_hor = tk.Scrollbar(tab1, orient='horizontal')
-    scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
-
-    treeview = ttk.Treeview(
-        tab1,
-        yscrollcommand=scrollbar_ver.set,
-        xscrollcommand=scrollbar_hor.set,
-        height=15
-    )
-    treeview.pack(fill='both')
-    treeview.propagate(0)
-    scrollbar_ver.config(command=treeview.yview)
-    scrollbar_hor.config(command=treeview.xview)
-    treeview['columns'] = ('1', )
-    treeview['show'] = 'headings'
-    treeview.column('1')
-    treeview.heading('1', text='')
+    tabs = create_tabs(notebook, tabnames=['1', ])
+    treeview = create_treeview(tabs[0], ('',))
     return treeview
 
 
