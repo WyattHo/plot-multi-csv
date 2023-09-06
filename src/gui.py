@@ -95,13 +95,22 @@ def create_working_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
 
 
 def fill_subframe_data(subframe: tk.Frame) -> ttk.Treeview:
-    scrollbar_ver = tk.Scrollbar(subframe)
+    subframe.rowconfigure(0, weight=1)
+    subframe.columnconfigure(0, weight=1)
+
+    notebook = ttk.Notebook(subframe)
+    notebook.grid(row=0, column=0, sticky=tk.NSEW)
+
+    tab1 = ttk.Frame(notebook)
+    notebook.add(tab1, text='1')
+    
+    scrollbar_ver = tk.Scrollbar(tab1)
     scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
-    scrollbar_hor = tk.Scrollbar(subframe, orient='horizontal')
+    scrollbar_hor = tk.Scrollbar(tab1, orient='horizontal')
     scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
 
     treeview = ttk.Treeview(
-        subframe,
+        tab1,
         yscrollcommand=scrollbar_ver.set,
         xscrollcommand=scrollbar_hor.set,
         height=15
