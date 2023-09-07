@@ -99,7 +99,7 @@ def create_data_frame(
     return notebook
 
 
-def create_curve_frame(root: tk.Tk):
+def create_curve_frame(root: tk.Tk, notebook_data: ttk.Notebook):
     frame = tk.LabelFrame(root, text='Curve settings')
     frame.grid(row=1, column=1, sticky=tk.NSEW, **PADS)
 
@@ -107,21 +107,22 @@ def create_curve_frame(root: tk.Tk):
     frame.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
 
-    frame_treeview = tk.Frame(frame)
-    frame_treeview.grid(row=0, column=0, sticky=tk.NSEW)
-
-    notebook = ttk.Notebook(frame)
-    notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
-    kernel.initial_tabs_with_frame(notebook)
+    notebook_curve = ttk.Notebook(frame)
+    notebook_curve.grid(row=1, column=0, columnspan=2, sticky=tk.NSEW)
+    kernel.initial_tabs_with_frame(notebook_curve)
 
     label = tk.Label(frame, text='Curve numbers')
-    label.grid(row=1, column=0, **PADS)
+    label.grid(row=0, column=0, **PADS)
 
     spinbox = tk.Spinbox(
         frame, from_=1, to=20, width=3,
-        # command=lambda: kernel.create_curve_setting(treeview, spinbox)
+        command=lambda: kernel.create_curve_tab(
+            notebook_data,
+            notebook_curve,
+            spinbox
+        )
     )
-    spinbox.grid(row=1, column=1, **PADS)
+    spinbox.grid(row=0, column=1, **PADS)
 
 
 def create_axes_frame(root: tk.Tk, font_btn: font.Font):
@@ -144,7 +145,7 @@ def main():
     treeview_filenames = create_directory_frame(root, font_label, font_btn)
     notebook_data = create_data_frame(
         root, font_label, font_btn, treeview_filenames)
-    create_curve_frame(root)
+    create_curve_frame(root, notebook_data)
     create_axes_frame(root, font_btn)
     root.mainloop()
 

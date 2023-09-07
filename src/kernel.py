@@ -128,7 +128,7 @@ def create_subframe(frame: ttk.Frame):
     entry.grid(row=2, column=1, sticky=tk.W, **PADS)
 
     label = tk.Label(frame, text='Label: ')
-    entry = ttk.Combobox(frame)
+    entry = tk.Entry(frame)
     label.grid(row=3, column=0, sticky=tk.W, **PADS)
     entry.grid(row=3, column=1, sticky=tk.W, **PADS)
 
@@ -172,22 +172,25 @@ def import_csv(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
         create_and_populate_tab(treeview_filenames, notebook)
 
 
-def create_curve_setting(treeview: ttk.Treeview, spinbox: tk.Spinbox):
-    exist_num = len(treeview.get_children())
+def create_curve_tab(
+        notebook_data: ttk.Notebook,
+        notebook_curve: ttk.Notebook,
+        spinbox: tk.Spinbox):
+    
+    exist_num = len(notebook_curve.tabs())
     tgt_num = int(spinbox.get())
+
     if tgt_num > exist_num:
-        for row_idx in range(exist_num, tgt_num):
-            treeview.insert(
-                parent='',
-                index=row_idx,
-                values=(row_idx + 1, ),
-                tags=str(row_idx + 1)
-            )
+        for tab_idx in range(exist_num, tgt_num):
+            tab = create_tab(notebook_curve, tabname=str(tab_idx + 1))
+            create_subframe(tab)
 
     elif tgt_num < exist_num:
-        lines = treeview.get_children()
-        for row_idx in range(tgt_num, exist_num):
-            treeview.delete(lines[row_idx])
+        tab_idx = notebook_curve.index('end') - 1
+        notebook_curve.forget(tab_idx)
+
+    exist_num = len(notebook_curve.tabs())
+    tgt_num = int(spinbox.get())
 
 
 def draw():
