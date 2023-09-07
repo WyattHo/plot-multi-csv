@@ -22,6 +22,7 @@ def initial_main_window() -> tk.Tk:
     root = tk.Tk()
     root.title('PlotCSV')
     root.columnconfigure(0, weight=1)
+    root.columnconfigure(1, weight=1)
     root.rowconfigure(0, weight=1)
     root.rowconfigure(1, weight=5)
     root.state('zoomed')
@@ -35,7 +36,7 @@ def create_directory_frame(
         font_btn: font.Font) -> ttk.Treeview:
 
     frame = tk.LabelFrame(root, text='Choose csv files')
-    frame.grid(row=0, column=0, sticky=tk.NSEW, **PADS)
+    frame.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW, **PADS)
     frame['font'] = font_label
 
     frame.rowconfigure(0, weight=1)
@@ -60,101 +61,7 @@ def create_directory_frame(
     return treeview
 
 
-def create_review_subframes(frame: tk.LabelFrame) -> Tuple[tk.Frame]:
-    subframe_data = tk.Frame(frame)
-    subframe_data.grid(row=0, column=0, sticky=tk.NSEW)
-
-    subframe_review = tk.Frame(frame)
-    subframe_review.grid(row=1, column=0)
-
-    subframe_setting = tk.Frame(frame)
-    subframe_setting.grid(row=0, column=1, sticky=tk.NSEW)
-
-    subframe_plot = tk.Frame(frame)
-    subframe_plot.grid(row=1, column=1)
-    return subframe_data, subframe_review, subframe_setting, subframe_plot
-
-
-def fill_subframe_data(subframe: tk.Frame) -> ttk.Notebook:
-    subframe.rowconfigure(0, weight=1)
-    subframe.columnconfigure(0, weight=1)
-    notebook = ttk.Notebook(subframe)
-    notebook.grid(row=0, column=0, sticky=tk.NSEW)
-    kernel.initial_tabs(notebook)
-    return notebook
-
-
-def fill_subframe_review(
-        subframe: tk.Frame, treeview_filenames: ttk.Treeview,
-        font_btn: font.Font, notebook: ttk.Notebook):
-
-    import_btn = tk.Button(
-        subframe,
-        text='Import',
-        command=lambda: kernel.import_csv(
-            treeview_filenames,
-            notebook
-        ),
-        width=6
-    )
-    clear_btn = tk.Button(
-        subframe,
-        text='Clear',
-        command=lambda: kernel.initial_tabs(notebook),
-        width=6
-    )
-    import_btn.grid(row=0, column=0, **PADS)
-    clear_btn.grid(row=0, column=1, **PADS)
-    import_btn['font'] = font_btn
-    clear_btn['font'] = font_btn
-
-
-def fill_subframe_setting(subframe: tk.Frame):
-    subframe.rowconfigure(0, weight=1)
-    subframe.columnconfigure(0, weight=1)
-
-    frame_curve = tk.LabelFrame(subframe, text='Curve settings')
-    frame_curve.grid(row=0, column=0, sticky=tk.NSEW)
-
-    frame_curve.rowconfigure(1, weight=1)
-    frame_curve.columnconfigure(0, weight=1)
-    frame_curve.columnconfigure(1, weight=1)
-
-    frame_treeview = tk.Frame(frame_curve)
-    frame_treeview.grid(row=1, column=0, columnspan=2, sticky=tk.NSEW)
-
-    columns = ('Curve ID', 'CSV ID', 'Field X', 'Field Y', 'Label')
-    treeview = kernel.create_treeview(frame_treeview, columns, 15)
-    treeview.insert(
-        parent='',
-        index=0,
-        values=(1,),
-        tags='0'
-    )
-
-    label = tk.Label(frame_curve, text='Curve numbers')
-    label.grid(row=0, column=0, sticky=tk.W, **PADS)
-
-    spinbox = tk.Spinbox(
-        frame_curve, from_=1, to=20, width=3,
-        command=lambda: kernel.create_curve_setting(treeview, spinbox)
-    )
-    spinbox.grid(row=0, column=0, sticky=tk.E, **PADS)
-    kernel.adjust_column_width(treeview)
-
-
-def fill_subframe_plot(subframe: tk.Frame, font_btn: font.Font):
-    button = tk.Button(
-        subframe,
-        text='Draw',
-        command=lambda: kernel.draw(),
-        width=6
-    )
-    button.grid(row=0, column=0, **PADS)
-    button['font'] = font_btn
-
-
-def create_review_frame(
+def create_data_frame(
         root: tk.Tk, font_label: font.Font,
         font_btn: font.Font, treeview_filenames: ttk.Treeview):
 
@@ -165,19 +72,75 @@ def create_review_frame(
     frame.rowconfigure(0, weight=1)
     frame.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
+    
+    notebook = ttk.Notebook(frame)
+    notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
+    kernel.initial_tabs(notebook)
 
-    subframe_data, subframe_review, subframe_setting, subframe_plot\
-        = create_review_subframes(frame)
-
-    notebook = fill_subframe_data(subframe_data)
-    fill_subframe_review(
-        subframe_review,
-        treeview_filenames,
-        font_btn,
-        notebook,
+    import_btn = tk.Button(
+        frame,
+        text='Import',
+        command=lambda: kernel.import_csv(
+            treeview_filenames,
+            notebook
+        ),
+        width=6
     )
-    fill_subframe_setting(subframe_setting)
-    fill_subframe_plot(subframe_plot, font_btn)
+    import_btn.grid(row=1, column=0, **PADS)
+    import_btn['font'] = font_btn
+
+    clear_btn = tk.Button(
+        frame,
+        text='Clear',
+        command=lambda: kernel.initial_tabs(notebook),
+        width=6
+    )
+    clear_btn.grid(row=1, column=1, **PADS)
+    clear_btn['font'] = font_btn
+    return notebook
+
+
+def create_curve_frame(root: tk.Tk):
+    frame = tk.LabelFrame(root, text='Curve settings')
+    frame.grid(row=1, column=1, sticky=tk.NSEW, **PADS)
+
+    frame.rowconfigure(1, weight=1)
+    frame.columnconfigure(0, weight=1)
+
+    frame_treeview = tk.Frame(frame)
+    frame_treeview.grid(row=0, column=0, sticky=tk.NSEW)
+
+    columns = ('Curve ID', 'CSV ID', 'Field X', 'Field Y', 'Label')
+    treeview = kernel.create_treeview(frame_treeview, columns, 15)
+    treeview.insert(
+        parent='',
+        index=0,
+        values=(1,),
+        tags='0'
+    )
+    kernel.adjust_column_width(treeview)
+
+    label = tk.Label(frame, text='Curve numbers')
+    label.grid(row=1, column=0, sticky=tk.W, **PADS)
+
+    spinbox = tk.Spinbox(
+        frame, from_=1, to=20, width=3,
+        command=lambda: kernel.create_curve_setting(treeview, spinbox)
+    )
+    spinbox.grid(row=1, column=0, sticky=tk.E, **PADS)
+
+
+def create_axes_frame(root: tk.Tk, font_btn: font.Font):
+    frame = tk.LabelFrame(root, text='Axes settings')
+    frame.grid(row=1, column=2, sticky=tk.NSEW, **PADS)
+    button = tk.Button(
+        frame,
+        text='Draw',
+        command=lambda: kernel.draw(),
+        width=6
+    )
+    button.grid(row=0, column=0, **PADS)
+    button['font'] = font_btn
 
 
 def main():
@@ -185,7 +148,9 @@ def main():
     font_label = font.Font(family='Helvetica', size=10)
     font_btn = font.Font(family='Helvetica', size=10)
     treeview_filenames = create_directory_frame(root, font_label, font_btn)
-    create_review_frame(root, font_label, font_btn, treeview_filenames)
+    notebook_data = create_data_frame(root, font_label, font_btn, treeview_filenames)
+    create_curve_frame(root)
+    create_axes_frame(root, font_btn)
     root.mainloop()
 
 
