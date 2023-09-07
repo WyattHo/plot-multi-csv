@@ -5,6 +5,14 @@ from tkinter import ttk
 from typing import Sequence, Union
 
 
+PADS = {
+    'padx': 5,
+    'pady': 5,
+    'ipadx': 1,
+    'ipady': 1,
+}
+
+
 def clear_treeview(treeview: ttk.Treeview):
     for item in treeview.get_children():
         treeview.delete(item)
@@ -100,8 +108,29 @@ def create_treeview(
 
     for column in columns:
         treeview.heading(column, text=column, anchor=tk.W)
-
     return treeview
+
+
+def create_subframe(frame: ttk.Frame):
+    label = tk.Label(frame, text='CSV ID: ')
+    entry = ttk.Combobox(frame)
+    label.grid(row=0, column=0, sticky=tk.W, **PADS)
+    entry.grid(row=0, column=1, sticky=tk.W, **PADS)
+
+    label = tk.Label(frame, text='Field X: ')
+    entry = ttk.Combobox(frame)
+    label.grid(row=1, column=0, sticky=tk.W, **PADS)
+    entry.grid(row=1, column=1, sticky=tk.W, **PADS)
+
+    label = tk.Label(frame, text='Field Y: ')
+    entry = ttk.Combobox(frame)
+    label.grid(row=2, column=0, sticky=tk.W, **PADS)
+    entry.grid(row=2, column=1, sticky=tk.W, **PADS)
+
+    label = tk.Label(frame, text='Label: ')
+    entry = ttk.Combobox(frame)
+    label.grid(row=3, column=0, sticky=tk.W, **PADS)
+    entry.grid(row=3, column=1, sticky=tk.W, **PADS)
 
 
 def clear_tabs(notebook: ttk.Notebook):
@@ -109,10 +138,16 @@ def clear_tabs(notebook: ttk.Notebook):
         notebook.forget(0)
 
 
-def initial_tabs(notebook: ttk.Notebook):
+def initial_tabs_with_treeview(notebook: ttk.Notebook):
     clear_tabs(notebook)
     tab = create_tab(notebook, tabname='1')
     create_treeview(tab, columns=('',), height=25)
+
+
+def initial_tabs_with_frame(notebook: ttk.Notebook):
+    clear_tabs(notebook)
+    tab = create_tab(notebook, tabname='1')
+    create_subframe(tab)
 
 
 def create_and_populate_tab(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):

@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import font
 from tkinter import ttk
-from typing import Tuple
 
 import kernel
 
@@ -72,10 +71,10 @@ def create_data_frame(
     frame.rowconfigure(0, weight=1)
     frame.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
-    
+
     notebook = ttk.Notebook(frame)
     notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
-    kernel.initial_tabs(notebook)
+    kernel.initial_tabs_with_treeview(notebook)
 
     import_btn = tk.Button(
         frame,
@@ -92,7 +91,7 @@ def create_data_frame(
     clear_btn = tk.Button(
         frame,
         text='Clear',
-        command=lambda: kernel.initial_tabs(notebook),
+        command=lambda: kernel.initial_tabs_with_treeview(notebook),
         width=6
     )
     clear_btn.grid(row=1, column=1, **PADS)
@@ -106,28 +105,23 @@ def create_curve_frame(root: tk.Tk):
 
     frame.rowconfigure(1, weight=1)
     frame.columnconfigure(0, weight=1)
+    frame.columnconfigure(1, weight=1)
 
     frame_treeview = tk.Frame(frame)
     frame_treeview.grid(row=0, column=0, sticky=tk.NSEW)
 
-    columns = ('Curve ID', 'CSV ID', 'Field X', 'Field Y', 'Label')
-    treeview = kernel.create_treeview(frame_treeview, columns, 15)
-    treeview.insert(
-        parent='',
-        index=0,
-        values=(1,),
-        tags='0'
-    )
-    kernel.adjust_column_width(treeview)
+    notebook = ttk.Notebook(frame)
+    notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
+    kernel.initial_tabs_with_frame(notebook)
 
     label = tk.Label(frame, text='Curve numbers')
-    label.grid(row=1, column=0, sticky=tk.W, **PADS)
+    label.grid(row=1, column=0, **PADS)
 
     spinbox = tk.Spinbox(
         frame, from_=1, to=20, width=3,
-        command=lambda: kernel.create_curve_setting(treeview, spinbox)
+        # command=lambda: kernel.create_curve_setting(treeview, spinbox)
     )
-    spinbox.grid(row=1, column=0, sticky=tk.E, **PADS)
+    spinbox.grid(row=1, column=1, **PADS)
 
 
 def create_axes_frame(root: tk.Tk, font_btn: font.Font):
@@ -148,7 +142,8 @@ def main():
     font_label = font.Font(family='Helvetica', size=10)
     font_btn = font.Font(family='Helvetica', size=10)
     treeview_filenames = create_directory_frame(root, font_label, font_btn)
-    notebook_data = create_data_frame(root, font_label, font_btn, treeview_filenames)
+    notebook_data = create_data_frame(
+        root, font_label, font_btn, treeview_filenames)
     create_curve_frame(root)
     create_axes_frame(root, font_btn)
     root.mainloop()
