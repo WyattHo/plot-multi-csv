@@ -112,7 +112,7 @@ def clear_tabs(notebook: ttk.Notebook):
 def initial_tabs(notebook: ttk.Notebook):
     clear_tabs(notebook)
     tab = create_tab(notebook, tabname='1')
-    create_treeview(tab, columns=('',), height=15)
+    create_treeview(tab, columns=('',), height=25)
 
 
 def create_and_populate_tab(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
@@ -121,7 +121,7 @@ def create_and_populate_tab(treeview_filenames: ttk.Treeview, notebook: ttk.Note
         tab = create_tab(notebook, tab_id)
         with open(path, 'r') as f:
             csv_data = csv.DictReader(f)
-            treeview_data = create_treeview(tab, csv_data.fieldnames, 15)
+            treeview_data = create_treeview(tab, csv_data.fieldnames, 25)
             insert_csv_values(treeview_data, csv_data)
             adjust_column_width(treeview_data)
 

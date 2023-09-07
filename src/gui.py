@@ -23,7 +23,7 @@ def initial_main_window() -> tk.Tk:
     root.title('PlotCSV')
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
-    root.rowconfigure(1, weight=1)
+    root.rowconfigure(1, weight=5)
     root.state('zoomed')
     root.minsize(**ROOT_MINSIZE)
     root.configure()
@@ -47,8 +47,8 @@ def create_directory_frame(
     subframe_action = tk.Frame(frame)
     subframe_action.grid(row=0, column=1)
 
-    columns = ('Index', 'Path')
-    treeview = kernel.create_treeview(subframe_directory, columns, 15)
+    columns = ('CSV ID', 'CSV Path')
+    treeview = kernel.create_treeview(subframe_directory, columns, 5)
     button = tk.Button(
         subframe_action,
         text='Choose',
@@ -116,16 +116,15 @@ def fill_subframe_setting(subframe: tk.Frame):
     frame_curve = tk.LabelFrame(subframe, text='Curve settings')
     frame_curve.grid(row=0, column=0, sticky=tk.NSEW)
 
-    frame_curve.rowconfigure(0, weight=1)
     frame_curve.rowconfigure(1, weight=1)
     frame_curve.columnconfigure(0, weight=1)
     frame_curve.columnconfigure(1, weight=1)
 
     frame_treeview = tk.Frame(frame_curve)
-    frame_treeview.grid(row=1, column=0, columnspan=2)
+    frame_treeview.grid(row=1, column=0, columnspan=2, sticky=tk.NSEW)
 
-    columns = ('Curve Index', 'CSV Index', 'Field X', 'Field Y', 'Label')
-    treeview = kernel.create_treeview(frame_treeview, columns, 5)
+    columns = ('Curve ID', 'CSV ID', 'Field X', 'Field Y', 'Label')
+    treeview = kernel.create_treeview(frame_treeview, columns, 15)
     treeview.insert(
         parent='',
         index=0,
