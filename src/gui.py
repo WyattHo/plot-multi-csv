@@ -15,16 +15,16 @@ class MyApp:
     }
 
     def __init__(self):
-        self.root = self.initial_main_window()
+        self.root = self.initialize_main_window()
         self.font_label = font.Font(family='Helvetica', size=10)
         self.font_btn = font.Font(family='Helvetica', size=10)
-        self.treeview_filenames = self.create_directory_frame()
-        self.notebook_data = self.create_data_frame()
-        self.notebook_curve = self.create_curve_frame()
-        self.create_axes_frame()
+        self.treeview_csv_names = self.create_frame_for_csv_names()
+        self.notebook_csv_data = self.create_frame_for_csv_data()
+        self.notebook_curve_settings = self.create_frame_for_curve_settings()
+        self.create_frame_for_axes_settings()
         self.root.mainloop()
 
-    def initial_main_window(self) -> tk.Tk:
+    def initialize_main_window(self) -> tk.Tk:
         root = tk.Tk()
         root.title('PlotCSV')
         root.columnconfigure(0, weight=1)
@@ -36,8 +36,8 @@ class MyApp:
         root.configure()
         return root
 
-    def create_directory_frame(self) -> ttk.Treeview:
-        frame = tk.LabelFrame(self.root, text='Choose csv files')
+    def create_frame_for_csv_names(self) -> ttk.Treeview:
+        frame = tk.LabelFrame(self.root, text='Choose CSV files')
         frame.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW, **self.PADS)
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
@@ -60,8 +60,8 @@ class MyApp:
         button['font'] = self.font_btn
         return treeview
 
-    def create_data_frame(self):
-        frame = tk.LabelFrame(self.root, text='Review data')
+    def create_frame_for_csv_data(self):
+        frame = tk.LabelFrame(self.root, text='Review CSV data')
         frame.grid(row=1, column=0, sticky=tk.NSEW, **self.PADS)
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
@@ -70,14 +70,14 @@ class MyApp:
 
         notebook = ttk.Notebook(frame)
         notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
-        tab = NotebookTools.create_tab(notebook, tabname='1')
+        tab = NotebookTools.create_new_tab(notebook, tabname='1')
         TreeviewTools.create_treeview(tab, columns=('',), height=25)
 
         button = tk.Button(
             frame,
             text='Import',
             command=lambda: MyAppAction.import_csv(
-                self.treeview_filenames,
+                self.treeview_csv_names,
                 notebook
             ),
             width=6
@@ -88,14 +88,14 @@ class MyApp:
         button = tk.Button(
             frame,
             text='Clear',
-            command=lambda: MyAppAction.clear_notebook_for_data(notebook),
+            command=lambda: MyAppAction.clear_csv_data_notebook(notebook),
             width=6
         )
         button.grid(row=1, column=1, **self.PADS)
         button['font'] = self.font_btn
         return notebook
 
-    def create_curve_frame(self):
+    def create_frame_for_curve_settings(self):
         frame = tk.LabelFrame(self.root, text='Curve settings')
         frame.grid(row=1, column=1, sticky=tk.NSEW, **self.PADS)
         frame.rowconfigure(1, weight=1)
@@ -112,8 +112,8 @@ class MyApp:
 
         spinbox = tk.Spinbox(
             frame, from_=1, to=20, width=3,
-            command=lambda: MyAppAction.adjust_tabs_for_curve(
-                self.notebook_data,
+            command=lambda: MyAppAction.adjust_curve_settings_tabs(
+                self.notebook_csv_data,
                 notebook,
                 spinbox,
                 MyApp.PADS
@@ -122,7 +122,7 @@ class MyApp:
         spinbox.grid(row=0, column=1, **self.PADS)
         return notebook
 
-    def create_axes_frame(self):
+    def create_frame_for_axes_settings(self):
         frame = tk.LabelFrame(self.root, text='Axes settings')
         frame.grid(row=1, column=2, sticky=tk.NSEW, **self.PADS)
         button = tk.Button(
