@@ -1,8 +1,9 @@
-import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 from typing import Sequence, Union, Dict
+
+import pandas as pd
 
 
 class TreeviewTools:
@@ -49,15 +50,12 @@ class TreeviewTools:
                 tags=str(idx)
             )
 
-    def insert_csv_values(treeview: ttk.Treeview, csv_data: csv.DictReader):
-        for row_idx, row_data in enumerate(csv_data):
-            values = [
-                row_data[fieldName].strip() for fieldName in csv_data.fieldnames
-            ]
+    def insert_dataframe(treeview: ttk.Treeview, df: pd.DataFrame):
+        for row_idx, row in df.iterrows():
             treeview.insert(
                 parent='',
                 index=row_idx,
-                values=values,
+                values=list(row.values),
                 tags=str(row_idx)
             )
 
@@ -83,28 +81,14 @@ class TreeviewTools:
 
 
 class NotebookTools:
-    def create_tab(
-            notebook: ttk.Notebook,
-            tabname: str) -> Sequence[ttk.Frame]:
-
+    def create_tab(notebook: ttk.Notebook, tabname: str) -> ttk.Frame:
         tab = ttk.Frame(notebook)
         notebook.add(tab, text=tabname)
         return tab
 
-    def clear_tabs(notebook: ttk.Notebook):
+    def remove_tabs(notebook: ttk.Notebook):
         while notebook.index('end') > 0:
             notebook.forget(0)
-
-    def create_and_populate_tab(treeview_filenames: ttk.Treeview, notebook: ttk.Notebook):
-        for line in treeview_filenames.get_children():
-            tab_id, path = treeview_filenames.item(line)['values']
-            tab = NotebookTools.create_tab(notebook, tab_id)
-            with open(path, 'r') as f:
-                csv_data = csv.DictReader(f)
-                treeview_data = TreeviewTools.create_treeview(
-                    tab, csv_data.fieldnames, 25)
-                TreeviewTools.insert_csv_values(treeview_data, csv_data)
-                TreeviewTools.adjust_column_width(treeview_data)
 
     def create_subframe(frame: ttk.Frame, pads: Dict[str, float]):
         label = tk.Label(frame, text='CSV ID: ')
@@ -128,7 +112,7 @@ class NotebookTools:
         entry.grid(row=3, column=1, sticky=tk.W, **pads)
 
     def initial_tabs_with_frame(notebook: ttk.Notebook, pads: Dict[str, float]):
-        NotebookTools.clear_tabs(notebook)
+        NotebookTools.remove_tabs(notebook)
         tab = NotebookTools.create_tab(notebook, tabname='1')
         NotebookTools.create_subframe(tab, pads)
 
@@ -143,6 +127,13 @@ class MyAppAction:
         TreeviewTools.insert_filenames(treeview, filenames)
         TreeviewTools.adjust_column_width(treeview)
 
+    def collect_dataframes(treeview_filenames: ttk.Treeview) -> Dict[int, pd.DataFrame]:
+        dataframes = {}
+        for line in treeview_filenames.get_children():
+            df_idx, path = treeview_filenames.item(line)['values']
+            dataframes[df_idx] = pd.read_csv(path)
+        return dataframes
+
     def import_csv(
             treeview_filenames: ttk.Treeview,
             notebook: ttk.Notebook):
@@ -152,11 +143,18 @@ class MyAppAction:
         except Exception as e:
             tk.messagebox.showerror(title='Error', message=e)
         else:
-            NotebookTools.clear_tabs(notebook)
-            NotebookTools.create_and_populate_tab(treeview_filenames, notebook)
+            NotebookTools.remove_tabs(notebook)
+            dataframes = MyAppAction.collect_dataframes(treeview_filenames)
+            for key, df in dataframes.items():
+                tab = NotebookTools.create_tab(notebook, key)
+                treeview_data = TreeviewTools.create_treeview(
+                    tab, list(df.columns), 25
+                )
+                TreeviewTools.insert_dataframe(treeview_data, df)
+                TreeviewTools.adjust_column_width(treeview_data)
 
     def initial_tabs_with_treeview(notebook: ttk.Notebook):
-        NotebookTools.clear_tabs(notebook)
+        NotebookTools.remove_tabs(notebook)
         tab = NotebookTools.create_tab(notebook, tabname='1')
         TreeviewTools.create_treeview(tab, columns=('',), height=25)
 
