@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import font
 from tkinter import ttk
 
-import kernel
+from kernel import TreeviewTools, NotebookTools, MyAppAction
 
 
 class MyApp:
@@ -46,14 +46,14 @@ class MyApp:
         subframe = tk.Frame(frame)
         subframe.grid(row=0, column=0, sticky=tk.NSEW)
         columns = ('CSV ID', 'CSV Path')
-        treeview = kernel.create_treeview(subframe, columns, 5)
+        treeview = TreeviewTools.create_treeview(subframe, columns, 5)
 
         subframe = tk.Frame(frame)
         subframe.grid(row=0, column=1)
         button = tk.Button(
             subframe,
             text='Choose',
-            command=lambda: kernel.open_files(treeview),
+            command=lambda: MyAppAction.open_files(treeview),
             width=6
         )
         button.grid(row=0, column=0, **self.PADS)
@@ -70,12 +70,12 @@ class MyApp:
 
         notebook = ttk.Notebook(frame)
         notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
-        kernel.initial_tabs_with_treeview(notebook)
+        MyAppAction.initial_tabs_with_treeview(notebook)
 
         button = tk.Button(
             frame,
             text='Import',
-            command=lambda: kernel.import_csv(
+            command=lambda: MyAppAction.import_csv(
                 self.treeview_filenames,
                 notebook
             ),
@@ -87,7 +87,7 @@ class MyApp:
         button = tk.Button(
             frame,
             text='Clear',
-            command=lambda: kernel.initial_tabs_with_treeview(notebook),
+            command=lambda: MyAppAction.initial_tabs_with_treeview(notebook),
             width=6
         )
         button.grid(row=1, column=1, **self.PADS)
@@ -103,17 +103,18 @@ class MyApp:
 
         notebook = ttk.Notebook(frame)
         notebook.grid(row=1, column=0, columnspan=2, sticky=tk.NSEW)
-        kernel.initial_tabs_with_frame(notebook)
+        NotebookTools.initial_tabs_with_frame(notebook, MyApp.PADS)
 
         label = tk.Label(frame, text='Curve numbers')
         label.grid(row=0, column=0, **self.PADS)
 
         spinbox = tk.Spinbox(
             frame, from_=1, to=20, width=3,
-            command=lambda: kernel.create_curve_tab(
+            command=lambda: MyAppAction.create_curve_tab(
                 self.notebook_data,
                 notebook,
-                spinbox
+                spinbox,
+                MyApp.PADS
             )
         )
         spinbox.grid(row=0, column=1, **self.PADS)
@@ -125,7 +126,7 @@ class MyApp:
         button = tk.Button(
             frame,
             text='Draw',
-            command=lambda: kernel.draw(),
+            command=lambda: MyAppAction.draw(),
             width=6
         )
         button.grid(row=0, column=0, **self.PADS)
