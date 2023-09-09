@@ -90,31 +90,31 @@ class NotebookTools:
         while notebook.index('end') > 0:
             notebook.forget(0)
 
-    def create_subframe(frame: ttk.Frame, pads: Dict[str, float]):
-        label = tk.Label(frame, text='CSV ID: ')
-        entry = ttk.Combobox(frame)
+    def fill_curve_setting_widgets(tab: ttk.Frame, pads: Dict[str, float]):
+        label = tk.Label(tab, text='CSV ID: ')
+        entry = ttk.Combobox(tab)
         label.grid(row=0, column=0, sticky=tk.W, **pads)
         entry.grid(row=0, column=1, sticky=tk.W, **pads)
 
-        label = tk.Label(frame, text='Field X: ')
-        entry = ttk.Combobox(frame)
+        label = tk.Label(tab, text='Field X: ')
+        entry = ttk.Combobox(tab)
         label.grid(row=1, column=0, sticky=tk.W, **pads)
         entry.grid(row=1, column=1, sticky=tk.W, **pads)
 
-        label = tk.Label(frame, text='Field Y: ')
-        entry = ttk.Combobox(frame)
+        label = tk.Label(tab, text='Field Y: ')
+        entry = ttk.Combobox(tab)
         label.grid(row=2, column=0, sticky=tk.W, **pads)
         entry.grid(row=2, column=1, sticky=tk.W, **pads)
 
-        label = tk.Label(frame, text='Label: ')
-        entry = tk.Entry(frame)
+        label = tk.Label(tab, text='Label: ')
+        entry = tk.Entry(tab)
         label.grid(row=3, column=0, sticky=tk.W, **pads)
         entry.grid(row=3, column=1, sticky=tk.W, **pads)
 
-    def initial_tabs_with_frame(notebook: ttk.Notebook, pads: Dict[str, float]):
+    def initialize_notebook_for_curve_settings(notebook: ttk.Notebook, pads: Dict[str, float]):
         NotebookTools.remove_tabs(notebook)
         tab = NotebookTools.create_tab(notebook, tabname='1')
-        NotebookTools.create_subframe(tab, pads)
+        NotebookTools.fill_curve_setting_widgets(tab, pads)
 
 
 class MyAppAction:
@@ -153,12 +153,12 @@ class MyAppAction:
                 TreeviewTools.insert_dataframe(treeview_data, df)
                 TreeviewTools.adjust_column_width(treeview_data)
 
-    def initial_tabs_with_treeview(notebook: ttk.Notebook):
+    def clear_notebook_for_data(notebook: ttk.Notebook):
         NotebookTools.remove_tabs(notebook)
         tab = NotebookTools.create_tab(notebook, tabname='1')
         TreeviewTools.create_treeview(tab, columns=('',), height=25)
 
-    def create_curve_tab(
+    def adjust_tabs_for_curve(
             notebook_data: ttk.Notebook,
             notebook_curve: ttk.Notebook,
             spinbox: tk.Spinbox,
@@ -170,7 +170,7 @@ class MyAppAction:
             for tab_idx in range(exist_num, tgt_num):
                 tab = NotebookTools.create_tab(
                     notebook_curve, tabname=str(tab_idx + 1))
-                NotebookTools.create_subframe(tab, pads)
+                NotebookTools.fill_curve_setting_widgets(tab, pads)
         elif tgt_num < exist_num:
             tab_idx = notebook_curve.index('end') - 1
             notebook_curve.forget(tab_idx)

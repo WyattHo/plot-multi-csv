@@ -70,7 +70,8 @@ class MyApp:
 
         notebook = ttk.Notebook(frame)
         notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
-        MyAppAction.initial_tabs_with_treeview(notebook)
+        tab = NotebookTools.create_tab(notebook, tabname='1')
+        TreeviewTools.create_treeview(tab, columns=('',), height=25)
 
         button = tk.Button(
             frame,
@@ -87,7 +88,7 @@ class MyApp:
         button = tk.Button(
             frame,
             text='Clear',
-            command=lambda: MyAppAction.initial_tabs_with_treeview(notebook),
+            command=lambda: MyAppAction.clear_notebook_for_data(notebook),
             width=6
         )
         button.grid(row=1, column=1, **self.PADS)
@@ -103,14 +104,15 @@ class MyApp:
 
         notebook = ttk.Notebook(frame)
         notebook.grid(row=1, column=0, columnspan=2, sticky=tk.NSEW)
-        NotebookTools.initial_tabs_with_frame(notebook, MyApp.PADS)
+        NotebookTools.initialize_notebook_for_curve_settings(
+            notebook, MyApp.PADS)
 
         label = tk.Label(frame, text='Curve numbers')
         label.grid(row=0, column=0, **self.PADS)
 
         spinbox = tk.Spinbox(
             frame, from_=1, to=20, width=3,
-            command=lambda: MyAppAction.create_curve_tab(
+            command=lambda: MyAppAction.adjust_tabs_for_curve(
                 self.notebook_data,
                 notebook,
                 spinbox,
