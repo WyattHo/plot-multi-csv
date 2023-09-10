@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import filedialog
 from tkinter import ttk
 from typing import Sequence, Union, Dict
 
@@ -7,6 +6,9 @@ import pandas as pd
 
 
 class TreeviewTools:
+    '''
+    tool should be inherit from tk object and expand the functionality
+    '''
     def create_treeview(
             frame: Union[tk.Frame, ttk.Frame],
             columns: Sequence[str], height: int) -> ttk.Treeview:
@@ -80,6 +82,9 @@ class TreeviewTools:
 
 
 class NotebookTools:
+    '''
+    tool should be inherit from tk object and expand the functionality
+    '''
     def create_new_tab(notebook: ttk.Notebook, tabname: str) -> ttk.Frame:
         tab = ttk.Frame(notebook)
         notebook.add(tab, text=tabname)
@@ -115,66 +120,3 @@ class NotebookTools:
         NotebookTools.remove_tabs(notebook)
         tab = NotebookTools.create_new_tab(notebook, tabname='1')
         NotebookTools.fill_curve_setting_widgets(tab, pads)
-
-
-class MyAppAction:
-    def open_files(treeview_csv_names: ttk.Treeview):
-        TreeviewTools.clear_treeview(treeview_csv_names)
-        filenames = filedialog.askopenfilenames(
-            title='Choose csv files',
-            filetypes=[('csv files', '*.csv')]
-        )
-        TreeviewTools.insert_csv_names(treeview_csv_names, filenames)
-        TreeviewTools.adjust_column_width(treeview_csv_names)
-
-    def collect_all_csv_data(
-            treeview_csv_names: ttk.Treeview) -> Dict[int, pd.DataFrame]:
-        csv_data_all = {}
-        for line in treeview_csv_names.get_children():
-            df_idx, path = treeview_csv_names.item(line)['values']
-            csv_data_all[df_idx] = pd.read_csv(path)
-        return csv_data_all
-
-    def import_csv(
-            treeview_csv_names: ttk.Treeview,
-            notebook_csv_data: ttk.Notebook):
-        try:
-            if not treeview_csv_names.get_children():
-                raise Exception('No CSV file chosen.')
-        except Exception as e:
-            tk.messagebox.showerror(title='Error', message=e)
-        else:
-            NotebookTools.remove_tabs(notebook_csv_data)
-            csv_data_all = MyAppAction.collect_all_csv_data(treeview_csv_names)
-            for csv_idx, csv_data in csv_data_all.items():
-                tab = NotebookTools.create_new_tab(notebook_csv_data, csv_idx)
-                treeview_csv_data = TreeviewTools.create_treeview(
-                    tab, list(csv_data.columns), 25
-                )
-                TreeviewTools.insert_csv_data(treeview_csv_data, csv_data)
-                TreeviewTools.adjust_column_width(treeview_csv_data)
-
-    def clear_csv_data_notebook(notebook_csv_data: ttk.Notebook):
-        NotebookTools.remove_tabs(notebook_csv_data)
-        tab = NotebookTools.create_new_tab(notebook_csv_data, tabname='1')
-        TreeviewTools.create_treeview(tab, columns=('',), height=25)
-
-    def adjust_curve_settings_tabs(
-            notebook_csv_data: ttk.Notebook,
-            notebook_curve_settings: ttk.Notebook,
-            spinbox: tk.Spinbox,
-            pads: Dict[str, float]):
-
-        exist_num = len(notebook_curve_settings.tabs())
-        tgt_num = int(spinbox.get())
-        if tgt_num > exist_num:
-            for tab_idx in range(exist_num, tgt_num):
-                tab = NotebookTools.create_new_tab(
-                    notebook_curve_settings, tabname=str(tab_idx + 1))
-                NotebookTools.fill_curve_setting_widgets(tab, pads)
-        elif tgt_num < exist_num:
-            tab_idx = notebook_curve_settings.index('end') - 1
-            notebook_curve_settings.forget(tab_idx)
-
-    def draw():
-        ...
