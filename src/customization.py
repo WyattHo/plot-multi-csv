@@ -7,34 +7,25 @@ import pandas as pd
 
 class Treeview(ttk.Treeview):
     def __init__(self, frame: Union[tk.Frame, ttk.Frame], columns: Sequence[str], height: int):
-        self.create_scrollbar(frame)
+        scrollbar_ver = tk.Scrollbar(frame)
+        scrollbar_hor = tk.Scrollbar(frame, orient='horizontal')
+        scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
+        scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
         super().__init__(
             frame,
-            yscrollcommand=self.scrollbar_ver.set,
-            xscrollcommand=self.scrollbar_hor.set,
+            yscrollcommand=scrollbar_ver.set,
+            xscrollcommand=scrollbar_hor.set,
             height=height
         )
-        self.config(columns)
-
-    def create_scrollbar(self, frame):
-        self.scrollbar_ver = tk.Scrollbar(frame)
-        self.scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
-        self.scrollbar_hor = tk.Scrollbar(frame, orient='horizontal')
-        self.scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
-
-    def config(self, columns):
         self.pack(fill='both')
-        self.propagate(0)
-        self.scrollbar_ver.config(command=self.yview)
-        self.scrollbar_hor.config(command=self.xview)
-
+        scrollbar_ver.config(command=self.yview)
+        scrollbar_hor.config(command=self.xview)
         self['columns'] = columns
         self['show'] = 'headings'
-
         for column in columns:
             self.heading(column, text=column, anchor=tk.W)
 
-    def clear(self):
+    def clear_content(self):
         for item in self.get_children():
             self.delete(item)
 
@@ -49,19 +40,19 @@ class Treeview(ttk.Treeview):
             )
 
     def insert_csv_data(self, df: pd.DataFrame):
-        for row_idx, row in df.iterrows():
+        for idx, row in df.iterrows():
             self.insert(
                 parent='',
-                index=row_idx,
+                index=idx,
                 values=list(row.values),
-                tags=str(row_idx)
+                tags=str(idx)
             )
 
     def collect_all_csv_data(self) -> Dict[int, pd.DataFrame]:
         csv_data_all = {}
         for line in self.get_children():
-            df_idx, path = self.item(line)['values']
-            csv_data_all[df_idx] = pd.read_csv(path)
+            idx, path = self.item(line)['values']
+            csv_data_all[idx] = pd.read_csv(path)
         return csv_data_all
 
     def adjust_column_width(self):

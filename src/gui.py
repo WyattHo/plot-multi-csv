@@ -130,7 +130,7 @@ class MyApp:
 
     # actions
     def open_files(self):
-        self.treeview_csv_names.clear()
+        self.treeview_csv_names.clear_content()
         csv_names = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
