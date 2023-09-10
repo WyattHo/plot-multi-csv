@@ -5,7 +5,7 @@ from tkinter import ttk
 from typing import Dict
 
 import pandas as pd
-from kernel import TreeviewTools, NotebookTools
+from kernel import Treeview, NotebookTools
 
 
 class MyApp:
@@ -50,7 +50,7 @@ class MyApp:
         subframe = tk.Frame(frame)
         subframe.grid(row=0, column=0, sticky=tk.NSEW)
         columns = ('CSV ID', 'CSV Path')
-        self.treeview_csv_names = TreeviewTools.create_treeview(
+        self.treeview_csv_names = Treeview(
             subframe, columns, 5)
 
         subframe = tk.Frame(frame)
@@ -77,7 +77,7 @@ class MyApp:
             row=0, column=0, columnspan=2, sticky=tk.NSEW
         )
         tab = NotebookTools.create_new_tab(self.notebook_csv_data, tabname='1')
-        TreeviewTools.create_treeview(tab, columns=('',), height=25)
+        Treeview(tab, columns=('',), height=25)
 
         button = tk.Button(
             frame,
@@ -134,23 +134,13 @@ class MyApp:
 
     # actions
     def open_files(self):
-        TreeviewTools.clear_treeview(self.treeview_csv_names)
+        self.treeview_csv_names.clear()
         filenames = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
         )
-        TreeviewTools.insert_csv_names(self.treeview_csv_names, filenames)
-        TreeviewTools.adjust_column_width(self.treeview_csv_names)
-
-    def collect_all_csv_data(self) -> Dict[int, pd.DataFrame]:
-        '''
-        this should be a tool
-        '''
-        csv_data_all = {}
-        for line in self.treeview_csv_names.get_children():
-            df_idx, path = self.treeview_csv_names.item(line)['values']
-            csv_data_all[df_idx] = pd.read_csv(path)
-        return csv_data_all
+        self.treeview_csv_names.insert_csv_names(filenames)
+        self.treeview_csv_names.adjust_column_width()
 
     def import_csv(self):
         try:
@@ -160,20 +150,20 @@ class MyApp:
             tk.messagebox.showerror(title='Error', message=e)
         else:
             NotebookTools.remove_tabs(self.notebook_csv_data)
-            csv_data_all = self.collect_all_csv_data()
+            csv_data_all = self.treeview_csv_names.collect_all_csv_data()
             for csv_idx, csv_data in csv_data_all.items():
                 tab = NotebookTools.create_new_tab(
                     self.notebook_csv_data, csv_idx)
-                treeview_csv_data = TreeviewTools.create_treeview(
+                treeview_csv_data = Treeview(
                     tab, list(csv_data.columns), 25
                 )
-                TreeviewTools.insert_csv_data(treeview_csv_data, csv_data)
-                TreeviewTools.adjust_column_width(treeview_csv_data)
+                treeview_csv_data.insert_csv_data(csv_data)
+                treeview_csv_data.adjust_column_width()
 
     def clear_csv_data_notebook(self):
         NotebookTools.remove_tabs(self.notebook_csv_data)
         tab = NotebookTools.create_new_tab(self.notebook_csv_data, tabname='1')
-        TreeviewTools.create_treeview(tab, columns=('',), height=25)
+        Treeview(tab, columns=('',), height=25)
 
     def adjust_curve_settings_tabs(self):
         exist_num = len(self.notebook_curve_settings.tabs())

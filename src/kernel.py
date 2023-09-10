@@ -5,75 +5,79 @@ from typing import Sequence, Union, Dict
 import pandas as pd
 
 
-class TreeviewTools:
-    '''
-    tool should be inherit from tk object and expand the functionality
-    '''
-    def create_treeview(
-            frame: Union[tk.Frame, ttk.Frame],
-            columns: Sequence[str], height: int) -> ttk.Treeview:
-
-        scrollbar_ver = tk.Scrollbar(frame)
-        scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
-        scrollbar_hor = tk.Scrollbar(frame, orient='horizontal')
-        scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
-
-        treeview = ttk.Treeview(
+class Treeview(ttk.Treeview):
+    def __init__(self, frame: Union[tk.Frame, ttk.Frame], columns: Sequence[str], height: int):
+        self.create_scrollbar(frame)
+        super().__init__(
             frame,
-            yscrollcommand=scrollbar_ver.set,
-            xscrollcommand=scrollbar_hor.set,
+            yscrollcommand=self.scrollbar_ver.set,
+            xscrollcommand=self.scrollbar_hor.set,
             height=height
         )
+        self.config(columns)
 
-        treeview.pack(fill='both')
-        treeview.propagate(0)
-        scrollbar_ver.config(command=treeview.yview)
-        scrollbar_hor.config(command=treeview.xview)
+    def create_scrollbar(self, frame):
+        self.scrollbar_ver = tk.Scrollbar(frame)
+        self.scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
+        self.scrollbar_hor = tk.Scrollbar(frame, orient='horizontal')
+        self.scrollbar_hor.pack(side=tk.BOTTOM, fill=tk.X)
 
-        treeview['columns'] = columns
-        treeview['show'] = 'headings'
+    def config(self, columns):
+        self.pack(fill='both')
+        self.propagate(0)
+        self.scrollbar_ver.config(command=self.yview)
+        self.scrollbar_hor.config(command=self.xview)
+
+        self['columns'] = columns
+        self['show'] = 'headings'
 
         for column in columns:
-            treeview.heading(column, text=column, anchor=tk.W)
-        return treeview
+            self.heading(column, text=column, anchor=tk.W)
 
-    def clear_treeview(treeview: ttk.Treeview):
-        for item in treeview.get_children():
-            treeview.delete(item)
+    def clear(self):
+        for item in self.get_children():
+            self.delete(item)
 
-    def insert_csv_names(treeview: ttk.Treeview, csv_names: Sequence):
+    def insert_csv_names(self, csv_names: Sequence):
         for idx, csv_name in enumerate(csv_names):
             values = [idx + 1, csv_name]
-            treeview.insert(
+            self.insert(
                 parent='',
                 index=idx,
                 values=values,
                 tags=str(idx)
             )
 
-    def insert_csv_data(treeview: ttk.Treeview, df: pd.DataFrame):
+    def insert_csv_data(self, df: pd.DataFrame):
         for row_idx, row in df.iterrows():
-            treeview.insert(
+            self.insert(
                 parent='',
                 index=row_idx,
                 values=list(row.values),
                 tags=str(row_idx)
             )
 
-    def adjust_column_width(treeview: ttk.Treeview):
+    def collect_all_csv_data(self) -> Dict[int, pd.DataFrame]:
+        csv_data_all = {}
+        for line in self.get_children():
+            df_idx, path = self.item(line)['values']
+            csv_data_all[df_idx] = pd.read_csv(path)
+        return csv_data_all
+
+    def adjust_column_width(self):
         COLUMN_WIDTH_RATIO = 9
         lengths = {
-            column: [len(column), ] for column in treeview['columns']
+            column: [len(column), ] for column in self['columns']
         }
-        for line in treeview.get_children():
-            columns = treeview['columns']
-            values = treeview.item(line)['values']
+        for line in self.get_children():
+            columns = self['columns']
+            values = self.item(line)['values']
             for column, value in zip(columns, values):
                 lengths[column].append(len(str(value)))
 
-        for column in treeview['columns']:
+        for column in self['columns']:
             width = COLUMN_WIDTH_RATIO * max(lengths[column])
-            treeview.column(
+            self.column(
                 column,
                 anchor=tk.W,
                 width=width,
