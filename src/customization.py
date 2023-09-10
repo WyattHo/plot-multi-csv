@@ -79,38 +79,61 @@ class Treeview(ttk.Treeview):
 class Notebook(ttk.Notebook):
     def __init__(self, frame: Union[tk.Frame, ttk.Frame]):
         super().__init__(frame)
+        self.widgets = {}
 
     def create_new_tab(self, tabname: str) -> ttk.Frame:
         tab = ttk.Frame(self)
         self.add(tab, text=tabname)
+        self.widgets[tabname] = {}
         return tab
 
     def remove_tabs(self):
+        self.widgets = {}
         while self.index('end') > 0:
             self.forget(0)
 
-    def fill_curve_setting_widgets(self, tab: ttk.Frame, pads: Dict[str, float]):
+    def fill_curve_setting_widgets(
+            self, tab: ttk.Frame, pads: Dict[str, float]):
+
         label = tk.Label(tab, text='CSV ID: ')
         entry = ttk.Combobox(tab)
         label.grid(row=0, column=0, sticky=tk.W, **pads)
         entry.grid(row=0, column=1, sticky=tk.W, **pads)
+        self.combobox_csv_idx = entry
 
         label = tk.Label(tab, text='Field X: ')
         entry = ttk.Combobox(tab)
         label.grid(row=1, column=0, sticky=tk.W, **pads)
         entry.grid(row=1, column=1, sticky=tk.W, **pads)
+        self.combobox_field_x = entry
 
         label = tk.Label(tab, text='Field Y: ')
         entry = ttk.Combobox(tab)
         label.grid(row=2, column=0, sticky=tk.W, **pads)
         entry.grid(row=2, column=1, sticky=tk.W, **pads)
+        self.combobox_field_y = entry
 
         label = tk.Label(tab, text='Label: ')
         entry = tk.Entry(tab)
         label.grid(row=3, column=0, sticky=tk.W, **pads)
         entry.grid(row=3, column=1, sticky=tk.W, **pads)
 
+        curve_settings_widgets = {
+            'csv_idx': self.combobox_csv_idx,
+            'field_x': self.combobox_field_x,
+            'field_y': self.combobox_field_y
+        }
+        return curve_settings_widgets
+
     def initialize_notebook_for_curve_settings(self, pads: Dict[str, float]):
+        TABNAME = '1'
         self.remove_tabs()
-        tab = self.create_new_tab(tabname='1')
-        self.fill_curve_setting_widgets(tab, pads)
+        tab = self.create_new_tab(tabname=TABNAME)
+        self.widgets[TABNAME] \
+            = self.fill_curve_setting_widgets(tab, pads)
+
+    def fill_values_for_curve_settings_widgets(self, csv_data_all: Dict[int, pd.DataFrame]):
+        values_csv_idx = list(csv_data_all.keys())
+        for key, widgets in self.widgets.items():
+            widgets['csv_idx'].config(values=values_csv_idx)
+            widgets['csv_idx'].current(0)

@@ -152,6 +152,9 @@ class MyApp:
                 treeview = Treeview(tab, list(csv_data.columns), 25)
                 treeview.insert_csv_data(csv_data)
                 treeview.adjust_column_width()
+            self.notebook_curve_settings.fill_values_for_curve_settings_widgets(
+                self.csv_data_all
+            )
 
     def clear_csv_data_notebook(self):
         self.notebook_csv_data.remove_tabs()
@@ -163,11 +166,17 @@ class MyApp:
         tgt_num = int(self.spinbox.get())
         if tgt_num > exist_num:
             for tab_idx in range(exist_num, tgt_num):
+                tabname = str(tab_idx + 1)
                 tab = self.notebook_curve_settings.create_new_tab(
-                    tabname=str(tab_idx + 1)
+                    tabname=tabname
                 )
-                self.notebook_curve_settings.fill_curve_setting_widgets(
+                widgets = self.notebook_curve_settings.fill_curve_setting_widgets(
                     tab, self.PADS
+                )
+                self.notebook_curve_settings.widgets[tabname] \
+                    = widgets
+                self.notebook_curve_settings.fill_values_for_curve_settings_widgets(
+                    self.csv_data_all
                 )
         elif tgt_num < exist_num:
             tab_idx = self.notebook_curve_settings.index('end') - 1
