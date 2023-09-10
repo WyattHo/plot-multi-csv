@@ -3,7 +3,7 @@ from tkinter import font
 from tkinter import filedialog
 from tkinter import ttk
 
-from kernel import Treeview, Notebook
+from customization import Treeview, Notebook
 
 
 class MyApp:
