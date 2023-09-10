@@ -2,10 +2,8 @@ import tkinter as tk
 from tkinter import font
 from tkinter import filedialog
 from tkinter import ttk
-from typing import Dict
 
-import pandas as pd
-from kernel import Treeview, NotebookTools
+from kernel import Treeview, Notebook
 
 
 class MyApp:
@@ -72,11 +70,11 @@ class MyApp:
         frame.columnconfigure(1, weight=1)
         frame['font'] = self.font_label
 
-        self.notebook_csv_data = ttk.Notebook(frame)
+        self.notebook_csv_data = Notebook(frame)
         self.notebook_csv_data.grid(
             row=0, column=0, columnspan=2, sticky=tk.NSEW
         )
-        tab = NotebookTools.create_new_tab(self.notebook_csv_data, tabname='1')
+        tab = self.notebook_csv_data.create_new_tab(tabname='1')
         Treeview(tab, columns=('',), height=25)
 
         button = tk.Button(
@@ -104,12 +102,10 @@ class MyApp:
         frame.columnconfigure(0, weight=1)
         frame.columnconfigure(1, weight=1)
 
-        self.notebook_curve_settings = ttk.Notebook(frame)
+        self.notebook_curve_settings = Notebook(frame)
         self.notebook_curve_settings.grid(
             row=1, column=0, columnspan=2, sticky=tk.NSEW)
-        NotebookTools.initialize_notebook_for_curve_settings(
-            self.notebook_curve_settings, MyApp.PADS
-        )
+        self.notebook_curve_settings.initialize_notebook_for_curve_settings(MyApp.PADS)
 
         label = tk.Label(frame, text='Curve numbers')
         label.grid(row=0, column=0, **self.PADS)
@@ -149,11 +145,10 @@ class MyApp:
         except Exception as e:
             tk.messagebox.showerror(title='Error', message=e)
         else:
-            NotebookTools.remove_tabs(self.notebook_csv_data)
+            self.notebook_csv_data.remove_tabs()
             csv_data_all = self.treeview_csv_names.collect_all_csv_data()
             for csv_idx, csv_data in csv_data_all.items():
-                tab = NotebookTools.create_new_tab(
-                    self.notebook_csv_data, csv_idx)
+                tab = self.notebook_csv_data.create_new_tab(csv_idx)
                 treeview_csv_data = Treeview(
                     tab, list(csv_data.columns), 25
                 )
@@ -161,8 +156,8 @@ class MyApp:
                 treeview_csv_data.adjust_column_width()
 
     def clear_csv_data_notebook(self):
-        NotebookTools.remove_tabs(self.notebook_csv_data)
-        tab = NotebookTools.create_new_tab(self.notebook_csv_data, tabname='1')
+        self.notebook_csv_data.remove_tabs()
+        tab = self.notebook_csv_data.create_new_tab(tabname='1')
         Treeview(tab, columns=('',), height=25)
 
     def adjust_curve_settings_tabs(self):
@@ -170,9 +165,8 @@ class MyApp:
         tgt_num = int(self.spinbox.get())
         if tgt_num > exist_num:
             for tab_idx in range(exist_num, tgt_num):
-                tab = NotebookTools.create_new_tab(
-                    self.notebook_curve_settings, tabname=str(tab_idx + 1))
-                NotebookTools.fill_curve_setting_widgets(tab, self.PADS)
+                tab = self.notebook_curve_settings.create_new_tab(tabname=str(tab_idx + 1))
+                Notebook.fill_curve_setting_widgets(tab, self.PADS)
         elif tgt_num < exist_num:
             tab_idx = self.notebook_curve_settings.index('end') - 1
             self.notebook_curve_settings.forget(tab_idx)

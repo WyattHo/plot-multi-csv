@@ -85,20 +85,20 @@ class Treeview(ttk.Treeview):
             )
 
 
-class NotebookTools:
-    '''
-    tool should be inherit from tk object and expand the functionality
-    '''
-    def create_new_tab(notebook: ttk.Notebook, tabname: str) -> ttk.Frame:
-        tab = ttk.Frame(notebook)
-        notebook.add(tab, text=tabname)
+class Notebook(ttk.Notebook):
+    def __init__(self, frame: Union[tk.Frame, ttk.Frame]):
+        super().__init__(frame)
+
+    def create_new_tab(self, tabname: str) -> ttk.Frame:
+        tab = ttk.Frame(self)
+        self.add(tab, text=tabname)
         return tab
 
-    def remove_tabs(notebook: ttk.Notebook):
-        while notebook.index('end') > 0:
-            notebook.forget(0)
+    def remove_tabs(self):
+        while self.index('end') > 0:
+            self.forget(0)
 
-    def fill_curve_setting_widgets(tab: ttk.Frame, pads: Dict[str, float]):
+    def fill_curve_setting_widgets(self, tab: ttk.Frame, pads: Dict[str, float]):
         label = tk.Label(tab, text='CSV ID: ')
         entry = ttk.Combobox(tab)
         label.grid(row=0, column=0, sticky=tk.W, **pads)
@@ -119,8 +119,7 @@ class NotebookTools:
         label.grid(row=3, column=0, sticky=tk.W, **pads)
         entry.grid(row=3, column=1, sticky=tk.W, **pads)
 
-    def initialize_notebook_for_curve_settings(
-            notebook: ttk.Notebook, pads: Dict[str, float]):
-        NotebookTools.remove_tabs(notebook)
-        tab = NotebookTools.create_new_tab(notebook, tabname='1')
-        NotebookTools.fill_curve_setting_widgets(tab, pads)
+    def initialize_notebook_for_curve_settings(self, pads: Dict[str, float]):
+        self.remove_tabs()
+        tab = self.create_new_tab(tabname='1')
+        self.fill_curve_setting_widgets(tab, pads)
