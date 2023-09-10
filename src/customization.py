@@ -39,7 +39,7 @@ class Treeview(ttk.Treeview):
                 tags=str(idx)
             )
 
-    def insert_csv_data(self, df: pd.DataFrame):
+    def insert_csv_dataframe(self, df: pd.DataFrame):
         for idx, row in df.iterrows():
             self.insert(
                 parent='',
@@ -48,12 +48,14 @@ class Treeview(ttk.Treeview):
                 tags=str(idx)
             )
 
-    def collect_all_csv_data(self) -> Dict[int, pd.DataFrame]:
-        csv_data_all = {}
+    def get_data(self) -> pd.DataFrame:
+        columns = self['columns']
+        data = {column: [] for column in columns}
         for line in self.get_children():
-            idx, path = self.item(line)['values']
-            csv_data_all[idx] = pd.read_csv(path)
-        return csv_data_all
+            values = self.item(line)['values']
+            for column, value in zip(columns, values):
+                data[column].append(value)
+        return pd.DataFrame(data)
 
     def adjust_column_width(self):
         COLUMN_WIDTH_RATIO = 9
@@ -76,42 +78,49 @@ class Treeview(ttk.Treeview):
             )
 
 
+class Tab(ttk.Frame):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.widgets = {}
+
+
 class Notebook(ttk.Notebook):
     def __init__(self, frame: Union[tk.Frame, ttk.Frame]):
         super().__init__(frame)
-        self.widgets = {}
+        self.tabs_ = {}
 
-    def create_new_tab(self, tabname: str) -> ttk.Frame:
-        tab = ttk.Frame(self)
+    def create_new_tab(self, tabname: str) -> Tab:
+        tab = Tab(self)
         self.add(tab, text=tabname)
-        self.widgets[tabname] = {}
+        self.tabs_[tabname] = tab
         return tab
 
     def remove_tabs(self):
-        self.widgets = {}
+        self.tabs_ = {}
         while self.index('end') > 0:
             self.forget(0)
 
     def fill_curve_setting_widgets(
-            self, tab: ttk.Frame, pads: Dict[str, float]):
+            self, tab: Tab, 
+            pads: Dict[str, float]) -> Dict[str, ttk.Combobox]:
 
         label = tk.Label(tab, text='CSV ID: ')
         entry = ttk.Combobox(tab)
         label.grid(row=0, column=0, sticky=tk.W, **pads)
         entry.grid(row=0, column=1, sticky=tk.W, **pads)
-        self.combobox_csv_idx = entry
+        combobox_csv_idx = entry
 
         label = tk.Label(tab, text='Field X: ')
         entry = ttk.Combobox(tab)
         label.grid(row=1, column=0, sticky=tk.W, **pads)
         entry.grid(row=1, column=1, sticky=tk.W, **pads)
-        self.combobox_field_x = entry
+        combobox_field_x = entry
 
         label = tk.Label(tab, text='Field Y: ')
         entry = ttk.Combobox(tab)
         label.grid(row=2, column=0, sticky=tk.W, **pads)
         entry.grid(row=2, column=1, sticky=tk.W, **pads)
-        self.combobox_field_y = entry
+        combobox_field_y = entry
 
         label = tk.Label(tab, text='Label: ')
         entry = tk.Entry(tab)
@@ -119,9 +128,9 @@ class Notebook(ttk.Notebook):
         entry.grid(row=3, column=1, sticky=tk.W, **pads)
 
         curve_settings_widgets = {
-            'csv_idx': self.combobox_csv_idx,
-            'field_x': self.combobox_field_x,
-            'field_y': self.combobox_field_y
+            'csv_idx': combobox_csv_idx,
+            'field_x': combobox_field_x,
+            'field_y': combobox_field_y
         }
         return curve_settings_widgets
 
@@ -129,11 +138,10 @@ class Notebook(ttk.Notebook):
         TABNAME = '1'
         self.remove_tabs()
         tab = self.create_new_tab(tabname=TABNAME)
-        self.widgets[TABNAME] \
-            = self.fill_curve_setting_widgets(tab, pads)
+        widgets = self.fill_curve_setting_widgets(tab, pads)
+        self.tabs_[TABNAME].widgets = widgets
 
-    def fill_values_for_curve_settings_widgets(self, csv_data_all: Dict[int, pd.DataFrame]):
-        values_csv_idx = list(csv_data_all.keys())
-        for key, widgets in self.widgets.items():
-            widgets['csv_idx'].config(values=values_csv_idx)
-            widgets['csv_idx'].current(0)
+    def fill_widget_options(self, tabname: str, csv_data_pool: Dict[str, pd.DataFrame]):
+        values_csv_idx = list(csv_data_pool.keys())
+        self.tabs_[tabname].widgets['csv_idx'].config(values=values_csv_idx)
+        self.tabs_[tabname].widgets['csv_idx'].current(0)

@@ -3,6 +3,8 @@ from tkinter import font
 from tkinter import filedialog
 from typing import Tuple
 
+import pandas as pd
+
 from customization import Treeview, Notebook
 
 
@@ -146,14 +148,21 @@ class MyApp:
             tk.messagebox.showerror(title='Error', message=e)
         else:
             self.notebook_csv_data.remove_tabs()
-            self.csv_data_all = self.treeview_csv_names.collect_all_csv_data()
-            for csv_idx, csv_data in self.csv_data_all.items():
+            self.csv_names = self.treeview_csv_names.get_data()
+            self.csv_data_pool = {}
+            for row_idx, row in self.csv_names.iterrows():
+                csv_idx = row['CSV ID']
+                path = row['CSV Path']
+                csv_dataframe = pd.read_csv(path)
+                self.csv_data_pool[csv_idx] = csv_dataframe
                 tab = self.notebook_csv_data.create_new_tab(csv_idx)
-                treeview = Treeview(tab, list(csv_data.columns), 25)
-                treeview.insert_csv_data(csv_data)
+                treeview = Treeview(tab, list(csv_dataframe.columns), 25)
+                treeview.insert_csv_dataframe(csv_dataframe)
                 treeview.adjust_column_width()
-            self.notebook_curve_settings.fill_values_for_curve_settings_widgets(
-                self.csv_data_all
+
+            self.notebook_curve_settings.fill_widget_options(
+                '1',
+                self.csv_data_pool
             )
 
     def clear_csv_data_notebook(self):
@@ -162,7 +171,7 @@ class MyApp:
         Treeview(tab, columns=('',), height=25)
 
     def adjust_curve_settings_tabs(self):
-        exist_num = len(self.notebook_curve_settings.tabs())
+        exist_num = len(self.notebook_curve_settings.tabs_)
         tgt_num = int(self.spinbox.get())
         if tgt_num > exist_num:
             for tab_idx in range(exist_num, tgt_num):
@@ -173,10 +182,10 @@ class MyApp:
                 widgets = self.notebook_curve_settings.fill_curve_setting_widgets(
                     tab, self.PADS
                 )
-                self.notebook_curve_settings.widgets[tabname] \
-                    = widgets
-                self.notebook_curve_settings.fill_values_for_curve_settings_widgets(
-                    self.csv_data_all
+                tab.widgets = widgets
+                self.notebook_curve_settings.fill_widget_options(
+                    tabname,
+                    self.csv_data_pool
                 )
         elif tgt_num < exist_num:
             tab_idx = self.notebook_curve_settings.index('end') - 1
