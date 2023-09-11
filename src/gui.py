@@ -191,7 +191,7 @@ class MyApp:
             tk.messagebox.showerror(title='Error', message=e)
         else:
             self.data_pool = {}
-            self.notebook_data_pool.remove_tabs()
+            self.notebook_data_pool.remove_all_tabs()
             for row_idx, row in self.filenames.iterrows():
                 csv_idx = row['CSV ID']
                 path = row['CSV Path']
@@ -204,7 +204,7 @@ class MyApp:
             self.fill_widget_options(self.notebook_data_visual.tabs_['1'])
 
     def clear_data_pool(self):
-        self.notebook_data_pool.remove_tabs()
+        self.notebook_data_pool.remove_all_tabs()
         tab = self.notebook_data_pool.create_new_tab(tabname='1')
         Treeview(tab, columns=('',), height=25)
 
@@ -218,9 +218,7 @@ class MyApp:
             self.fill_widget_options(tab)
         elif tgt_num < exist_num:
             tabname = str(exist_num)
-            tab_idx = self.notebook_data_visual.index('end') - 1
-            self.notebook_data_visual.forget(tab_idx)
-            self.notebook_data_visual.tabs_.pop(tabname)
+            self.notebook_data_visual.remove_tab(tabname)
 
     def draw(self):
         ...

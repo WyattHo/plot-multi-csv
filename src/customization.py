@@ -6,7 +6,12 @@ import pandas as pd
 
 
 class Treeview(ttk.Treeview):
-    def __init__(self, frame: Union[tk.Frame, ttk.Frame], columns: Sequence[str], height: int):
+    COLUMN_WIDTH_RATIO = 9
+
+    def __init__(
+            self, frame: Union[tk.Frame, ttk.Frame],
+            columns: Sequence[str], height: int):
+
         scrollbar_ver = tk.Scrollbar(frame)
         scrollbar_hor = tk.Scrollbar(frame, orient='horizontal')
         scrollbar_ver.pack(side=tk.RIGHT, fill=tk.Y)
@@ -48,7 +53,6 @@ class Treeview(ttk.Treeview):
         return pd.DataFrame(data)
 
     def adjust_column_width(self):
-        COLUMN_WIDTH_RATIO = 9
         lengths = {
             column: [len(column), ] for column in self['columns']
         }
@@ -59,7 +63,7 @@ class Treeview(ttk.Treeview):
                 lengths[column].append(len(str(value)))
 
         for column in self['columns']:
-            width = COLUMN_WIDTH_RATIO * max(lengths[column])
+            width = Treeview.COLUMN_WIDTH_RATIO * max(lengths[column])
             self.column(
                 column,
                 anchor=tk.W,
@@ -80,12 +84,16 @@ class Notebook(ttk.Notebook):
         self.tabs_: Dict[str, Tab] = {}
 
     def create_new_tab(self, tabname: str) -> Tab:
-        tab = Tab(self)
+        self.tabs_[tabname] = tab = Tab(self)
         self.add(tab, text=tabname)
-        self.tabs_[tabname] = tab
         return tab
 
-    def remove_tabs(self):
+    def remove_tab(self, tabname: str):
+        tab_idx = list(self.tabs_.keys()).index(tabname)
+        self.forget(tab_idx)
+        self.tabs_.pop(tabname)
+
+    def remove_all_tabs(self):
         self.tabs_ = {}
         while self.index('end') > 0:
             self.forget(0)
