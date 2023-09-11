@@ -22,11 +22,11 @@ class MyApp:
         self.root = self.initialize_main_window()
         self.font_label = font.Font(family='Helvetica', size=10)
         self.font_button = font.Font(family='Helvetica', size=10)
-        self.treeview_csv_names = self.create_frame_for_csv_names()
-        self.notebook_csv_data = self.create_frame_for_csv_data()
-        self.notebook_curve_settings, self.spinbox\
-            = self.create_frame_for_curve_settings()
-        self.create_frame_for_axes_settings()
+        self.treeview_filenames = self.create_frame_for_filenames()
+        self.notebook_data_pool = self.create_frame_for_data_pool()
+        self.notebook_data_visual, self.spinbox\
+            = self.create_frame_for_data_visual()
+        self.create_frame_for_axes_visual()
         self.root.mainloop()
 
     def initialize_main_window(self) -> tk.Tk:
@@ -41,7 +41,7 @@ class MyApp:
         root.configure()
         return root
 
-    def create_frame_for_csv_names(self) -> Treeview:
+    def create_frame_for_filenames(self) -> Treeview:
         frame = tk.LabelFrame(self.root, text='Choose CSV files')
         frame.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW, **self.PADS)
         frame.rowconfigure(0, weight=1)
@@ -65,7 +65,7 @@ class MyApp:
         button['font'] = self.font_button
         return treeview
 
-    def create_frame_for_csv_data(self) -> Notebook:
+    def create_frame_for_data_pool(self) -> Notebook:
         frame = tk.LabelFrame(self.root, text='Review CSV data')
         frame.grid(row=1, column=0, sticky=tk.NSEW, **self.PADS)
         frame.rowconfigure(0, weight=1)
@@ -90,15 +90,15 @@ class MyApp:
         button = tk.Button(
             frame,
             text='Clear',
-            command=lambda: self.clear_csv_data_notebook(),
+            command=lambda: self.clear_data_pool(),
             width=6
         )
         button.grid(row=1, column=1, **self.PADS)
         button['font'] = self.font_button
         return notebook
 
-    def create_frame_for_curve_settings(self) -> Tuple[Notebook, tk.Spinbox]:
-        frame = tk.LabelFrame(self.root, text='Curve settings')
+    def create_frame_for_data_visual(self) -> Tuple[Notebook, tk.Spinbox]:
+        frame = tk.LabelFrame(self.root, text='Data Visualization')
         frame.grid(row=1, column=1, sticky=tk.NSEW, **self.PADS)
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(0, weight=1)
@@ -106,20 +106,20 @@ class MyApp:
 
         notebook = Notebook(frame)
         notebook.grid(row=1, column=0, columnspan=2, sticky=tk.NSEW)
-        notebook.initialize_notebook_for_curve_settings(MyApp.PADS)
+        notebook.initialize_notebook_data_visual(MyApp.PADS)
 
-        label = tk.Label(frame, text='Curve numbers')
+        label = tk.Label(frame, text='Numbers of datasets')
         label.grid(row=0, column=0, **self.PADS)
 
         spinbox = tk.Spinbox(
             frame, from_=1, to=20, width=3,
-            command=lambda: self.adjust_curve_settings_tabs()
+            command=lambda: self.change_number_of_dataset()
         )
         spinbox.grid(row=0, column=1, **self.PADS)
         return notebook, spinbox
 
-    def create_frame_for_axes_settings(self):
-        frame = tk.LabelFrame(self.root, text='Axes settings')
+    def create_frame_for_axes_visual(self):
+        frame = tk.LabelFrame(self.root, text='Axes Visualization')
         frame.grid(row=1, column=2, sticky=tk.NSEW, **self.PADS)
         button = tk.Button(
             frame,
@@ -132,64 +132,68 @@ class MyApp:
 
     # actions
     def open_files(self):
-        self.treeview_csv_names.clear_content()
-        csv_names = filedialog.askopenfilenames(
+        self.treeview_filenames.clear_content()
+        filenames = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
         )
-        self.treeview_csv_names.insert_csv_names(csv_names)
-        self.treeview_csv_names.adjust_column_width()
+        self.filenames = {'CSV ID': [], 'CSV Path': []}
+        for idx, filename in enumerate(filenames):
+            self.filenames['CSV ID'].append(idx + 1)
+            self.filenames['CSV Path'].append(filename)
+        self.filenames = pd.DataFrame(self.filenames)
+        self.treeview_filenames.insert_dataframe(self.filenames)
+        self.treeview_filenames.adjust_column_width()
 
     def import_csv(self):
         try:
-            if not self.treeview_csv_names.get_children():
+            if not self.treeview_filenames.get_children():
                 raise Exception('No CSV file chosen.')
         except Exception as e:
             tk.messagebox.showerror(title='Error', message=e)
         else:
-            self.notebook_csv_data.remove_tabs()
-            self.csv_names = self.treeview_csv_names.get_data()
-            self.csv_data_pool = {}
-            for row_idx, row in self.csv_names.iterrows():
+            self.data_pool = {}
+            self.notebook_data_pool.remove_tabs()
+            for row_idx, row in self.filenames.iterrows():
                 csv_idx = row['CSV ID']
                 path = row['CSV Path']
+                tab = self.notebook_data_pool.create_new_tab(csv_idx)
                 csv_dataframe = pd.read_csv(path)
-                self.csv_data_pool[csv_idx] = csv_dataframe
-                tab = self.notebook_csv_data.create_new_tab(csv_idx)
+                self.data_pool[csv_idx] = csv_dataframe
                 treeview = Treeview(tab, list(csv_dataframe.columns), 25)
-                treeview.insert_csv_dataframe(csv_dataframe)
+                treeview.insert_dataframe(csv_dataframe)
                 treeview.adjust_column_width()
 
-            self.notebook_curve_settings.fill_widget_options(
+            self.notebook_data_visual.fill_widget_options(
                 '1',
-                self.csv_data_pool
+                self.data_pool
             )
 
-    def clear_csv_data_notebook(self):
-        self.notebook_csv_data.remove_tabs()
-        tab = self.notebook_csv_data.create_new_tab(tabname='1')
+    def clear_data_pool(self):
+        self.notebook_data_pool.remove_tabs()
+        tab = self.notebook_data_pool.create_new_tab(tabname='1')
         Treeview(tab, columns=('',), height=25)
 
-    def adjust_curve_settings_tabs(self):
-        exist_num = len(self.notebook_curve_settings.tabs_)
+    def change_number_of_dataset(self):
+        exist_num = len(self.notebook_data_visual.tabs_)
         tgt_num = int(self.spinbox.get())
         if tgt_num > exist_num:
             for tab_idx in range(exist_num, tgt_num):
                 tabname = str(tab_idx + 1)
-                tab = self.notebook_curve_settings.create_new_tab(
+                tab = self.notebook_data_visual.create_new_tab(
                     tabname=tabname
                 )
-                widgets = self.notebook_curve_settings.fill_curve_setting_widgets(
-                    tab, self.PADS
-                )
-                tab.widgets = widgets
-                self.notebook_curve_settings.fill_widget_options(
+                tab.widgets\
+                    = self.notebook_data_visual.fill_data_visual_widgets(
+                        tab, self.PADS
+                    )
+                self.notebook_data_visual.fill_widget_options(
                     tabname,
-                    self.csv_data_pool
+                    self.data_pool
                 )
         elif tgt_num < exist_num:
-            tab_idx = self.notebook_curve_settings.index('end') - 1
-            self.notebook_curve_settings.forget(tab_idx)
+            tab_idx = self.notebook_data_visual.index('end') - 1
+            self.notebook_data_visual.forget(tab_idx)
 
     def draw(self):
         ...
