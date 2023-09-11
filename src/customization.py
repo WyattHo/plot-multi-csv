@@ -77,7 +77,7 @@ class Tab(ttk.Frame):
 class Notebook(ttk.Notebook):
     def __init__(self, frame: Union[tk.Frame, ttk.Frame]):
         super().__init__(frame)
-        self.tabs_ = {}
+        self.tabs_: Dict[str, Tab] = {}
 
     def create_new_tab(self, tabname: str) -> Tab:
         tab = Tab(self)
@@ -89,49 +89,3 @@ class Notebook(ttk.Notebook):
         self.tabs_ = {}
         while self.index('end') > 0:
             self.forget(0)
-
-    def fill_data_visual_widgets(
-            self, tab: Tab,
-            pads: Dict[str, float]) -> Dict[str, ttk.Combobox]:
-
-        label = tk.Label(tab, text='CSV ID: ')
-        entry = ttk.Combobox(tab)
-        label.grid(row=0, column=0, sticky=tk.W, **pads)
-        entry.grid(row=0, column=1, sticky=tk.W, **pads)
-        combobox_csv_idx = entry
-
-        label = tk.Label(tab, text='Field X: ')
-        entry = ttk.Combobox(tab)
-        label.grid(row=1, column=0, sticky=tk.W, **pads)
-        entry.grid(row=1, column=1, sticky=tk.W, **pads)
-        combobox_field_x = entry
-
-        label = tk.Label(tab, text='Field Y: ')
-        entry = ttk.Combobox(tab)
-        label.grid(row=2, column=0, sticky=tk.W, **pads)
-        entry.grid(row=2, column=1, sticky=tk.W, **pads)
-        combobox_field_y = entry
-
-        label = tk.Label(tab, text='Label: ')
-        entry = tk.Entry(tab)
-        label.grid(row=3, column=0, sticky=tk.W, **pads)
-        entry.grid(row=3, column=1, sticky=tk.W, **pads)
-
-        curve_settings_widgets = {
-            'csv_idx': combobox_csv_idx,
-            'field_x': combobox_field_x,
-            'field_y': combobox_field_y
-        }
-        return curve_settings_widgets
-
-    def initialize_notebook_data_visual(self, pads: Dict[str, float]):
-        TABNAME = '1'
-        self.remove_tabs()
-        tab = self.create_new_tab(tabname=TABNAME)
-        widgets = self.fill_data_visual_widgets(tab, pads)
-        self.tabs_[TABNAME].widgets = widgets
-
-    def fill_widget_options(self, tabname: str, data_pool: Dict[str, pd.DataFrame]):
-        values_csv_idx = list(data_pool.keys())
-        self.tabs_[tabname].widgets['csv_idx'].config(values=values_csv_idx)
-        self.tabs_[tabname].widgets['csv_idx'].current(0)
