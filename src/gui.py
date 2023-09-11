@@ -175,25 +175,26 @@ class MyApp:
         Treeview(tab, columns=('',), height=25)
 
     def change_number_of_dataset(self):
-        exist_num = len(self.notebook_data_visual.tabs_)
+        exist_num = len(self.notebook_data_visual.tabs())
         tgt_num = int(self.spinbox.get())
         if tgt_num > exist_num:
-            for tab_idx in range(exist_num, tgt_num):
-                tabname = str(tab_idx + 1)
-                tab = self.notebook_data_visual.create_new_tab(
-                    tabname=tabname
+            tabname = str(tgt_num)
+            tab = self.notebook_data_visual.create_new_tab(
+                tabname=tabname
+            )
+            tab.widgets\
+                = self.notebook_data_visual.fill_data_visual_widgets(
+                    tab, self.PADS
                 )
-                tab.widgets\
-                    = self.notebook_data_visual.fill_data_visual_widgets(
-                        tab, self.PADS
-                    )
-                self.notebook_data_visual.fill_widget_options(
-                    tabname,
-                    self.data_pool
-                )
+            self.notebook_data_visual.fill_widget_options(
+                tabname,
+                self.data_pool
+            )
         elif tgt_num < exist_num:
+            tabname = str(exist_num)
             tab_idx = self.notebook_data_visual.index('end') - 1
             self.notebook_data_visual.forget(tab_idx)
+            self.notebook_data_visual.tabs_.pop(tabname)
 
     def draw(self):
         ...
