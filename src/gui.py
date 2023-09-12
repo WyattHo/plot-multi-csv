@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import font
 from tkinter import filedialog
 from tkinter import ttk
-from typing import Tuple
+from typing import Dict, Tuple
 
 import pandas as pd
 
@@ -178,10 +178,19 @@ class MyApp:
         self.treeview_filenames.insert_dataframe(self.filenames)
         self.treeview_filenames.adjust_column_width()
 
-    def fill_widget_options(self, tab: Tab):
+    def update_fields_x_and_y(self, tab: Tab):
+        csv_idx = int(tab.widgets['csv_idx'].get())
+        columns = list(self.data_pool[csv_idx].columns)
+        tab.widgets['field_x'].config(values=columns)
+        tab.widgets['field_x'].current(0)
+        tab.widgets['field_y'].config(values=columns)
+        tab.widgets['field_y'].current(1)
+
+    def initialize_csv_indices(self, tab: Tab):
         values_csv_idx = list(self.data_pool.keys())
         tab.widgets['csv_idx'].config(values=values_csv_idx)
         tab.widgets['csv_idx'].current(0)
+        self.update_fields_x_and_y(tab)
 
     def import_csv(self):
         try:
@@ -190,7 +199,7 @@ class MyApp:
         except Exception as e:
             tk.messagebox.showerror(title='Error', message=e)
         else:
-            self.data_pool = {}
+            self.data_pool: Dict[str, pd.DataFrame] = {}
             self.notebook_data_pool.remove_all_tabs()
             for row_idx, row in self.filenames.iterrows():
                 csv_idx = row['CSV ID']
@@ -201,7 +210,7 @@ class MyApp:
                 treeview = Treeview(tab, list(csv_dataframe.columns), 25)
                 treeview.insert_dataframe(csv_dataframe)
                 treeview.adjust_column_width()
-            self.fill_widget_options(self.notebook_data_visual.tabs_['1'])
+            self.initialize_csv_indices(self.notebook_data_visual.tabs_['1'])
 
     def clear_data_pool(self):
         self.notebook_data_pool.remove_all_tabs()
@@ -222,7 +231,7 @@ class MyApp:
                 tabname = str(tgt_num)
                 tab = self.notebook_data_visual.create_new_tab(tabname)
                 self.fill_data_visual_widgets(tab)
-                self.fill_widget_options(tab)
+                self.initialize_csv_indices(tab)
             elif tgt_num < exist_num:
                 tabname = str(exist_num)
                 self.notebook_data_visual.remove_tab(tabname)
