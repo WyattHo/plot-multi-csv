@@ -97,3 +97,11 @@ class Notebook(ttk.Notebook):
         self.tabs_ = {}
         while self.index('end') > 0:
             self.forget(0)
+
+
+class Spinbox(tk.Spinbox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.stringvar = tk.StringVar()
+        self.stringvar.set(1)
+        self.config(textvariable=self.stringvar)

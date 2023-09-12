@@ -6,7 +6,7 @@ from typing import Tuple
 
 import pandas as pd
 
-from customization import Treeview, Notebook, Tab
+from customization import Treeview, Notebook, Tab, Spinbox
 
 
 class MyApp:
@@ -129,7 +129,7 @@ class MyApp:
         }
         tab.widgets = widgets
 
-    def create_frame_for_data_visual(self) -> Tuple[Notebook, tk.Spinbox]:
+    def create_frame_for_data_visual(self) -> Tuple[Notebook, Spinbox]:
         frame = tk.LabelFrame(self.root, text='Data Visualization')
         frame.grid(row=1, column=1, sticky=tk.NSEW, **self.PADS)
         frame.rowconfigure(1, weight=1)
@@ -144,11 +144,11 @@ class MyApp:
         label = tk.Label(frame, text='Numbers of datasets')
         label.grid(row=0, column=0, **self.PADS)
 
-        spinbox = tk.Spinbox(
-            frame, from_=1, to=20, width=3,
+        spinbox = Spinbox(frame, from_=1, to=20, width=3)
+        spinbox.grid(row=0, column=1, **self.PADS)
+        spinbox.config(
             command=lambda: self.change_number_of_dataset()
         )
-        spinbox.grid(row=0, column=1, **self.PADS)
         return notebook, spinbox
 
     def create_frame_for_axes_visual(self):
@@ -209,16 +209,23 @@ class MyApp:
         Treeview(tab, columns=('',), height=25)
 
     def change_number_of_dataset(self):
-        exist_num = len(self.notebook_data_visual.tabs())
-        tgt_num = int(self.spinbox.get())
-        if tgt_num > exist_num:
-            tabname = str(tgt_num)
-            tab = self.notebook_data_visual.create_new_tab(tabname)
-            self.fill_data_visual_widgets(tab)
-            self.fill_widget_options(tab)
-        elif tgt_num < exist_num:
-            tabname = str(exist_num)
-            self.notebook_data_visual.remove_tab(tabname)
+        try:
+            self.data_pool
+        except AttributeError:
+            self.spinbox.stringvar.set(1)
+            msg = 'Please import data first.'
+            tk.messagebox.showerror(title='Error', message=msg)
+        else:
+            exist_num = len(self.notebook_data_visual.tabs())
+            tgt_num = int(self.spinbox.get())
+            if tgt_num > exist_num:
+                tabname = str(tgt_num)
+                tab = self.notebook_data_visual.create_new_tab(tabname)
+                self.fill_data_visual_widgets(tab)
+                self.fill_widget_options(tab)
+            elif tgt_num < exist_num:
+                tabname = str(exist_num)
+                self.notebook_data_visual.remove_tab(tabname)
 
     def draw(self):
         ...
