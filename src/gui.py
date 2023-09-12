@@ -178,7 +178,7 @@ class MyApp:
         self.treeview_filenames.insert_dataframe(self.filenames)
         self.treeview_filenames.adjust_column_width()
 
-    def update_fields_x_and_y(self, tab: Tab):
+    def update_field_x_and_y(self, tab: Tab):
         csv_idx = int(tab.widgets['csv_idx'].get())
         columns = list(self.data_pool[csv_idx].columns)
         tab.widgets['field_x'].config(values=columns)
@@ -190,7 +190,11 @@ class MyApp:
         values_csv_idx = list(self.data_pool.keys())
         tab.widgets['csv_idx'].config(values=values_csv_idx)
         tab.widgets['csv_idx'].current(0)
-        self.update_fields_x_and_y(tab)
+        self.update_field_x_and_y(tab)
+        tab.widgets['csv_idx'].bind(
+            '<<ComboboxSelected>>',
+            lambda event: self.update_field_x_and_y(tab)
+        )
 
     def import_csv(self):
         try:
