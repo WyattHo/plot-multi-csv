@@ -1,12 +1,38 @@
 import json
 from pathlib import Path
-from typing import Sequence, Tuple, Dict
+from typing import Sequence, Tuple, Dict, TypedDict
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def read_configurations(config_name: str):
+class DataConfig(TypedDict):
+    directory: str
+    labels: Sequence[str]
+    fieldnames: Sequence[Dict[str, str]]
+
+
+class FigureConfig(TypedDict):
+    title: str
+    size: Sequence[float]
+    grid_visible: bool
+    legend_visible: bool
+
+
+class AxisConfig(TypedDict):
+    label: str
+    scale: str
+    lim: Sequence
+
+
+class Config(TypedDict):
+    data: DataConfig
+    figure: FigureConfig
+    axis_x: AxisConfig
+    axis_y: AxisConfig
+
+
+def read_configurations(config_name: str) -> Config:
     parent = Path(__file__).parent
     config_path = parent.joinpath(config_name)
     with open(config_path, 'r') as f:
@@ -14,20 +40,20 @@ def read_configurations(config_name: str):
     return config
 
 
-def get_data_pool(config: Dict) -> Sequence[pd.DataFrame]:
+def get_data_pool(config: Config) -> Sequence[pd.DataFrame]:
     data_dir = config['data']['directory']
     csvs = list(Path(data_dir).glob('*.csv'))
     return [pd.read_csv(path) for path in csvs]
 
 
-def initialize_figure(config: Dict) -> Tuple[plt.Figure, plt.Axes]:
+def initialize_figure(config: Config) -> Tuple[plt.Figure, plt.Axes]:
     figsize = config['figure']['size']
     fig = plt.figure(figsize=figsize, tight_layout=True)
     ax = plt.axes()
     return fig, ax
 
 
-def get_plot_function(config: Dict, ax: plt.Axes):
+def get_plot_function(config: Config, ax: plt.Axes):
     scale_x = config['axis_x']['scale']
     scale_y = config['axis_y']['scale']
     if scale_x == 'linear' and scale_y == 'linear':
@@ -42,7 +68,7 @@ def get_plot_function(config: Dict, ax: plt.Axes):
 
 
 def plot_data(
-        config: Dict, data_pool: Sequence[pd.DataFrame],
+        config: Config, data_pool: Sequence[pd.DataFrame],
         plot_function):
 
     fieldnames = config['data']['fieldnames']
@@ -53,7 +79,7 @@ def plot_data(
         plot_function(values_x, values_y, label=label)
 
 
-def set_axes(config: Dict, ax: plt.Axes):
+def set_axes(config: Config, ax: plt.Axes):
     ax.set_title(config['figure'].get('title', ''))
     ax.set_xlabel(config['axis_x'].get('label', ''))
     ax.set_xlim(config['axis_x'].get('lim', ''))
