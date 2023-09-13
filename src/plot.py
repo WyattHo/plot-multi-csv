@@ -14,9 +14,9 @@ def read_configurations(config_name: str):
     return config
 
 
-def collect_csvs_from_directory(data_dir: str) -> Sequence[str]:
+def get_data_pool(data_dir: str) -> Sequence[pd.DataFrame]:
     csvs = list(Path(data_dir).glob('*.csv'))
-    return csvs
+    return [pd.read_csv(path) for idx, path in enumerate(csvs)]
 
 
 def initialize_figure(figsize: Sequence[float]) -> Tuple[plt.Figure, plt.Axes]:
@@ -26,8 +26,9 @@ def initialize_figure(figsize: Sequence[float]) -> Tuple[plt.Figure, plt.Axes]:
 
 
 def plot_data(
-        ax: plt.Axes, csvs: Sequence[str], labels: Sequence[str],
-        fieldnames: Sequence[Dict[str, str]], scale: Dict[str, str]):
+        ax: plt.Axes, data_pool: Sequence[pd.DataFrame],
+        labels: Sequence[str], fieldnames: Sequence[Dict[str, str]],
+        scale: Dict[str, str]):
 
     if scale['x'] == 'linear' and scale['y'] == 'linear':
         plot_function = ax.plot
@@ -38,8 +39,7 @@ def plot_data(
     elif scale['x'] == 'log' and scale['y'] == 'log':
         plot_function = ax.loglog
 
-    for csv, fieldname, label in zip(csvs, fieldnames, labels):
-        df = pd.read_csv(csv)
+    for df, fieldname, label in zip(data_pool, fieldnames, labels):
         values_x = df[fieldname['x']]
         values_y = df[fieldname['y']]
         plot_function(values_x, values_y, label=label)
@@ -65,9 +65,9 @@ def main(config_name: str = 'config.json'):
     fieldnames = config['plot']['fieldnames']
     misc_config = config['plot']['misc']
 
-    csvs = collect_csvs_from_directory(data_dir)
+    data_pool = get_data_pool(data_dir)
     fig, ax = initialize_figure(figsize)
-    plot_data(ax, csvs, labels, fieldnames, scale)
+    plot_data(ax, data_pool, labels, fieldnames, scale)
     set_axes(ax, misc_config)
     plt.show()
 
