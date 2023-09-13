@@ -6,7 +6,7 @@ from typing import Dict, Tuple
 
 import pandas as pd
 
-from customization import Treeview, Notebook, Tab, Spinbox
+from custom_widgets import Treeview, Notebook, Tab, Spinbox
 
 
 class MyApp:
