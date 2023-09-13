@@ -14,61 +14,66 @@ def read_configurations(config_name: str):
     return config
 
 
-def get_data_pool(data_dir: str) -> Sequence[pd.DataFrame]:
+def get_data_pool(config: Dict) -> Sequence[pd.DataFrame]:
+    data_dir = config['data']['directory']
     csvs = list(Path(data_dir).glob('*.csv'))
     return [pd.read_csv(path) for path in csvs]
 
 
-def initialize_figure(figsize: Sequence[float]) -> Tuple[plt.Figure, plt.Axes]:
+def initialize_figure(config: Dict) -> Tuple[plt.Figure, plt.Axes]:
+    figsize = config['figure']['size']
     fig = plt.figure(figsize=figsize, tight_layout=True)
     ax = plt.axes()
     return fig, ax
 
 
-def plot_data(
-        ax: plt.Axes, data_pool: Sequence[pd.DataFrame],
-        labels: Sequence[str], fieldnames: Sequence[Dict[str, str]],
-        scale: Dict[str, str]):
-
-    if scale['x'] == 'linear' and scale['y'] == 'linear':
+def get_plot_function(config: Dict, ax: plt.Axes):
+    scale_x = config['axis_x']['scale']
+    scale_y = config['axis_y']['scale']
+    if scale_x == 'linear' and scale_y == 'linear':
         plot_function = ax.plot
-    elif scale['x'] == 'log' and scale['y'] == 'linear':
+    elif scale_x == 'log' and scale_y == 'linear':
         plot_function = ax.semilogx
-    elif scale['x'] == 'linear' and scale['y'] == 'log':
+    elif scale_x == 'linear' and scale_y == 'log':
         plot_function = ax.semilogy
-    elif scale['x'] == 'log' and scale['y'] == 'log':
+    elif scale_x == 'log' and scale_y == 'log':
         plot_function = ax.loglog
+    return plot_function
 
+
+def plot_data(
+        config: Dict, data_pool: Sequence[pd.DataFrame],
+        plot_function):
+
+    fieldnames = config['data']['fieldnames']
+    labels = config['data']['labels']
     for df, fieldname, label in zip(data_pool, fieldnames, labels):
         values_x = df[fieldname['x']]
         values_y = df[fieldname['y']]
         plot_function(values_x, values_y, label=label)
 
 
-def set_axes(ax: plt.Axes, misc_config: Dict):
-    ax.set_title(misc_config.get('title', ''))
-    ax.set_xlabel(misc_config.get('xlabel', ''))
-    ax.set_ylabel(misc_config.get('ylabel', ''))
-    ax.set_xlim(misc_config.get('xlim'))
-    ax.set_ylim(misc_config.get('ylim'))
-    ax.grid(visible=misc_config.get('grid_visible'), axis='both')
-    if misc_config['legend_visible']:
+def set_axes(config: Dict, ax: plt.Axes):
+    ax.set_title(config['figure'].get('title', ''))
+    ax.set_xlabel(config['axis_x'].get('label', ''))
+    ax.set_xlim(config['axis_x'].get('lim', ''))
+    ax.set_ylabel(config['axis_y'].get('label', ''))
+    ax.set_ylim(config['axis_y'].get('lim', ''))
+    ax.grid(
+        visible=config['figure'].get('grid_visible', ''),
+        axis='both'
+    )
+    if config['figure']['legend_visible']:
         ax.legend()
 
 
 def main(config_name: str = 'config.json'):
     config = read_configurations(config_name)
-    data_dir = config['plot']['data_dir']
-    figsize = config['plot']['figsize']
-    scale = config['plot']['scale']
-    labels = config['plot']['labels']
-    fieldnames = config['plot']['fieldnames']
-    misc_config = config['plot']['misc']
-
-    data_pool = get_data_pool(data_dir)
-    fig, ax = initialize_figure(figsize)
-    plot_data(ax, data_pool, labels, fieldnames, scale)
-    set_axes(ax, misc_config)
+    data_pool = get_data_pool(config)
+    fig, ax = initialize_figure(config)
+    plot_function = get_plot_function(config, ax)
+    plot_data(config, data_pool, plot_function)
+    set_axes(config, ax)
     plt.show()
 
 

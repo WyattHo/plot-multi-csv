@@ -1,11 +1,6 @@
 {
-    "plot": {
-        "data_dir": "D:\\my-analysis\\komatsu-xm25\\test\\tie_small_2order_30g",
-        "figsize": [4.8, 2.4],
-        "scale": {
-            "x": "linear",
-            "y": "linear"
-        },
+    "data": {
+        "directory": "D:\\my-analysis\\komatsu-xm25\\data\\output\\tie_small_2order_89g",
         "labels": ["excite-x", "excite-y", "excite-z"],
         "fieldnames": [
             {
@@ -20,15 +15,22 @@
                 "x": "frequency",
                 "y": "max_stress"
             }
-        ],
-        "misc": {
-            "title": "Maximum Stress Distribution",
-            "xlabel": "Frequency, Hz",
-            "ylabel": "Stress, MPa",
-            "xlim": [10, 200],
-            "ylim": null,
-            "grid_visible": true,
-            "legend_visible": true
-        }
+        ]
+    },
+    "figure": {
+        "title": "Maximum Stress Distribution",
+        "size": [4.8, 2.4],
+        "grid_visible": true,
+        "legend_visible": true
+    },
+    "axis_x": {
+        "label": "Frequency, Hz",
+        "scale": "linear",
+        "lim": null
+    },
+    "axis_y": {
+        "label": "Stress, MPa",
+        "scale": "linear",
+        "lim": null
     }
 }
