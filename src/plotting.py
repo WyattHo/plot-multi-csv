@@ -103,5 +103,13 @@ def main(config_name: str = 'config.json'):
     plt.show()
 
 
+def plot_by_app(config: Config, data_pool: Sequence[pd.DataFrame]):
+    fig, ax = initialize_figure(config)
+    plot_function = get_plot_function(config, ax)
+    plot_data(config, data_pool, plot_function)
+    set_axes(config, ax)
+    plt.show()
+
+
 if __name__ == '__main__':
     main()

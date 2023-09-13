@@ -6,6 +6,7 @@ from typing import Dict, Tuple
 
 import pandas as pd
 
+import plotting
 from custom_widgets import Treeview, Notebook, Tab, Spinbox
 
 
@@ -128,7 +129,8 @@ class MyApp:
         widgets = {
             'csv_idx': combobox_csv_idx,
             'field_x': combobox_field_x,
-            'field_y': combobox_field_y
+            'field_y': combobox_field_y,
+            'label': entry
         }
         tab.widgets = widgets
 
@@ -159,8 +161,8 @@ class MyApp:
         frame.grid(row=1, column=2, sticky=tk.NSEW, **MyApp.PADS)
         button = tk.Button(
             frame,
-            text='Draw',
-            command=lambda: self.draw(),
+            text='Plot',
+            command=lambda: self.plot(),
             width=6
         )
         button.grid(row=0, column=0, **MyApp.PADS)
@@ -244,8 +246,35 @@ class MyApp:
                 tabname = str(exist_num)
                 self.notebook_data_visual.remove_tab(tabname)
 
-    def draw(self):
-        ...
+    def collect_configurations(self):
+        config = plotting.Config()
+        config['data'] = {}
+        config['figure'] = {}
+        config['axis_x'] = {}
+        config['axis_y'] = {}
+        
+        # temporarily configs
+        config['figure']['size'] = [4.8, 2.4]
+        config['figure']['grid_visible'] = True
+        config['figure']['legend_visible'] = True
+        config['axis_x']['scale'] = 'linear'
+        config['axis_x']['lim'] = None
+        config['axis_y']['scale'] = 'linear'
+        config['axis_y']['lim'] = None
+
+        label = config['data']['labels'] = []
+        fieldnames = config['data']['fieldnames'] = []
+        for tab in self.notebook_data_visual.tabs_.values():
+            label.append(tab.widgets['label'].get())
+            fieldnames.append({
+                'x': tab.widgets['field_x'].get(),
+                'y': tab.widgets['field_y'].get()
+            })
+        self.config = config
+
+    def plot(self):
+        self.collect_configurations()
+        plotting.plot_by_app(self.config, self.data_pool.values())
 
 
 if __name__ == '__main__':
