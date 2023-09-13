@@ -16,7 +16,7 @@ def read_configurations(config_name: str):
 
 def get_data_pool(data_dir: str) -> Sequence[pd.DataFrame]:
     csvs = list(Path(data_dir).glob('*.csv'))
-    return [pd.read_csv(path) for idx, path in enumerate(csvs)]
+    return [pd.read_csv(path) for path in csvs]
 
 
 def initialize_figure(figsize: Sequence[float]) -> Tuple[plt.Figure, plt.Axes]:
