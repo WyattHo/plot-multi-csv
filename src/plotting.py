@@ -80,6 +80,7 @@ def plot_data(
 
 
 def set_axes(config: Config, ax: plt.Axes):
+    print(config['figure'])
     ax.set_title(config['figure'].get('title', ''))
     ax.set_xlabel(config['axis_x'].get('label', ''))
     ax.set_xlim(config['axis_x'].get('lim', ''))

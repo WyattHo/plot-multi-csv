@@ -166,28 +166,43 @@ class MyApp:
         entry = tk.Entry(frame, width=28)
         label.grid(row=0, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=0, column=1, columnspan=3, sticky=tk.W, **MyApp.PADS)
+        self.figure_title = entry
 
         label = tk.Label(frame, text='Width: ')
         entry = tk.Entry(frame, width=8)
         label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        self.figure_width = entry
 
         label = tk.Label(frame, text='Height: ')
         entry = tk.Entry(frame, width=8)
         label.grid(row=1, column=2, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=1, column=3, sticky=tk.W, **MyApp.PADS)
+        self.figure_height = entry
 
-        checkbutton = tk.Checkbutton(frame, text='Show grid')
+        intvar = tk.IntVar()
+        checkbutton = tk.Checkbutton(
+            frame,
+            text='Show grid',
+            variable=intvar
+        )
         checkbutton.grid(
             row=2, column=0, columnspan=4,
             sticky=tk.W, **MyApp.PADS
         )
+        self.figure_grid_visible = intvar
 
-        checkbutton = tk.Checkbutton(frame, text='Show legend')
+        intvar = tk.IntVar()
+        checkbutton = tk.Checkbutton(
+            frame,
+            text='Show legend',
+            variable=intvar
+        )
         checkbutton.grid(
             row=3, column=0, columnspan=4,
             sticky=tk.W, **MyApp.PADS
         )
+        self.figure_legend_visible = intvar
 
     def create_frame_for_axes_visual(self):
         frame = tk.LabelFrame(self.root, text='Axes Visualization')
@@ -283,11 +298,6 @@ class MyApp:
         config = plotting.Config()
 
         # temporarily configs
-        config['figure'] = {
-            'size': [4.8, 2.4],
-            'grid_visible': True,
-            'legend_visible': True
-        }
         config['axis_x'] = {
             'scale': 'linear',
             'lim': None
@@ -309,6 +319,16 @@ class MyApp:
                 'x': tab.widgets['field_x'].get(),
                 'y': tab.widgets['field_y'].get()
             })
+
+        config['figure'] = {
+            'title': self.figure_title.get(),
+            'size': [
+                float(self.figure_width.get()),
+                float(self.figure_height.get())
+            ],
+            'grid_visible': self.figure_grid_visible.get(),
+            'legend_visible': self.figure_legend_visible.get()
+        }
         self.config = config
 
     def plot(self):
