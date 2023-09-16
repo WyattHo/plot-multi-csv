@@ -331,11 +331,10 @@ class MyApp:
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
         )
-        self.filenames = {'CSV ID': [], 'CSV Path': []}
-        for idx, filename in enumerate(filenames):
-            self.filenames['CSV ID'].append(idx + 1)
-            self.filenames['CSV Path'].append(filename)
-        self.filenames = pd.DataFrame(self.filenames)
+        self.filenames = pd.DataFrame(
+            [[idx + 1, filename] for idx, filename in enumerate(filenames)],
+            columns=['CSV ID', 'CSV Path']
+        )
         self.treeview_filenames.insert_dataframe(self.filenames)
         self.treeview_filenames.adjust_column_width()
 
@@ -366,11 +365,10 @@ class MyApp:
         else:
             self.data_pool: Dict[str, pd.DataFrame] = {}
             self.notebook_data_pool.remove_all_tabs()
-            for row_idx, row in self.filenames.iterrows():
-                csv_idx = row['CSV ID']
-                path = row['CSV Path']
+            for row in self.filenames.itertuples():
+                csv_idx, csv_path = row[1:]
                 tab = self.notebook_data_pool.create_new_tab(csv_idx)
-                csv_dataframe = pd.read_csv(path)
+                csv_dataframe = pd.read_csv(csv_path)
                 self.data_pool[csv_idx] = csv_dataframe
                 columns = list(csv_dataframe.columns)
                 treeview = Treeview(tab, columns, MyApp.HEIGHT_DATAPOOL)
