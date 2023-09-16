@@ -32,7 +32,9 @@ class MyApp:
         self.notebook_data_visual, self.spinbox\
             = self.create_frame_for_data_visual()
         self.create_frame_for_figure_visual()
-        self.create_frame_for_axes_visual()
+        self.create_frame_for_x_axis_visual()
+        self.create_frame_for_y_axis_visual()
+        self.create_frame_for_plot()
         self.root.mainloop()
 
     def initialize_main_window(self) -> tk.Tk:
@@ -40,6 +42,7 @@ class MyApp:
         root.title('PlotCSV')
         root.columnconfigure(0, weight=1)
         root.columnconfigure(1, weight=1)
+        root.columnconfigure(2, weight=1)
         root.rowconfigure(0, weight=1)
         root.rowconfigure(1, weight=5)
         root.rowconfigure(2, weight=5)
@@ -74,7 +77,7 @@ class MyApp:
 
     def create_frame_for_data_pool(self) -> Notebook:
         frame = tk.LabelFrame(self.root, text='Review CSV data')
-        frame.grid(row=1, column=0, rowspan=2, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=1, column=0, rowspan=3, sticky=tk.NSEW, **MyApp.PADS)
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
         frame.columnconfigure(1, weight=1)
@@ -204,9 +207,100 @@ class MyApp:
         )
         self.figure_legend_visible = intvar
 
-    def create_frame_for_axes_visual(self):
-        frame = tk.LabelFrame(self.root, text='Axes Visualization')
+    def create_frame_for_x_axis_visual(self):
+        frame = tk.LabelFrame(self.root, text='X-Axis Visualization')
         frame.grid(row=1, column=2, sticky=tk.NSEW, **MyApp.PADS)
+
+        label = tk.Label(frame, text='Label: ')
+        entry = tk.Entry(frame, width=28)
+        label.grid(row=0, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=0, column=1, sticky=tk.W, **MyApp.PADS)
+        self.x_label = entry
+
+        label = tk.Label(frame, text='Scale: ')
+        entry = ttk.Combobox(frame, width=MyApp.WIDTH_COMBOBOX)
+        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        entry.config(values=['linear', 'log'])
+        self.x_scale = entry
+
+        subframe = tk.Frame(frame)
+        subframe.grid(row=2, column=0, columnspan=2, sticky=tk.NSEW, **MyApp.PADS)
+
+        intvar = tk.IntVar()
+        checkbutton = tk.Checkbutton(
+            subframe,
+            text='Assign range',
+            variable=intvar
+        )
+        checkbutton.grid(
+            row=0, column=0,
+            columnspan=2,
+            sticky=tk.W, **MyApp.PADS
+        )
+        self.x_assign_range = intvar
+
+        label = tk.Label(subframe, text='Min: ')
+        entry = tk.Entry(subframe, width=8)
+        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        self.x_min = entry
+
+        label = tk.Label(subframe, text='Max: ')
+        entry = tk.Entry(subframe, width=8)
+        label.grid(row=2, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=2, column=1, sticky=tk.W, **MyApp.PADS)
+        self.x_max = entry
+
+    def create_frame_for_y_axis_visual(self):
+        frame = tk.LabelFrame(self.root, text='Y-Axis Visualization')
+        frame.grid(row=2, column=2, sticky=tk.NSEW, **MyApp.PADS)
+
+        label = tk.Label(frame, text='Label: ')
+        entry = tk.Entry(frame, width=28)
+        label.grid(row=0, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=0, column=1, sticky=tk.W, **MyApp.PADS)
+        self.y_label = entry
+
+        label = tk.Label(frame, text='Scale: ')
+        entry = ttk.Combobox(frame, width=MyApp.WIDTH_COMBOBOX)
+        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        entry.config(values=['linear', 'log'])
+        self.y_scale = entry
+
+        subframe = tk.Frame(frame)
+        subframe.grid(row=2, column=0, columnspan=2, sticky=tk.NSEW, **MyApp.PADS)
+
+        intvar = tk.IntVar()
+        checkbutton = tk.Checkbutton(
+            subframe,
+            text='Assign range',
+            variable=intvar
+        )
+        checkbutton.grid(
+            row=0, column=0,
+            columnspan=2,
+            sticky=tk.W, **MyApp.PADS
+        )
+        self.y_assign_range = intvar
+
+        label = tk.Label(subframe, text='Min: ')
+        entry = tk.Entry(subframe, width=8)
+        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        self.y_min = entry
+
+        label = tk.Label(subframe, text='Max: ')
+        entry = tk.Entry(subframe, width=8)
+        label.grid(row=2, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=2, column=1, sticky=tk.W, **MyApp.PADS)
+        self.y_max = entry
+
+    def create_frame_for_plot(self):
+        frame = tk.LabelFrame(self.root, text='Plot Actions')
+        frame.grid(row=3, column=1, columnspan=2, sticky=tk.NSEW, **MyApp.PADS)
+        frame.columnconfigure(0, weight=1)
         button = tk.Button(
             frame,
             text='Plot',
@@ -296,21 +390,10 @@ class MyApp:
 
     def collect_configurations(self):
         config = plotting.Config()
-
-        # temporarily configs
-        config['axis_x'] = {
-            'scale': 'linear',
-            'lim': None
-        }
-        config['axis_y'] = {
-            'scale': 'linear',
-            'lim': None
-        }
         config['data'] = {
             'labels': [],
             'fieldnames': []
         }
-
         labels = config['data']['labels']
         fieldnames = config['data']['fieldnames']
         for tab in self.notebook_data_visual.tabs_.values():
@@ -328,6 +411,14 @@ class MyApp:
             ],
             'grid_visible': self.figure_grid_visible.get(),
             'legend_visible': self.figure_legend_visible.get()
+        }
+        config['axis_x'] = {
+            'scale': 'linear',
+            'lim': None
+        }
+        config['axis_y'] = {
+            'scale': 'linear',
+            'lim': None
         }
         self.config = config
 
