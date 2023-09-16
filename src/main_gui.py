@@ -238,7 +238,8 @@ class MyApp:
         checkbutton = tk.Checkbutton(
             subframe,
             text='Assign range',
-            variable=intvar
+            variable=intvar,
+            command=self.active_deactive_range
         )
         checkbutton.grid(
             row=0, column=0,
@@ -286,7 +287,8 @@ class MyApp:
         checkbutton = tk.Checkbutton(
             subframe,
             text='Assign range',
-            variable=intvar
+            variable=intvar,
+            command=self.active_deactive_range
         )
         checkbutton.grid(
             row=0, column=0,
@@ -399,6 +401,21 @@ class MyApp:
             elif tgt_num < exist_num:
                 tabname = str(exist_num)
                 self.notebook_data_visual.remove_tab(tabname)
+
+
+    def active_deactive_range(self):
+        if self.x_assign_range.get():
+            self.x_min.config(state='normal')
+            self.x_max.config(state='normal')
+        else:
+            self.x_min.config(state='disabled')
+            self.x_max.config(state='disabled')
+        if self.y_assign_range.get():
+            self.y_min.config(state='normal')
+            self.y_max.config(state='normal')
+        else:
+            self.y_min.config(state='disabled')
+            self.y_max.config(state='disabled')
 
     def collect_configurations(self):
         config = plotting.Config()
