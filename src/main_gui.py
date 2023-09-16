@@ -31,6 +31,7 @@ class MyApp:
         self.notebook_data_pool = self.create_frame_for_data_pool()
         self.notebook_data_visual, self.spinbox\
             = self.create_frame_for_data_visual()
+        self.create_frame_for_figure_visual()
         self.create_frame_for_axes_visual()
         self.root.mainloop()
 
@@ -41,6 +42,7 @@ class MyApp:
         root.columnconfigure(1, weight=1)
         root.rowconfigure(0, weight=1)
         root.rowconfigure(1, weight=5)
+        root.rowconfigure(2, weight=5)
         root.state('zoomed')
         root.minsize(**self.ROOT_MINSIZE)
         root.configure()
@@ -72,7 +74,7 @@ class MyApp:
 
     def create_frame_for_data_pool(self) -> Notebook:
         frame = tk.LabelFrame(self.root, text='Review CSV data')
-        frame.grid(row=1, column=0, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=1, column=0, rowspan=2, sticky=tk.NSEW, **MyApp.PADS)
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
         frame.columnconfigure(1, weight=1)
@@ -155,6 +157,37 @@ class MyApp:
             command=lambda: self.change_number_of_dataset()
         )
         return notebook, spinbox
+
+    def create_frame_for_figure_visual(self):
+        frame = tk.LabelFrame(self.root, text='Figure Visualization')
+        frame.grid(row=2, column=1, sticky=tk.NSEW, **MyApp.PADS)
+
+        label = tk.Label(frame, text='Title: ')
+        entry = tk.Entry(frame, width=28)
+        label.grid(row=0, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=0, column=1, columnspan=3, sticky=tk.W, **MyApp.PADS)
+
+        label = tk.Label(frame, text='Width: ')
+        entry = tk.Entry(frame, width=8)
+        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+
+        label = tk.Label(frame, text='Height: ')
+        entry = tk.Entry(frame, width=8)
+        label.grid(row=1, column=2, sticky=tk.W, **MyApp.PADS)
+        entry.grid(row=1, column=3, sticky=tk.W, **MyApp.PADS)
+
+        checkbutton = tk.Checkbutton(frame, text='Show grid')
+        checkbutton.grid(
+            row=2, column=0, columnspan=4,
+            sticky=tk.W, **MyApp.PADS
+        )
+
+        checkbutton = tk.Checkbutton(frame, text='Show legend')
+        checkbutton.grid(
+            row=3, column=0, columnspan=4,
+            sticky=tk.W, **MyApp.PADS
+        )
 
     def create_frame_for_axes_visual(self):
         frame = tk.LabelFrame(self.root, text='Axes Visualization')
@@ -252,7 +285,7 @@ class MyApp:
         config['figure'] = {}
         config['axis_x'] = {}
         config['axis_y'] = {}
-        
+
         # temporarily configs
         config['figure']['size'] = [4.8, 2.4]
         config['figure']['grid_visible'] = True
