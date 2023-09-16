@@ -232,7 +232,10 @@ class MyApp:
         self.x_scale = entry
 
         subframe = tk.Frame(frame)
-        subframe.grid(row=2, column=0, columnspan=2, sticky=tk.NSEW, **MyApp.PADS)
+        subframe.grid(
+            row=2, column=0, columnspan=2,
+            sticky=tk.NSEW, **MyApp.PADS
+        )
 
         intvar = tk.IntVar()
         checkbutton = tk.Checkbutton(
@@ -281,7 +284,10 @@ class MyApp:
         self.y_scale = entry
 
         subframe = tk.Frame(frame)
-        subframe.grid(row=2, column=0, columnspan=2, sticky=tk.NSEW, **MyApp.PADS)
+        subframe.grid(
+            row=2, column=0, columnspan=2,
+            sticky=tk.NSEW, **MyApp.PADS
+        )
 
         intvar = tk.IntVar()
         checkbutton = tk.Checkbutton(
@@ -400,7 +406,6 @@ class MyApp:
                 tabname = str(exist_num)
                 self.notebook_data_visual.remove_tab(tabname)
 
-
     def active_deactive_range(self):
         if self.x_assign_range.get():
             self.x_min.config(state='normal')
@@ -423,12 +428,15 @@ class MyApp:
         }
         labels = config['data']['labels']
         fieldnames = config['data']['fieldnames']
+        data_send = []
         for tab in self.notebook_data_visual.tabs_.values():
+            csv_idx = tab.widgets['csv_idx'].get()
             labels.append(tab.widgets['label'].get())
             fieldnames.append({
                 'x': tab.widgets['field_x'].get(),
                 'y': tab.widgets['field_y'].get()
             })
+            data_send.append(self.data_pool[int(csv_idx)])
 
         config['figure'] = {
             'title': self.figure_title.get(),
@@ -447,11 +455,11 @@ class MyApp:
             'scale': 'linear',
             'lim': None
         }
-        self.config = config
+        return config, data_send
 
     def plot(self):
-        self.collect_configurations()
-        plotting.plot_by_app(self.config, self.data_pool.values())
+        config, data_send = self.collect_configurations()
+        plotting.plot_by_app(config, data_send)
 
 
 if __name__ == '__main__':
