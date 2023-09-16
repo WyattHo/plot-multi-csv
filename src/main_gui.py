@@ -171,16 +171,20 @@ class MyApp:
         entry.grid(row=0, column=1, columnspan=3, sticky=tk.W, **MyApp.PADS)
         self.figure_title = entry
 
+        doublevar = tk.DoubleVar()
         label = tk.Label(frame, text='Width: ')
-        entry = tk.Entry(frame, width=8)
+        entry = tk.Entry(frame, width=8, textvariable=doublevar)
         label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
-        self.figure_width = entry
+        doublevar.set(4.8)
+        self.figure_width = doublevar
 
+        doublevar = tk.DoubleVar()
         label = tk.Label(frame, text='Height: ')
-        entry = tk.Entry(frame, width=8)
+        entry = tk.Entry(frame, width=8, textvariable=doublevar)
         label.grid(row=1, column=2, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=1, column=3, sticky=tk.W, **MyApp.PADS)
+        doublevar.set(2.4)
         self.figure_height = entry
 
         intvar = tk.IntVar()
@@ -193,6 +197,7 @@ class MyApp:
             row=2, column=0, columnspan=4,
             sticky=tk.W, **MyApp.PADS
         )
+        intvar.set(True)
         self.figure_grid_visible = intvar
 
         intvar = tk.IntVar()
@@ -205,6 +210,7 @@ class MyApp:
             row=3, column=0, columnspan=4,
             sticky=tk.W, **MyApp.PADS
         )
+        intvar.set(True)
         self.figure_legend_visible = intvar
 
     def create_frame_for_x_axis_visual(self):
@@ -222,6 +228,7 @@ class MyApp:
         label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
         entry.config(values=['linear', 'log'])
+        entry.current(0)
         self.x_scale = entry
 
         subframe = tk.Frame(frame)
@@ -244,12 +251,14 @@ class MyApp:
         entry = tk.Entry(subframe, width=8)
         label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        entry.config(state='disabled')
         self.x_min = entry
 
         label = tk.Label(subframe, text='Max: ')
         entry = tk.Entry(subframe, width=8)
         label.grid(row=2, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=2, column=1, sticky=tk.W, **MyApp.PADS)
+        entry.config(state='disabled')
         self.x_max = entry
 
     def create_frame_for_y_axis_visual(self):
@@ -267,6 +276,7 @@ class MyApp:
         label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
         entry.config(values=['linear', 'log'])
+        entry.current(0)
         self.y_scale = entry
 
         subframe = tk.Frame(frame)
@@ -289,12 +299,14 @@ class MyApp:
         entry = tk.Entry(subframe, width=8)
         label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        entry.config(state='disabled')
         self.y_min = entry
 
         label = tk.Label(subframe, text='Max: ')
         entry = tk.Entry(subframe, width=8)
         label.grid(row=2, column=0, sticky=tk.W, **MyApp.PADS)
         entry.grid(row=2, column=1, sticky=tk.W, **MyApp.PADS)
+        entry.config(state='disabled')
         self.y_max = entry
 
     def create_frame_for_plot(self):
