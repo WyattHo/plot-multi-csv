@@ -281,24 +281,30 @@ class MyApp:
 
     def collect_configurations(self):
         config = plotting.Config()
-        config['data'] = {}
-        config['figure'] = {}
-        config['axis_x'] = {}
-        config['axis_y'] = {}
 
         # temporarily configs
-        config['figure']['size'] = [4.8, 2.4]
-        config['figure']['grid_visible'] = True
-        config['figure']['legend_visible'] = True
-        config['axis_x']['scale'] = 'linear'
-        config['axis_x']['lim'] = None
-        config['axis_y']['scale'] = 'linear'
-        config['axis_y']['lim'] = None
+        config['figure'] = {
+            'size': [4.8, 2.4],
+            'grid_visible': True,
+            'legend_visible': True
+        }
+        config['axis_x'] = {
+            'scale': 'linear',
+            'lim': None
+        }
+        config['axis_y'] = {
+            'scale': 'linear',
+            'lim': None
+        }
+        config['data'] = {
+            'labels': [],
+            'fieldnames': []
+        }
 
-        label = config['data']['labels'] = []
-        fieldnames = config['data']['fieldnames'] = []
+        labels = config['data']['labels']
+        fieldnames = config['data']['fieldnames']
         for tab in self.notebook_data_visual.tabs_.values():
-            label.append(tab.widgets['label'].get())
+            labels.append(tab.widgets['label'].get())
             fieldnames.append({
                 'x': tab.widgets['field_x'].get(),
                 'y': tab.widgets['field_y'].get()
