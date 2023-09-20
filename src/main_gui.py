@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import font
 from tkinter import filedialog
 from tkinter import ttk
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Sequence
 
 import pandas as pd
 
@@ -27,6 +27,7 @@ class MyApp:
         self.root = self.initialize_main_window()
         self.font_label = font.Font(family='Helvetica', size=10)
         self.font_button = font.Font(family='Helvetica', size=10)
+        self.config = plotting.get_initial_configuration()
         self.treeview_filenames = self.create_frame_for_filenames()
         self.notebook_data_pool = self.create_frame_for_data_pool()
         self.notebook_data_visual, self.spinbox\
@@ -420,41 +421,44 @@ class MyApp:
             self.y_min.config(state='disabled')
             self.y_max.config(state='disabled')
 
-    def collect_configurations(self):
-        config = plotting.get_initial_configuration()
-
-        # config - data
-        labels = config['data']['labels']
-        fieldnames = config['data']['fieldnames']
+    def collect_data_send(self) -> Sequence[pd.DataFrame]:
         data_send = []
         for tab in self.notebook_data_visual.tabs_.values():
             csv_idx = tab.widgets['csv_idx'].get()
+            data_send.append(self.data_pool[int(csv_idx)])
+        return data_send
+
+    def collect_configurations_data(self):
+        labels = self.config['data']['labels']
+        fieldnames = self.config['data']['fieldnames']
+        for tab in self.notebook_data_visual.tabs_.values():
             labels.append(tab.widgets['label'].get())
             fieldnames.append({
                 'x': tab.widgets['field_x'].get(),
                 'y': tab.widgets['field_y'].get()
             })
-            data_send.append(self.data_pool[int(csv_idx)])
 
-        # config - figure
-        config['figure']['title'] = self.figure_title.get()
-        config['figure']['size'] = [
+    def collect_configurations_figure(self):
+        self.config['figure']['title'] = self.figure_title.get()
+        self.config['figure']['size'] = [
             float(self.figure_width.get()),
             float(self.figure_height.get())
         ]
-        config['figure']['grid_visible'] = self.figure_grid_visible.get()
-        config['figure']['legend_visible'] = self.figure_legend_visible.get()
+        self.config['figure']['grid_visible'] = self.figure_grid_visible.get()
+        self.config['figure']['legend_visible'] = self.figure_legend_visible.get()
 
-        # config - axes
-        config['axis_x']['scale'] = 'linear'
-        config['axis_x']['lim'] = None
-        config['axis_y']['scale'] = 'linear'
-        config['axis_y']['lim'] = None
-        return config, data_send
+    def collect_configurations_axes(self):
+        self.config['axis_x']['scale'] = 'linear'
+        self.config['axis_x']['lim'] = None
+        self.config['axis_y']['scale'] = 'linear'
+        self.config['axis_y']['lim'] = None
 
     def plot(self):
-        config, data_send = self.collect_configurations()
-        plotting.plot_by_app(config, data_send)
+        data_send = self.collect_data_send()
+        self.collect_configurations_data()
+        self.collect_configurations_figure()
+        self.collect_configurations_axes()
+        plotting.plot_by_app(self.config, data_send)
 
 
 if __name__ == '__main__':
