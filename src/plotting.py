@@ -32,6 +32,33 @@ class Config(TypedDict):
     axis_y: AxisConfig
 
 
+def get_initial_configuration():
+    config_ini: Config = {
+        'data': {
+            'directory': '',
+            'labels': [],
+            'fieldnames': []
+        },
+        'figure': {
+            'title': '',
+            'size': [],
+            'grid_visible': False,
+            'legend_visible': False
+        },
+        'axis_x': {
+            'label': '',
+            'scale': '',
+            'lim': []
+        },
+        'axis_y': {
+            'label': '',
+            'scale': '',
+            'lim': []
+        }
+    }
+    return config_ini
+
+
 def read_configurations(config_name: str) -> Config:
     parent = Path(__file__).parent
     config_path = parent.joinpath(config_name)

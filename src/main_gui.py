@@ -421,11 +421,9 @@ class MyApp:
             self.y_max.config(state='disabled')
 
     def collect_configurations(self):
-        config = plotting.Config()
-        config['data'] = {
-            'labels': [],
-            'fieldnames': []
-        }
+        config = plotting.get_initial_configuration()
+
+        # config - data
         labels = config['data']['labels']
         fieldnames = config['data']['fieldnames']
         data_send = []
@@ -438,23 +436,20 @@ class MyApp:
             })
             data_send.append(self.data_pool[int(csv_idx)])
 
-        config['figure'] = {
-            'title': self.figure_title.get(),
-            'size': [
-                float(self.figure_width.get()),
-                float(self.figure_height.get())
-            ],
-            'grid_visible': self.figure_grid_visible.get(),
-            'legend_visible': self.figure_legend_visible.get()
-        }
-        config['axis_x'] = {
-            'scale': 'linear',
-            'lim': None
-        }
-        config['axis_y'] = {
-            'scale': 'linear',
-            'lim': None
-        }
+        # config - figure
+        config['figure']['title'] = self.figure_title.get()
+        config['figure']['size'] = [
+            float(self.figure_width.get()),
+            float(self.figure_height.get())
+        ]
+        config['figure']['grid_visible'] = self.figure_grid_visible.get()
+        config['figure']['legend_visible'] = self.figure_legend_visible.get()
+
+        # config - axes
+        config['axis_x']['scale'] = 'linear'
+        config['axis_x']['lim'] = None
+        config['axis_y']['scale'] = 'linear'
+        config['axis_y']['lim'] = None
         return config, data_send
 
     def plot(self):
