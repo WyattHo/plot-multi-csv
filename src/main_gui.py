@@ -7,7 +7,7 @@ from typing import Dict, Tuple, Sequence
 import pandas as pd
 
 import plotting
-from custom_widgets import Treeview, Notebook, Tab, Spinbox
+from custom_widgets import *
 
 
 class MyApp:
@@ -28,7 +28,7 @@ class MyApp:
         self.font_label = font.Font(family='Helvetica', size=10)
         self.font_button = font.Font(family='Helvetica', size=10)
         self.config = plotting.get_initial_configuration()
-        self.treeview_filenames = self.create_frame_for_filenames()
+        self.create_frame_for_filenames()
         self.notebook_data_pool = self.create_frame_for_data_pool()
         self.notebook_data_visual, self.spinbox\
             = self.create_frame_for_data_visual()
@@ -38,8 +38,8 @@ class MyApp:
         self.create_frame_for_plot()
         self.root.mainloop()
 
-    def initialize_main_window(self) -> tk.Tk:
-        root = tk.Tk()
+    def initialize_main_window(self) -> Tk:
+        root = Tk()
         root.title('PlotCSV')
         root.columnconfigure(0, weight=1)
         root.columnconfigure(1, weight=1)
@@ -52,8 +52,8 @@ class MyApp:
         root.configure()
         return root
 
-    def create_frame_for_filenames(self) -> Treeview:
-        frame = tk.LabelFrame(self.root, text='Choose CSV files')
+    def create_frame_for_filenames(self):
+        frame = LabelFrame(self.root, text='Choose CSV files')
         frame.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW, **MyApp.PADS)
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
@@ -74,7 +74,9 @@ class MyApp:
         )
         button.grid(row=0, column=0, **MyApp.PADS)
         button['font'] = self.font_button
-        return treeview
+
+        self.root.labelframes['filenames'] = frame
+        frame.treeviews['filenames'] = treeview
 
     def create_frame_for_data_pool(self) -> Notebook:
         frame = tk.LabelFrame(self.root, text='Review CSV data')
@@ -333,7 +335,8 @@ class MyApp:
 
     # actions
     def open_files(self):
-        self.treeview_filenames.clear_content()
+        treeview = self.root.labelframes['filenames'].treeviews['filenames']
+        treeview.clear_content()
         filenames = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
@@ -342,8 +345,8 @@ class MyApp:
             [[idx + 1, filename] for idx, filename in enumerate(filenames)],
             columns=['CSV ID', 'CSV Path']
         )
-        self.treeview_filenames.insert_dataframe(self.filenames)
-        self.treeview_filenames.adjust_column_width()
+        treeview.insert_dataframe(self.filenames)
+        treeview.adjust_column_width()
 
     def update_field_x_and_y(self, tab: Tab):
         csv_idx = int(tab.widgets['csv_idx'].get())
@@ -365,7 +368,9 @@ class MyApp:
 
     def import_csv(self):
         try:
-            if not self.treeview_filenames.get_children():
+            frame = self.root.labelframes['filenames']
+            treeview = frame.treeviews['filenames']
+            if not treeview.get_children():
                 raise Exception('No CSV file chosen.')
         except Exception as e:
             tk.messagebox.showerror(title='Error', message=e)
