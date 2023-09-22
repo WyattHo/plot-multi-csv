@@ -29,9 +29,8 @@ class MyApp:
         self.font_button = font.Font(family='Helvetica', size=10)
         self.config = plotting.get_initial_configuration()
         self.create_frame_for_filenames()
-        self.notebook_data_pool = self.create_frame_for_data_pool()
-        self.notebook_data_visual, self.spinbox\
-            = self.create_frame_for_data_visual()
+        self.create_frame_for_data_pool()
+        self.create_frame_for_data_visual()
         self.create_frame_for_figure_visual()
         self.create_frame_for_x_axis_visual()
         self.create_frame_for_y_axis_visual()
@@ -79,7 +78,7 @@ class MyApp:
         frame.treeviews['filenames'] = treeview
 
     def create_frame_for_data_pool(self) -> Notebook:
-        frame = tk.LabelFrame(self.root, text='Review CSV data')
+        frame = LabelFrame(self.root, text='Review CSV data')
         frame.grid(row=1, column=0, rowspan=3, sticky=tk.NSEW, **MyApp.PADS)
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
@@ -108,7 +107,9 @@ class MyApp:
         )
         button.grid(row=1, column=1, **MyApp.PADS)
         button['font'] = self.font_button
-        return notebook
+        
+        self.root.labelframes['data_pool'] = frame
+        frame.notebooks['data_pool'] = notebook
 
     def fill_data_visual_widgets(self, tab: Tab):
         label = tk.Label(tab, text='CSV ID: ')
@@ -143,7 +144,7 @@ class MyApp:
         tab.widgets = widgets
 
     def create_frame_for_data_visual(self) -> Tuple[Notebook, Spinbox]:
-        frame = tk.LabelFrame(self.root, text='Data Visualization')
+        frame = LabelFrame(self.root, text='Data Visualization')
         frame.grid(row=1, column=1, sticky=tk.NSEW, **MyApp.PADS)
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(0, weight=1)
@@ -162,7 +163,9 @@ class MyApp:
         spinbox.config(
             command=lambda: self.change_number_of_dataset()
         )
-        return notebook, spinbox
+        self.root.labelframes['data_visual'] = frame
+        frame.notebooks['data_visual'] = notebook
+        frame.spinboxes['dataset_number'] = spinbox
 
     def create_frame_for_figure_visual(self):
         frame = tk.LabelFrame(self.root, text='Figure Visualization')
@@ -376,21 +379,27 @@ class MyApp:
             tk.messagebox.showerror(title='Error', message=e)
         else:
             self.data_pool: Dict[str, pd.DataFrame] = {}
-            self.notebook_data_pool.remove_all_tabs()
+            frame = self.root.labelframes['data_pool']
+            notebook = frame.notebooks['data_pool']
+            notebook.remove_all_tabs()
             for row in self.filenames.itertuples():
                 csv_idx, csv_path = row[1:]
-                tab = self.notebook_data_pool.create_new_tab(csv_idx)
+                tab = notebook.create_new_tab(csv_idx)
                 csv_dataframe = pd.read_csv(csv_path)
                 self.data_pool[csv_idx] = csv_dataframe
                 columns = list(csv_dataframe.columns)
                 treeview = Treeview(tab, columns, MyApp.HEIGHT_DATAPOOL)
                 treeview.insert_dataframe(csv_dataframe)
                 treeview.adjust_column_width()
-            self.initialize_csv_indices(self.notebook_data_visual.tabs_['1'])
+            frame = self.root.labelframes['data_visual']
+            notebook = frame.notebooks['data_visual']
+            self.initialize_csv_indices(notebook.tabs_['1'])
 
     def clear_data_pool(self):
-        self.notebook_data_pool.remove_all_tabs()
-        tab = self.notebook_data_pool.create_new_tab(tabname='1')
+        frame = self.root.labelframes['data_pool']
+        notebook = frame.notebooks['data_pool']
+        notebook.remove_all_tabs()
+        tab = notebook.create_new_tab(tabname='1')
         Treeview(tab, columns=('',), height=MyApp.HEIGHT_DATAPOOL)
 
     def change_number_of_dataset(self):
@@ -401,16 +410,19 @@ class MyApp:
             msg = 'Please import data first.'
             tk.messagebox.showerror(title='Error', message=msg)
         else:
-            exist_num = len(self.notebook_data_visual.tabs())
-            tgt_num = int(self.spinbox.get())
+            frame = self.root.labelframes['data_visual']
+            notebook = frame.notebooks['data_visual']
+            spinbox = frame.spinboxes['dataset_number']
+            exist_num = len(notebook.tabs())
+            tgt_num = int(spinbox.get())
             if tgt_num > exist_num:
                 tabname = str(tgt_num)
-                tab = self.notebook_data_visual.create_new_tab(tabname)
+                tab = notebook.create_new_tab(tabname)
                 self.fill_data_visual_widgets(tab)
                 self.initialize_csv_indices(tab)
             elif tgt_num < exist_num:
                 tabname = str(exist_num)
-                self.notebook_data_visual.remove_tab(tabname)
+                notebook.remove_tab(tabname)
 
     def active_deactive_range(self):
         if self.x_assign_range.get():
@@ -428,7 +440,9 @@ class MyApp:
 
     def collect_data_send(self) -> Sequence[pd.DataFrame]:
         data_send = []
-        for tab in self.notebook_data_visual.tabs_.values():
+        frame = self.root.labelframes['data_visual']
+        notebook = frame.notebooks['data_visual']
+        for tab in notebook.tabs_.values():
             csv_idx = tab.widgets['csv_idx'].get()
             data_send.append(self.data_pool[int(csv_idx)])
         return data_send
@@ -436,7 +450,9 @@ class MyApp:
     def collect_configurations_data(self):
         labels = self.config['data']['labels']
         fieldnames = self.config['data']['fieldnames']
-        for tab in self.notebook_data_visual.tabs_.values():
+        frame = self.root.labelframes['data_visual']
+        notebook = frame.notebooks['data_visual']
+        for tab in notebook.tabs_.values():
             labels.append(tab.widgets['label'].get())
             fieldnames.append({
                 'x': tab.widgets['field_x'].get(),

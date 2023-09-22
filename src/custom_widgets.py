@@ -15,6 +15,8 @@ class LabelFrame(tk.LabelFrame):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.treeviews: Dict[str, Treeview] = {}
+        self.notebooks: Dict[str, Notebook] = {}
+        self.spinboxes: Dict[str, Spinbox] = {}
         self.widgets = {}
 
 
