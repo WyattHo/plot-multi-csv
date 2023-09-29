@@ -5,21 +5,6 @@ from typing import Sequence, Union, Dict
 import pandas as pd
 
 
-class Tk(tk.Tk):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.labelframes: Dict[str, LabelFrame] = {}
-
-
-class LabelFrame(tk.LabelFrame):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.treeviews: Dict[str, Treeview] = {}
-        self.notebooks: Dict[str, Notebook] = {}
-        self.spinboxes: Dict[str, Spinbox] = {}
-        self.widgets = {}
-
-
 class Treeview(ttk.Treeview):
     COLUMN_WIDTH_RATIO = 9
 
