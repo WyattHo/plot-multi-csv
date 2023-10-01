@@ -495,14 +495,32 @@ class MyApp:
             float(widgets['height'].get())
         ]
         values['grid_visible'] = widgets['show_grid'].get()
-        values['legend_visible'] = widgets['legend_visible'].get(
-        )
+        values['legend_visible'] = widgets['legend_visible'].get()
 
     def collect_configurations_axes(self):
-        self.config_values['axis_x']['scale'] = 'linear'
-        self.config_values['axis_x']['lim'] = None
-        self.config_values['axis_y']['scale'] = 'linear'
-        self.config_values['axis_y']['lim'] = None
+        widgets = self.config_widgets['x_axis']
+        values = self.config_values['axis_x']
+        values['scale'] = widgets['scale'].get()
+        values['label'] = widgets['label'].get()
+        if widgets['assign_range'].get():
+            values['lim'] = [
+                float(widgets['min'].get()),
+                float(widgets['max'].get())
+            ]
+        else:
+            values['lim'] = None
+
+        widgets = self.config_widgets['y_axis']
+        values = self.config_values['axis_y']
+        values['scale'] = widgets['scale'].get()
+        values['label'] = widgets['label'].get()
+        if widgets['assign_range'].get():
+            values['lim'] = [
+                float(widgets['min'].get()),
+                float(widgets['max'].get())
+            ]
+        else:
+            values['lim'] = None
 
     def plot(self):
         data_send = self.collect_data_send()
