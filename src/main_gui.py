@@ -22,21 +22,21 @@ class FigureVisualWidgets(TypedDict):
     title: tk.Entry
     width: tk.DoubleVar
     height: tk.DoubleVar
-    show_grid: tk.IntVar
+    grid_visible: tk.IntVar
     legend_visible: tk.IntVar
 
 
 class ConfigWidgets(TypedDict):
-    filenames: Treeview
+    csvnames: Treeview
     data_pool: Notebook
     data_visual: Notebook
     dataset_number: Spinbox
     figure_visual: FigureVisualWidgets
-    x_axis: AxisVisualWidgets
-    y_axis: AxisVisualWidgets
+    axis_x: AxisVisualWidgets
+    axis_y: AxisVisualWidgets
 
 
-class MyApp:
+class App:
     PADS = {
         'padx': 5, 'pady': 5,
         'ipadx': 1, 'ipady': 1,
@@ -59,20 +59,20 @@ class MyApp:
         self.create_frame_for_data_pool()
         self.create_frame_for_data_visual()
         self.create_frame_for_figure_visual()
-        self.create_frame_for_x_axis_visual()
-        self.create_frame_for_y_axis_visual()
+        self.create_frame_for_axis_visual_x()
+        self.create_frame_for_axis_visual_y()
         self.create_frame_for_plot()
         self.root.mainloop()
 
     def initialize_configuration_widgets(self) -> ConfigWidgets:
         config_widgets: ConfigWidgets = {
-            'filenames': None,
+            'csvnames': None,
             'data_pool': None,
             'dataset_number': None,
             'data_visual': None,
             'figure_visual': FigureVisualWidgets(),
-            'x_axis': AxisVisualWidgets(),
-            'y_axis': AxisVisualWidgets()
+            'axis_x': AxisVisualWidgets(),
+            'axis_y': AxisVisualWidgets()
         }
         return config_widgets
 
@@ -92,7 +92,7 @@ class MyApp:
 
     def create_frame_for_filenames(self):
         frame = tk.LabelFrame(self.root, text='Choose CSV files')
-        frame.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW, **App.PADS)
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
         frame['font'] = self.font_label
@@ -110,13 +110,13 @@ class MyApp:
             command=lambda: self.open_files(),
             width=6
         )
-        button.grid(row=0, column=0, **MyApp.PADS)
+        button.grid(row=0, column=0, **App.PADS)
         button['font'] = self.font_button
-        self.config_widgets['filenames'] = treeview
+        self.config_widgets['csvnames'] = treeview
 
     def create_frame_for_data_pool(self):
         frame = tk.LabelFrame(self.root, text='Review CSV data')
-        frame.grid(row=1, column=0, rowspan=3, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=1, column=0, rowspan=3, sticky=tk.NSEW, **App.PADS)
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
         frame.columnconfigure(1, weight=1)
@@ -125,7 +125,7 @@ class MyApp:
         notebook = Notebook(frame)
         notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
         tab = notebook.create_new_tab(tabname='1')
-        Treeview(tab, columns=('',), height=MyApp.HEIGHT_DATAPOOL)
+        Treeview(tab, columns=('',), height=App.HEIGHT_DATAPOOL)
 
         button = tk.Button(
             frame,
@@ -133,7 +133,7 @@ class MyApp:
             command=lambda: self.import_csv(),
             width=6
         )
-        button.grid(row=1, column=0, **MyApp.PADS)
+        button.grid(row=1, column=0, **App.PADS)
         button['font'] = self.font_button
 
         button = tk.Button(
@@ -142,33 +142,33 @@ class MyApp:
             command=lambda: self.clear_data_pool(),
             width=6
         )
-        button.grid(row=1, column=1, **MyApp.PADS)
+        button.grid(row=1, column=1, **App.PADS)
         button['font'] = self.font_button
         self.config_widgets['data_pool'] = notebook
 
     def fill_data_visual_widgets(self, tab: Tab):
         label = tk.Label(tab, text='CSV ID: ')
-        combobox = ttk.Combobox(tab, width=MyApp.WIDTH_COMBOBOX)
-        label.grid(row=0, column=0, sticky=tk.W, **MyApp.PADS)
-        combobox.grid(row=0, column=1, sticky=tk.W, **MyApp.PADS)
+        combobox = ttk.Combobox(tab, width=App.WIDTH_COMBOBOX)
+        label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
+        combobox.grid(row=0, column=1, sticky=tk.W, **App.PADS)
         combobox_csv_idx = combobox
 
         label = tk.Label(tab, text='Field X: ')
-        combobox = ttk.Combobox(tab, width=MyApp.WIDTH_COMBOBOX)
-        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
-        combobox.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        combobox = ttk.Combobox(tab, width=App.WIDTH_COMBOBOX)
+        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        combobox.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         combobox_field_x = combobox
 
         label = tk.Label(tab, text='Field Y: ')
-        combobox = ttk.Combobox(tab, width=MyApp.WIDTH_COMBOBOX)
-        label.grid(row=2, column=0, sticky=tk.W, **MyApp.PADS)
-        combobox.grid(row=2, column=1, sticky=tk.W, **MyApp.PADS)
+        combobox = ttk.Combobox(tab, width=App.WIDTH_COMBOBOX)
+        label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
+        combobox.grid(row=2, column=1, sticky=tk.W, **App.PADS)
         combobox_field_y = combobox
 
         label = tk.Label(tab, text='Label: ')
-        entry = tk.Entry(tab, width=MyApp.WIDTH_ENTRY)
-        label.grid(row=3, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=3, column=1, sticky=tk.W, **MyApp.PADS)
+        entry = tk.Entry(tab, width=App.WIDTH_ENTRY)
+        label.grid(row=3, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=3, column=1, sticky=tk.W, **App.PADS)
 
         widgets = {
             'csv_idx': combobox_csv_idx,
@@ -180,7 +180,7 @@ class MyApp:
 
     def create_frame_for_data_visual(self):
         frame = tk.LabelFrame(self.root, text='Data Visualization')
-        frame.grid(row=1, column=1, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=1, column=1, sticky=tk.NSEW, **App.PADS)
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(0, weight=1)
         frame.columnconfigure(1, weight=1)
@@ -191,10 +191,10 @@ class MyApp:
         self.fill_data_visual_widgets(tab)
 
         label = tk.Label(frame, text='Numbers of datasets')
-        label.grid(row=0, column=0, **MyApp.PADS)
+        label.grid(row=0, column=0, **App.PADS)
 
         spinbox = Spinbox(frame, from_=1, to=20, width=3)
-        spinbox.grid(row=0, column=1, **MyApp.PADS)
+        spinbox.grid(row=0, column=1, **App.PADS)
         spinbox.config(
             command=lambda: self.change_number_of_dataset()
         )
@@ -202,30 +202,31 @@ class MyApp:
         self.config_widgets['dataset_number'] = spinbox
 
     def create_frame_for_figure_visual(self):
+        widgets = self.config_widgets['figure_visual']
         frame = tk.LabelFrame(self.root, text='Figure Visualization')
-        frame.grid(row=2, column=1, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=2, column=1, sticky=tk.NSEW, **App.PADS)
 
         label = tk.Label(frame, text='Title: ')
         entry = tk.Entry(frame, width=28)
-        label.grid(row=0, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=0, column=1, columnspan=3, sticky=tk.W, **MyApp.PADS)
-        self.config_widgets['figure_visual']['title'] = entry
+        label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=0, column=1, columnspan=3, sticky=tk.W, **App.PADS)
+        widgets['title'] = entry
 
         doublevar = tk.DoubleVar()
         label = tk.Label(frame, text='Width: ')
         entry = tk.Entry(frame, width=8, textvariable=doublevar)
-        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         doublevar.set(4.8)
-        self.config_widgets['figure_visual']['width'] = doublevar
+        widgets['width'] = doublevar
 
         doublevar = tk.DoubleVar()
         label = tk.Label(frame, text='Height: ')
         entry = tk.Entry(frame, width=8, textvariable=doublevar)
-        label.grid(row=1, column=2, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=1, column=3, sticky=tk.W, **MyApp.PADS)
+        label.grid(row=1, column=2, sticky=tk.W, **App.PADS)
+        entry.grid(row=1, column=3, sticky=tk.W, **App.PADS)
         doublevar.set(2.4)
-        self.config_widgets['figure_visual']['height'] = doublevar
+        widgets['height'] = doublevar
 
         intvar = tk.IntVar()
         checkbutton = tk.Checkbutton(
@@ -235,10 +236,10 @@ class MyApp:
         )
         checkbutton.grid(
             row=2, column=0, columnspan=4,
-            sticky=tk.W, **MyApp.PADS
+            sticky=tk.W, **App.PADS
         )
         intvar.set(True)
-        self.config_widgets['figure_visual']['show_grid'] = intvar
+        widgets['grid_visible'] = intvar
 
         intvar = tk.IntVar()
         checkbutton = tk.Checkbutton(
@@ -248,33 +249,34 @@ class MyApp:
         )
         checkbutton.grid(
             row=3, column=0, columnspan=4,
-            sticky=tk.W, **MyApp.PADS
+            sticky=tk.W, **App.PADS
         )
         intvar.set(True)
-        self.config_widgets['figure_visual']['legend_visible'] = intvar
+        widgets['legend_visible'] = intvar
 
-    def create_frame_for_x_axis_visual(self):
+    def create_frame_for_axis_visual_x(self):
+        widgets = self.config_widgets['axis_x']
         frame = tk.LabelFrame(self.root, text='X-Axis Visualization')
-        frame.grid(row=1, column=2, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=1, column=2, sticky=tk.NSEW, **App.PADS)
 
         label = tk.Label(frame, text='Label: ')
         entry = tk.Entry(frame, width=28)
-        label.grid(row=0, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=0, column=1, sticky=tk.W, **MyApp.PADS)
-        self.config_widgets['x_axis']['label'] = entry
+        label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
+        widgets['label'] = entry
 
         label = tk.Label(frame, text='Scale: ')
-        combobox = ttk.Combobox(frame, width=MyApp.WIDTH_COMBOBOX)
-        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
-        combobox.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
+        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        combobox.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         combobox.config(values=['linear', 'log'])
         combobox.current(0)
-        self.config_widgets['x_axis']['scale'] = combobox
+        widgets['scale'] = combobox
 
         subframe = tk.Frame(frame)
         subframe.grid(
             row=2, column=0, columnspan=2,
-            sticky=tk.NSEW, **MyApp.PADS
+            sticky=tk.NSEW, **App.PADS
         )
 
         intvar = tk.IntVar()
@@ -287,46 +289,47 @@ class MyApp:
         checkbutton.grid(
             row=0, column=0,
             columnspan=2,
-            sticky=tk.W, **MyApp.PADS
+            sticky=tk.W, **App.PADS
         )
-        self.config_widgets['x_axis']['assign_range'] = intvar
+        widgets['assign_range'] = intvar
 
         label = tk.Label(subframe, text='Min: ')
         entry = tk.Entry(subframe, width=8)
-        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         entry.config(state='disabled')
-        self.config_widgets['x_axis']['min'] = entry
+        widgets['min'] = entry
 
         label = tk.Label(subframe, text='Max: ')
         entry = tk.Entry(subframe, width=8)
-        label.grid(row=2, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=2, column=1, sticky=tk.W, **MyApp.PADS)
+        label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
         entry.config(state='disabled')
-        self.config_widgets['x_axis']['max'] = entry
+        widgets['max'] = entry
 
-    def create_frame_for_y_axis_visual(self):
+    def create_frame_for_axis_visual_y(self):
+        widgets = self.config_widgets['axis_y']
         frame = tk.LabelFrame(self.root, text='Y-Axis Visualization')
-        frame.grid(row=2, column=2, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=2, column=2, sticky=tk.NSEW, **App.PADS)
 
         label = tk.Label(frame, text='Label: ')
         entry = tk.Entry(frame, width=28)
-        label.grid(row=0, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=0, column=1, sticky=tk.W, **MyApp.PADS)
-        self.config_widgets['y_axis']['label'] = entry
+        label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
+        widgets['label'] = entry
 
         label = tk.Label(frame, text='Scale: ')
-        combobox = ttk.Combobox(frame, width=MyApp.WIDTH_COMBOBOX)
-        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
-        combobox.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
+        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        combobox.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         combobox.config(values=['linear', 'log'])
         combobox.current(0)
-        self.config_widgets['y_axis']['scale'] = combobox
+        widgets['scale'] = combobox
 
         subframe = tk.Frame(frame)
         subframe.grid(
             row=2, column=0, columnspan=2,
-            sticky=tk.NSEW, **MyApp.PADS
+            sticky=tk.NSEW, **App.PADS
         )
 
         intvar = tk.IntVar()
@@ -339,27 +342,27 @@ class MyApp:
         checkbutton.grid(
             row=0, column=0,
             columnspan=2,
-            sticky=tk.W, **MyApp.PADS
+            sticky=tk.W, **App.PADS
         )
-        self.config_widgets['y_axis']['assign_range'] = intvar
+        widgets['assign_range'] = intvar
 
         label = tk.Label(subframe, text='Min: ')
         entry = tk.Entry(subframe, width=8)
-        label.grid(row=1, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=1, column=1, sticky=tk.W, **MyApp.PADS)
+        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         entry.config(state='disabled')
-        self.config_widgets['y_axis']['min'] = entry
+        widgets['min'] = entry
 
         label = tk.Label(subframe, text='Max: ')
         entry = tk.Entry(subframe, width=8)
-        label.grid(row=2, column=0, sticky=tk.W, **MyApp.PADS)
-        entry.grid(row=2, column=1, sticky=tk.W, **MyApp.PADS)
+        label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
         entry.config(state='disabled')
-        self.config_widgets['y_axis']['max'] = entry
+        widgets['max'] = entry
 
     def create_frame_for_plot(self):
         frame = tk.LabelFrame(self.root, text='Plot Actions')
-        frame.grid(row=3, column=1, columnspan=2, sticky=tk.NSEW, **MyApp.PADS)
+        frame.grid(row=3, column=1, columnspan=2, sticky=tk.NSEW, **App.PADS)
         frame.columnconfigure(0, weight=1)
         button = tk.Button(
             frame,
@@ -367,22 +370,22 @@ class MyApp:
             command=lambda: self.plot(),
             width=6
         )
-        button.grid(row=0, column=0, **MyApp.PADS)
+        button.grid(row=0, column=0, **App.PADS)
         button['font'] = self.font_button
 
     # actions
     def open_files(self):
-        treeview = self.config_widgets['filenames']
+        treeview = self.config_widgets['csvnames']
         treeview.clear_content()
-        filenames = filedialog.askopenfilenames(
+        csvnames = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
         )
-        self.filenames = pd.DataFrame(
-            [[idx + 1, filename] for idx, filename in enumerate(filenames)],
+        self.csvnames = pd.DataFrame(
+            [[idx + 1, filename] for idx, filename in enumerate(csvnames)],
             columns=['CSV ID', 'CSV Path']
         )
-        treeview.insert_dataframe(self.filenames)
+        treeview.insert_dataframe(self.csvnames)
         treeview.adjust_column_width()
 
     def update_field_x_and_y(self, tab: Tab):
@@ -405,7 +408,7 @@ class MyApp:
 
     def import_csv(self):
         try:
-            if not self.config_widgets['filenames'].get_children():
+            if not self.config_widgets['csvnames'].get_children():
                 raise Exception('No CSV file chosen.')
         except Exception as e:
             tk.messagebox.showerror(title='Error', message=e)
@@ -413,13 +416,13 @@ class MyApp:
             notebook = self.config_widgets['data_pool']
             self.data_pool: Dict[str, pd.DataFrame] = {}
             notebook.remove_all_tabs()
-            for row in self.filenames.itertuples():
+            for row in self.csvnames.itertuples():
                 csv_idx, csv_path = row[1:]
                 tab = notebook.create_new_tab(csv_idx)
                 csv_dataframe = pd.read_csv(csv_path)
                 self.data_pool[csv_idx] = csv_dataframe
                 columns = list(csv_dataframe.columns)
-                treeview = Treeview(tab, columns, MyApp.HEIGHT_DATAPOOL)
+                treeview = Treeview(tab, columns, App.HEIGHT_DATAPOOL)
                 treeview.insert_dataframe(csv_dataframe)
                 treeview.adjust_column_width()
             notebook = self.config_widgets['data_visual']
@@ -429,7 +432,7 @@ class MyApp:
         notebook = self.config_widgets['data_pool']
         notebook.remove_all_tabs()
         tab = notebook.create_new_tab(tabname='1')
-        Treeview(tab, columns=('',), height=MyApp.HEIGHT_DATAPOOL)
+        Treeview(tab, columns=('',), height=App.HEIGHT_DATAPOOL)
 
     def change_number_of_dataset(self):
         try:
@@ -452,7 +455,7 @@ class MyApp:
                 notebook.remove_tab(tabname)
 
     def active_deactive_range(self):
-        widgets = self.config_widgets['x_axis']
+        widgets = self.config_widgets['axis_x']
         if widgets['assign_range'].get():
             widgets['min'].config(state='normal')
             widgets['max'].config(state='normal')
@@ -460,7 +463,7 @@ class MyApp:
             widgets['min'].config(state='disabled')
             widgets['max'].config(state='disabled')
 
-        widgets = self.config_widgets['y_axis']
+        widgets = self.config_widgets['axis_y']
         if widgets['assign_range'].get():
             widgets['min'].config(state='normal')
             widgets['max'].config(state='normal')
@@ -494,11 +497,11 @@ class MyApp:
             float(widgets['width'].get()),
             float(widgets['height'].get())
         ]
-        values['grid_visible'] = widgets['show_grid'].get()
+        values['grid_visible'] = widgets['grid_visible'].get()
         values['legend_visible'] = widgets['legend_visible'].get()
 
     def collect_configurations_axes(self):
-        widgets = self.config_widgets['x_axis']
+        widgets = self.config_widgets['axis_x']
         values = self.config_values['axis_x']
         values['scale'] = widgets['scale'].get()
         values['label'] = widgets['label'].get()
@@ -510,7 +513,7 @@ class MyApp:
         else:
             values['lim'] = None
 
-        widgets = self.config_widgets['y_axis']
+        widgets = self.config_widgets['axis_y']
         values = self.config_values['axis_y']
         values['scale'] = widgets['scale'].get()
         values['label'] = widgets['label'].get()
@@ -531,4 +534,4 @@ class MyApp:
 
 
 if __name__ == '__main__':
-    MyApp()
+    App()
