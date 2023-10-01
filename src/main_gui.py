@@ -372,7 +372,8 @@ class MyApp:
 
     # actions
     def open_files(self):
-        self.config_widgets['filenames'].clear_content()
+        treeview = self.config_widgets['filenames']
+        treeview.clear_content()
         filenames = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
@@ -381,8 +382,8 @@ class MyApp:
             [[idx + 1, filename] for idx, filename in enumerate(filenames)],
             columns=['CSV ID', 'CSV Path']
         )
-        self.config_widgets['filenames'].insert_dataframe(self.filenames)
-        self.config_widgets['filenames'].adjust_column_width()
+        treeview.insert_dataframe(self.filenames)
+        treeview.adjust_column_width()
 
     def update_field_x_and_y(self, tab: Tab):
         csv_idx = int(tab.widgets['csv_idx'].get())
@@ -409,22 +410,25 @@ class MyApp:
         except Exception as e:
             tk.messagebox.showerror(title='Error', message=e)
         else:
+            notebook = self.config_widgets['data_pool']
             self.data_pool: Dict[str, pd.DataFrame] = {}
-            self.config_widgets['data_pool'].remove_all_tabs()
+            notebook.remove_all_tabs()
             for row in self.filenames.itertuples():
                 csv_idx, csv_path = row[1:]
-                tab = self.config_widgets['data_pool'].create_new_tab(csv_idx)
+                tab = notebook.create_new_tab(csv_idx)
                 csv_dataframe = pd.read_csv(csv_path)
                 self.data_pool[csv_idx] = csv_dataframe
                 columns = list(csv_dataframe.columns)
                 treeview = Treeview(tab, columns, MyApp.HEIGHT_DATAPOOL)
                 treeview.insert_dataframe(csv_dataframe)
                 treeview.adjust_column_width()
-            self.initialize_csv_indices(self.config_widgets['data_visual'].tabs_['1'])
+            notebook = self.config_widgets['data_visual']
+            self.initialize_csv_indices(notebook.tabs_['1'])
 
     def clear_data_pool(self):
-        self.config_widgets['data_pool'].remove_all_tabs()
-        tab = self.config_widgets['data_pool'].create_new_tab(tabname='1')
+        notebook = self.config_widgets['data_pool']
+        notebook.remove_all_tabs()
+        tab = notebook.create_new_tab(tabname='1')
         Treeview(tab, columns=('',), height=MyApp.HEIGHT_DATAPOOL)
 
     def change_number_of_dataset(self):
@@ -437,32 +441,37 @@ class MyApp:
         else:
             exist_num = len(self.config_widgets['data_visual'].tabs())
             tgt_num = int(self.config_widgets['dataset_number'].get())
+            notebook = self.config_widgets['data_visual']
             if tgt_num > exist_num:
                 tabname = str(tgt_num)
-                tab = self.config_widgets['data_visual'].create_new_tab(tabname)
+                tab = notebook.create_new_tab(tabname)
                 self.fill_data_visual_widgets(tab)
                 self.initialize_csv_indices(tab)
             elif tgt_num < exist_num:
                 tabname = str(exist_num)
-                self.config_widgets['data_visual'].remove_tab(tabname)
+                notebook.remove_tab(tabname)
 
     def active_deactive_range(self):
-        if self.config_widgets['x_axis']['assign_range'].get():
-            self.config_widgets['x_axis']['min'].config(state='normal')
-            self.config_widgets['x_axis']['max'].config(state='normal')
+        widgets = self.config_widgets['x_axis']
+        if widgets['assign_range'].get():
+            widgets['min'].config(state='normal')
+            widgets['max'].config(state='normal')
         else:
-            self.config_widgets['x_axis']['min'].config(state='disabled')
-            self.config_widgets['x_axis']['max'].config(state='disabled')
-        if self.config_widgets['y_axis']['assign_range'].get():
-            self.config_widgets['y_axis']['min'].config(state='normal')
-            self.config_widgets['y_axis']['max'].config(state='normal')
+            widgets['min'].config(state='disabled')
+            widgets['max'].config(state='disabled')
+
+        widgets = self.config_widgets['y_axis']
+        if widgets['assign_range'].get():
+            widgets['min'].config(state='normal')
+            widgets['max'].config(state='normal')
         else:
-            self.config_widgets['y_axis']['min'].config(state='disabled')
-            self.config_widgets['y_axis']['max'].config(state='disabled')
+            widgets['min'].config(state='disabled')
+            widgets['max'].config(state='disabled')
 
     def collect_data_send(self) -> Sequence[pd.DataFrame]:
         data_send = []
-        for tab in self.config_widgets['data_visual'].tabs_.values():
+        notebook = self.config_widgets['data_visual']
+        for tab in notebook.tabs_.values():
             csv_idx = tab.widgets['csv_idx'].get()
             data_send.append(self.data_pool[int(csv_idx)])
         return data_send
@@ -479,13 +488,14 @@ class MyApp:
 
     def collect_configurations_figure(self):
         widgets = self.config_widgets['figure_visual']
-        self.config_values['figure']['title'] = widgets['title'].get()
-        self.config_values['figure']['size'] = [
+        values = self.config_values['figure']
+        values['title'] = widgets['title'].get()
+        values['size'] = [
             float(widgets['width'].get()),
             float(widgets['height'].get())
         ]
-        self.config_values['figure']['grid_visible'] = widgets['show_grid'].get()
-        self.config_values['figure']['legend_visible'] = widgets['legend_visible'].get(
+        values['grid_visible'] = widgets['show_grid'].get()
+        values['legend_visible'] = widgets['legend_visible'].get(
         )
 
     def collect_configurations_axes(self):
