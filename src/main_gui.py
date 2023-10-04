@@ -71,10 +71,9 @@ class DataVisualNotebook(Notebook):
         label.grid(row=3, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=3, column=1, sticky=tk.W, **App.PADS)
         widgets['label'] = entry
-
         tab.widgets = widgets
 
-    def update_field_x_and_y(self, tabname: str, data_pool: Dict[str, pd.DataFrame]):
+    def update_fieldname_options(self, tabname: str, data_pool: Dict[str, pd.DataFrame]):
         widgets = self.tabs_[tabname].widgets
         csv_idx = widgets['csv_idx'].get()
         columns = list(data_pool[csv_idx].columns)
@@ -83,15 +82,15 @@ class DataVisualNotebook(Notebook):
         widgets['field_y'].config(values=columns)
         widgets['field_y'].current(1)
 
-    def initialize_tab_widgets(self, tabname: str, data_pool: Dict[str, pd.DataFrame]):
+    def initialize_widgets(self, tabname: str, data_pool: Dict[str, pd.DataFrame]):
         widgets = self.tabs_[tabname].widgets
         values_csv_idx = list(data_pool.keys())
         widgets['csv_idx'].config(values=values_csv_idx)
         widgets['csv_idx'].current(0)
-        self.update_field_x_and_y(tabname, data_pool)
+        self.update_fieldname_options(tabname, data_pool)
         widgets['csv_idx'].bind(
             '<<ComboboxSelected>>',
-            lambda event: self.update_field_x_and_y(tabname, data_pool)
+            lambda event: self.update_fieldname_options(tabname, data_pool)
         )
 
 
@@ -113,7 +112,8 @@ class App:
     ROOT_MINSIZE = {
         'width': 400, 'height': 400
     }
-    HEIGHT_DATAPOOL = 25
+    HEIGHT_FILENAMES = 5
+    HEIGHT_DATAPOOL = 28
     WIDTH_COMBOBOX = 12
     WIDTH_ENTRY = 14
 
@@ -155,7 +155,7 @@ class App:
         root.rowconfigure(1, weight=5)
         root.rowconfigure(2, weight=5)
         root.state('zoomed')
-        root.minsize(**self.ROOT_MINSIZE)
+        root.minsize(**App.ROOT_MINSIZE)
         root.configure()
         return root
 
@@ -169,7 +169,7 @@ class App:
         subframe = tk.Frame(frame)
         subframe.grid(row=0, column=0, sticky=tk.NSEW)
         columns = ('CSV ID', 'CSV Path')
-        treeview = Treeview(subframe, columns, 5)
+        treeview = Treeview(subframe, columns, App.HEIGHT_FILENAMES)
 
         subframe = tk.Frame(frame)
         subframe.grid(row=0, column=1)
@@ -193,6 +193,7 @@ class App:
 
         notebook = Notebook(frame)
         notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
+        
         tabname = '1'
         notebook.create_new_tab(tabname=tabname)
         tab = notebook.tabs_[tabname]
@@ -442,7 +443,7 @@ class App:
             for row in self.csvnames.itertuples():
                 csv_idx, csv_path = row[1:]
                 tabname = str(csv_idx)
-                notebook.create_new_tab(tabname=tabname)
+                notebook.create_new_tab(tabname)
                 csv_dataframe = pd.read_csv(csv_path)
                 self.data_pool[tabname] = csv_dataframe
                 columns = list(csv_dataframe.columns)
@@ -451,14 +452,13 @@ class App:
                 treeview.insert_dataframe(csv_dataframe)
                 treeview.adjust_column_width()
             notebook = self.config_widgets['data_visual']
-            notebook.initialize_tab_widgets(
-                tabname='1', data_pool=self.data_pool)
+            notebook.initialize_widgets('1', self.data_pool)
 
     def clear_data_pool(self):
         notebook = self.config_widgets['data_pool']
         notebook.remove_all_tabs()
         tabname = '1'
-        notebook.create_new_tab(tabname=tabname)
+        notebook.create_new_tab(tabname)
         tab = notebook.tabs_[tabname]
         Treeview(tab, columns=('',), height=App.HEIGHT_DATAPOOL)
 
@@ -475,10 +475,9 @@ class App:
             notebook = self.config_widgets['data_visual']
             if tgt_num > exist_num:
                 tabname = str(tgt_num)
-                notebook.create_new_tab(tabname=tabname)
-                notebook.fill_data_visual_widgets(tabname=tabname)
-                notebook.initialize_tab_widgets(
-                    tabname=tabname, data_pool=self.data_pool)
+                notebook.create_new_tab(tabname)
+                notebook.fill_data_visual_widgets(tabname)
+                notebook.initialize_widgets(tabname, self.data_pool)
             elif tgt_num < exist_num:
                 tabname = str(exist_num)
                 notebook.remove_tab(tabname)
