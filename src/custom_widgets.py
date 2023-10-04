@@ -72,21 +72,14 @@ class Treeview(ttk.Treeview):
             )
 
 
-class Tab(ttk.Frame):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.widgets = {}
-
-
 class Notebook(ttk.Notebook):
     def __init__(self, frame: Union[tk.Frame, ttk.Frame]):
         super().__init__(frame)
-        self.tabs_: Dict[str, Tab] = {}
+        self.tabs_: Dict[str, ttk.Frame] = {}
 
-    def create_new_tab(self, tabname: str) -> Tab:
-        self.tabs_[tabname] = tab = Tab(self)
+    def create_new_tab(self, tabname: str):
+        self.tabs_[tabname] = tab = ttk.Frame(self)
         self.add(tab, text=tabname)
-        return tab
 
     def remove_tab(self, tabname: str):
         tab_idx = list(self.tabs_.keys()).index(tabname)
