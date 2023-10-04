@@ -396,7 +396,7 @@ class App:
         tab.widgets['field_y'].config(values=columns)
         tab.widgets['field_y'].current(1)
 
-    def initialize_csv_indices(self, tab: Tab):
+    def initialize_tab_widgets(self, tab: Tab):
         values_csv_idx = list(self.data_pool.keys())
         tab.widgets['csv_idx'].config(values=values_csv_idx)
         tab.widgets['csv_idx'].current(0)
@@ -426,7 +426,7 @@ class App:
                 treeview.insert_dataframe(csv_dataframe)
                 treeview.adjust_column_width()
             notebook = self.config_widgets['data_visual']
-            self.initialize_csv_indices(notebook.tabs_['1'])
+            self.initialize_tab_widgets(notebook.tabs_['1'])
 
     def clear_data_pool(self):
         notebook = self.config_widgets['data_pool']
@@ -449,7 +449,7 @@ class App:
                 tabname = str(tgt_num)
                 tab = notebook.create_new_tab(tabname)
                 self.fill_data_visual_widgets(tab)
-                self.initialize_csv_indices(tab)
+                self.initialize_tab_widgets(tab)
             elif tgt_num < exist_num:
                 tabname = str(exist_num)
                 notebook.remove_tab(tabname)
