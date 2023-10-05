@@ -39,6 +39,9 @@ class DataVisualTab(ttk.Frame):
         self.widgets: Dict[str, DataVisualWidgets] = {}
 
 
+DataPool = Dict[str, pd.DataFrame]
+
+
 class DataVisualNotebook(Notebook):
     def __init__(self, frame: Union[tk.Frame, ttk.Frame]):
         super().__init__(frame)
@@ -73,7 +76,7 @@ class DataVisualNotebook(Notebook):
         widgets['label'] = entry
         tab.widgets = widgets
 
-    def update_fieldname_options(self, tabname: str, data_pool: Dict[str, pd.DataFrame]):
+    def update_fieldname_options(self, tabname: str, data_pool: DataPool):
         widgets = self.tabs_[tabname].widgets
         csv_idx = widgets['csv_idx'].get()
         columns = list(data_pool[csv_idx].columns)
@@ -82,7 +85,7 @@ class DataVisualNotebook(Notebook):
         widgets['field_y'].config(values=columns)
         widgets['field_y'].current(1)
 
-    def initialize_widgets(self, tabname: str, data_pool: Dict[str, pd.DataFrame]):
+    def initialize_widgets(self, tabname: str, data_pool: DataPool):
         widgets = self.tabs_[tabname].widgets
         values_csv_idx = list(data_pool.keys())
         widgets['csv_idx'].config(values=values_csv_idx)
@@ -94,9 +97,45 @@ class DataVisualNotebook(Notebook):
         )
 
 
+class DataPoolNotebook(Notebook):
+    def __init__(self, frame: Union[tk.Frame, ttk.Frame]):
+        super().__init__(frame)
+
+    def present_data_pool(self, datapool: DataPool):
+        for tabname, dataframe in datapool.items():
+            self.create_new_tab(tabname)
+            tab = self.tabs_[tabname]
+            columns = list(dataframe.columns)
+            treeview = Treeview(tab, columns, App.HEIGHT_DATAPOOL)
+            treeview.insert_dataframe(dataframe)
+            treeview.adjust_column_width()
+
+    def clear_content(self):
+        self.remove_all_tabs()
+        tabname = '1'
+        self.create_new_tab(tabname)
+        tab = self.tabs_[tabname]
+        Treeview(tab, columns=('',), height=App.HEIGHT_DATAPOOL)
+
+
+class CsvInfoTreeview(Treeview):
+    def __init__(self, frame: Union[tk.Frame, ttk.Frame], columns: Sequence[str], height: int):
+        super().__init__(frame, columns, height)
+
+    def collect_data_pool(self) -> DataPool:
+        data_pool: DataPool = {}
+        csv_info = self.get_dataframe()
+        for row in csv_info.itertuples():
+            csv_idx, csv_path = row[1:]
+            tabname = str(csv_idx)
+            csv_dataframe = pd.read_csv(csv_path)
+            data_pool[tabname] = csv_dataframe
+        return data_pool
+
+
 class ConfigWidgets(TypedDict):
-    csvnames: Treeview
-    data_pool: Notebook
+    csv_info: CsvInfoTreeview
+    data_pool: DataPoolNotebook
     data_visual: DataVisualNotebook
     dataset_number: Spinbox
     figure_visual: FigureVisualWidgets
@@ -124,7 +163,7 @@ class App:
         self.font_button = font.Font(family='Helvetica', size=10)
         self.config_values = plotting.get_initial_configuration()
         self.config_widgets = self.initialize_configuration_widgets()
-        self.create_frame_for_filenames()
+        self.create_frame_for_csv_info()
         self.create_frame_for_data_pool()
         self.create_frame_for_data_visual()
         self.create_frame_for_figure_visual()
@@ -135,7 +174,7 @@ class App:
 
     def initialize_configuration_widgets(self) -> ConfigWidgets:
         config_widgets: ConfigWidgets = {
-            'csvnames': None,
+            'csv_info': None,
             'data_pool': None,
             'dataset_number': None,
             'data_visual': None,
@@ -159,7 +198,7 @@ class App:
         root.configure()
         return root
 
-    def create_frame_for_filenames(self):
+    def create_frame_for_csv_info(self):
         frame = tk.LabelFrame(self.root, text='Choose CSV files')
         frame.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW, **App.PADS)
         frame.rowconfigure(0, weight=1)
@@ -169,7 +208,7 @@ class App:
         subframe = tk.Frame(frame)
         subframe.grid(row=0, column=0, sticky=tk.NSEW)
         columns = ('CSV ID', 'CSV Path')
-        treeview = Treeview(subframe, columns, App.HEIGHT_FILENAMES)
+        treeview = CsvInfoTreeview(subframe, columns, App.HEIGHT_FILENAMES)
 
         subframe = tk.Frame(frame)
         subframe.grid(row=0, column=1)
@@ -181,7 +220,7 @@ class App:
         )
         button.grid(row=0, column=0, **App.PADS)
         button['font'] = self.font_button
-        self.config_widgets['csvnames'] = treeview
+        self.config_widgets['csv_info'] = treeview
 
     def create_frame_for_data_pool(self):
         frame = tk.LabelFrame(self.root, text='Review CSV data')
@@ -191,9 +230,9 @@ class App:
         frame.columnconfigure(1, weight=1)
         frame['font'] = self.font_label
 
-        notebook = Notebook(frame)
+        notebook = DataPoolNotebook(frame)
         notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
-        
+
         tabname = '1'
         notebook.create_new_tab(tabname=tabname)
         tab = notebook.tabs_[tabname]
@@ -417,50 +456,37 @@ class App:
 
     # actions
     def open_files(self):
-        treeview = self.config_widgets['csvnames']
+        treeview = self.config_widgets['csv_info']
         treeview.clear_content()
-        csvnames = filedialog.askopenfilenames(
+        csv_paths = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
         )
-        self.csvnames = pd.DataFrame(
-            [[idx + 1, filename] for idx, filename in enumerate(csvnames)],
+        csv_info = pd.DataFrame(
+            [[idx + 1, path] for idx, path in enumerate(csv_paths)],
             columns=['CSV ID', 'CSV Path']
         )
-        treeview.insert_dataframe(self.csvnames)
+        treeview.insert_dataframe(csv_info)
         treeview.adjust_column_width()
 
     def import_csv(self):
         try:
-            if not self.config_widgets['csvnames'].get_children():
+            if not self.config_widgets['csv_info'].get_children():
                 raise Exception('No CSV file chosen.')
         except Exception as e:
             tk.messagebox.showerror(title='Error', message=e)
         else:
-            notebook = self.config_widgets['data_pool']
-            self.data_pool: Dict[str, pd.DataFrame] = {}
-            notebook.remove_all_tabs()
-            for row in self.csvnames.itertuples():
-                csv_idx, csv_path = row[1:]
-                tabname = str(csv_idx)
-                notebook.create_new_tab(tabname)
-                csv_dataframe = pd.read_csv(csv_path)
-                self.data_pool[tabname] = csv_dataframe
-                columns = list(csv_dataframe.columns)
-                tab = notebook.tabs_[tabname]
-                treeview = Treeview(tab, columns, App.HEIGHT_DATAPOOL)
-                treeview.insert_dataframe(csv_dataframe)
-                treeview.adjust_column_width()
-            notebook = self.config_widgets['data_visual']
-            notebook.initialize_widgets('1', self.data_pool)
+            treeview_csv_info = self.config_widgets['csv_info']
+            notebook_data_pool = self.config_widgets['data_pool']
+            notebook_data_visual = self.config_widgets['data_visual']
+            self.data_pool = treeview_csv_info.collect_data_pool()
+            notebook_data_pool.remove_all_tabs()
+            notebook_data_pool.present_data_pool(self.data_pool)
+            notebook_data_visual.initialize_widgets('1', self.data_pool)
 
     def clear_data_pool(self):
-        notebook = self.config_widgets['data_pool']
-        notebook.remove_all_tabs()
-        tabname = '1'
-        notebook.create_new_tab(tabname)
-        tab = notebook.tabs_[tabname]
-        Treeview(tab, columns=('',), height=App.HEIGHT_DATAPOOL)
+        self.data_pool: DataPool = {}
+        self.config_widgets['data_pool'].clear_content()
 
     def change_number_of_dataset(self):
         try:
