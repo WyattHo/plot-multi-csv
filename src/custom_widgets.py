@@ -77,7 +77,7 @@ class Notebook(ttk.Notebook):
         super().__init__(frame)
         self.tabs_: Dict[str, ttk.Frame] = {}
 
-    def create_new_tab(self, tabname: str):
+    def create_new_empty_tab(self, tabname: str):
         self.tabs_[tabname] = tab = ttk.Frame(self)
         self.add(tab, text=tabname)
 

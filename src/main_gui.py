@@ -39,7 +39,7 @@ TabName = str
 class DataVisualTab(ttk.Frame):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.widgets: Dict[TabName, DataVisualWidgets] = {}
+        self.widgets: DataVisualWidgets = {}
 
 
 DataPool = Dict[TabName, pd.DataFrame]
@@ -106,7 +106,7 @@ class DataPoolNotebook(Notebook):
 
     def present_data_pool(self, datapool: DataPool):
         for tabname, dataframe in datapool.items():
-            self.create_new_tab(tabname)
+            self.create_new_empty_tab(tabname)
             tab = self.tabs_[tabname]
             columns = list(dataframe.columns)
             treeview = Treeview(tab, columns, App.HEIGHT_DATAPOOL)
@@ -116,7 +116,7 @@ class DataPoolNotebook(Notebook):
     def clear_content(self):
         self.remove_all_tabs()
         tabname = '1'
-        self.create_new_tab(tabname)
+        self.create_new_empty_tab(tabname)
         tab = self.tabs_[tabname]
         Treeview(tab, columns=('',), height=App.HEIGHT_DATAPOOL)
 
@@ -237,7 +237,7 @@ class App:
         notebook.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
 
         tabname = '1'
-        notebook.create_new_tab(tabname=tabname)
+        notebook.create_new_empty_tab(tabname=tabname)
         tab = notebook.tabs_[tabname]
         Treeview(tab, columns=('',), height=App.HEIGHT_DATAPOOL)
 
@@ -271,7 +271,7 @@ class App:
         notebook.grid(row=1, column=0, columnspan=2, sticky=tk.NSEW)
 
         tabname = '1'
-        notebook.create_new_tab(tabname=tabname)
+        notebook.create_new_empty_tab(tabname=tabname)
         notebook.fill_data_visual_widgets(tabname=tabname)
 
         label = tk.Label(frame, text='Numbers of datasets')
@@ -485,6 +485,9 @@ class App:
             self.data_pool = treeview_csv_info.collect_data_pool()
             notebook_data_pool.remove_all_tabs()
             notebook_data_pool.present_data_pool(self.data_pool)
+            notebook_data_visual.remove_all_tabs()
+            notebook_data_visual.create_new_empty_tab('1')
+            notebook_data_visual.fill_data_visual_widgets('1')
             notebook_data_visual.initialize_widgets('1', self.data_pool)
 
     def clear_data_pool(self):
@@ -504,7 +507,7 @@ class App:
             notebook = self.config_widgets['data_visual']
             if tgt_num > exist_num:
                 tabname = str(tgt_num)
-                notebook.create_new_tab(tabname)
+                notebook.create_new_empty_tab(tabname)
                 notebook.fill_data_visual_widgets(tabname)
                 notebook.initialize_widgets(tabname, self.data_pool)
             elif tgt_num < exist_num:
