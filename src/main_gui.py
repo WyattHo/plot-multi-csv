@@ -58,18 +58,21 @@ class DataVisualNotebook(Notebook):
         combobox = ttk.Combobox(tab, width=App.WIDTH_COMBOBOX)
         label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
         combobox.grid(row=0, column=1, sticky=tk.W, **App.PADS)
+        combobox.config(state='readonly')
         widgets['csv_idx'] = combobox
 
         label = tk.Label(tab, text='Field X: ')
         combobox = ttk.Combobox(tab, width=App.WIDTH_COMBOBOX)
         label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
         combobox.grid(row=1, column=1, sticky=tk.W, **App.PADS)
+        combobox.config(state='readonly')
         widgets['field_x'] = combobox
 
         label = tk.Label(tab, text='Field Y: ')
         combobox = ttk.Combobox(tab, width=App.WIDTH_COMBOBOX)
         label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
         combobox.grid(row=2, column=1, sticky=tk.W, **App.PADS)
+        combobox.config(state='readonly')
         widgets['field_y'] = combobox
 
         label = tk.Label(tab, text='Label: ')
@@ -353,7 +356,7 @@ class App:
         combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
         label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
         combobox.grid(row=1, column=1, sticky=tk.W, **App.PADS)
-        combobox.config(values=['linear', 'log'])
+        combobox.config(values=['linear', 'log'], state='readonly')
         combobox.current(0)
         widgets['scale'] = combobox
 
@@ -406,7 +409,7 @@ class App:
         combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
         label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
         combobox.grid(row=1, column=1, sticky=tk.W, **App.PADS)
-        combobox.config(values=['linear', 'log'])
+        combobox.config(values=['linear', 'log'], state='readonly')
         combobox.current(0)
         widgets['scale'] = combobox
 

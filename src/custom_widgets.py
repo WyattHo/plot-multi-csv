@@ -97,4 +97,4 @@ class Spinbox(tk.Spinbox):
         super().__init__(*args, **kwargs)
         self.stringvar = tk.StringVar()
         self.stringvar.set(1)
-        self.config(textvariable=self.stringvar)
+        self.config(textvariable=self.stringvar, state='readonly')
