@@ -33,21 +33,24 @@ class DataVisualWidgets(TypedDict):
     label: tk.Entry
 
 
+TabName = str
+
+
 class DataVisualTab(ttk.Frame):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.widgets: Dict[str, DataVisualWidgets] = {}
+        self.widgets: Dict[TabName, DataVisualWidgets] = {}
 
 
-DataPool = Dict[str, pd.DataFrame]
+DataPool = Dict[TabName, pd.DataFrame]
 
 
 class DataVisualNotebook(Notebook):
     def __init__(self, frame: Union[tk.Frame, ttk.Frame]):
         super().__init__(frame)
-        self.tabs_: Dict[str, DataVisualTab] = {}
+        self.tabs_: Dict[TabName, DataVisualTab] = {}
 
-    def fill_data_visual_widgets(self, tabname: str):
+    def fill_data_visual_widgets(self, tabname: TabName):
         tab = self.tabs_[tabname]
         widgets: DataVisualWidgets = {}
 
@@ -76,7 +79,7 @@ class DataVisualNotebook(Notebook):
         widgets['label'] = entry
         tab.widgets = widgets
 
-    def update_fieldname_options(self, tabname: str, data_pool: DataPool):
+    def update_fieldname_options(self, tabname: TabName, data_pool: DataPool):
         widgets = self.tabs_[tabname].widgets
         csv_idx = widgets['csv_idx'].get()
         columns = list(data_pool[csv_idx].columns)
@@ -85,7 +88,7 @@ class DataVisualNotebook(Notebook):
         widgets['field_y'].config(values=columns)
         widgets['field_y'].current(1)
 
-    def initialize_widgets(self, tabname: str, data_pool: DataPool):
+    def initialize_widgets(self, tabname: TabName, data_pool: DataPool):
         widgets = self.tabs_[tabname].widgets
         values_csv_idx = list(data_pool.keys())
         widgets['csv_idx'].config(values=values_csv_idx)
