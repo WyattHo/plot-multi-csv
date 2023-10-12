@@ -139,11 +139,15 @@ def plot_by_app(config: Config, data_pool: Sequence[pd.DataFrame]):
     set_axes(config, ax)
     plt.show()
 
+
 def copy_to_clipboard():
+    '''
+    Honestly, I don't know how it works. Here is the reference I found.
+    https://stackoverflow.com/questions/7050448/write-image-to-windows-clipboard-in-python-with-pil-and-win32clipboard
+    '''
     fig = plt.gcf()
     buffer = BytesIO()
     fig.savefig(buffer, format='png')
-    # plt.savefig(buffer, format='png')
     clipboard_format = win32clipboard.RegisterClipboardFormat('PNG')
     win32clipboard.OpenClipboard()
     win32clipboard.EmptyClipboard()

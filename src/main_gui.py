@@ -451,6 +451,7 @@ class App:
         frame = tk.LabelFrame(self.root, text='Plot Actions')
         frame.grid(row=3, column=1, columnspan=2, sticky=tk.NSEW, **App.PADS)
         frame.columnconfigure(0, weight=1)
+        frame.columnconfigure(1, weight=1)
         
         button = tk.Button(
             frame,
@@ -458,7 +459,7 @@ class App:
             command=lambda: self.plot(),
             width=6
         )
-        button.grid(row=0, column=0, **App.PADS)
+        button.grid(row=0, column=0, **App.PADS,)
         button['font'] = self.font_button
 
         button = tk.Button(
