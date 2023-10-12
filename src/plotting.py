@@ -1,9 +1,11 @@
 import json
+from io import BytesIO
 from pathlib import Path
 from typing import Sequence, Tuple, Dict, TypedDict
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import win32clipboard
 
 
 class DataConfig(TypedDict):
@@ -136,6 +138,18 @@ def plot_by_app(config: Config, data_pool: Sequence[pd.DataFrame]):
     plot_data(config, data_pool, plot_function)
     set_axes(config, ax)
     plt.show()
+
+def copy_to_clipboard():
+    fig = plt.gcf()
+    buffer = BytesIO()
+    fig.savefig(buffer, format='png')
+    # plt.savefig(buffer, format='png')
+    clipboard_format = win32clipboard.RegisterClipboardFormat('PNG')
+    win32clipboard.OpenClipboard()
+    win32clipboard.EmptyClipboard()
+    win32clipboard.SetClipboardData(clipboard_format, buffer.getvalue())
+    win32clipboard.CloseClipboard()
+    buffer.close()
 
 
 if __name__ == '__main__':
