@@ -34,6 +34,16 @@ class Config(TypedDict):
     axis_y: AxisConfig
 
 
+class Error(Exception):
+    '''Base class for exceptions in this module.'''
+    pass
+
+
+class FigureNumsError(Error):
+    '''Exception raised when no existing figure to copy.'''
+    pass
+
+
 def get_initial_configuration():
     config_ini: Config = {
         'data': {
@@ -144,7 +154,13 @@ def copy_to_clipboard():
     '''
     Honestly, I don't know how it works. Here is the reference I found.
     https://stackoverflow.com/questions/7050448/write-image-to-windows-clipboard-in-python-with-pil-and-win32clipboard
+
+    This method can copy the figure image and paste to MS office but not Paint.
     '''
+    fignums = plt.get_fignums()  # if no fig -> []
+    if not fignums:
+        raise FigureNumsError
+
     fig = plt.gcf()
     buffer = BytesIO()
     fig.savefig(buffer, format='png')

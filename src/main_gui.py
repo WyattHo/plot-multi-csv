@@ -452,7 +452,7 @@ class App:
         frame.grid(row=3, column=1, columnspan=2, sticky=tk.NSEW, **App.PADS)
         frame.columnconfigure(0, weight=1)
         frame.columnconfigure(1, weight=1)
-        
+
         button = tk.Button(
             frame,
             text='Plot',
@@ -465,7 +465,7 @@ class App:
         button = tk.Button(
             frame,
             text='Copy',
-            command=plotting.copy_to_clipboard,
+            command=lambda: self.copy(),
             width=6
         )
         button.grid(row=0, column=1, **App.PADS)
@@ -605,6 +605,13 @@ class App:
         self.collect_configurations_figure()
         self.collect_configurations_axes()
         plotting.plot_by_app(self.config_values, data_send)
+
+    def copy(self):
+        try:
+            plotting.copy_to_clipboard()
+        except plotting.FigureNumsError:
+            msg = 'No figure to copy.'
+            tk.messagebox.showerror(title='Error', message=msg)
 
 
 if __name__ == '__main__':
