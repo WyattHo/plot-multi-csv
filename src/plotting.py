@@ -1,9 +1,11 @@
 import json
+from io import BytesIO
 from pathlib import Path
 from typing import Sequence, Tuple, Dict, TypedDict
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import win32clipboard
 
 
 class DataConfig(TypedDict):
@@ -30,6 +32,16 @@ class Config(TypedDict):
     figure: FigureConfig
     axis_x: AxisConfig
     axis_y: AxisConfig
+
+
+class Error(Exception):
+    '''Base class for exceptions in this module.'''
+    pass
+
+
+class FigureNumsError(Error):
+    '''Exception raised when no existing figure to copy.'''
+    pass
 
 
 def get_initial_configuration():
@@ -136,6 +148,28 @@ def plot_by_app(config: Config, data_pool: Sequence[pd.DataFrame]):
     plot_data(config, data_pool, plot_function)
     set_axes(config, ax)
     plt.show()
+
+
+def copy_to_clipboard():
+    '''
+    Honestly, I don't know how it works. Here is the reference I found.
+    https://stackoverflow.com/questions/7050448/write-image-to-windows-clipboard-in-python-with-pil-and-win32clipboard
+
+    This method can copy the figure image and paste to MS office but not Paint.
+    '''
+    fignums = plt.get_fignums()  # if no fig -> []
+    if not fignums:
+        raise FigureNumsError
+
+    fig = plt.gcf()
+    buffer = BytesIO()
+    fig.savefig(buffer, format='png')
+    clipboard_format = win32clipboard.RegisterClipboardFormat('PNG')
+    win32clipboard.OpenClipboard()
+    win32clipboard.EmptyClipboard()
+    win32clipboard.SetClipboardData(clipboard_format, buffer.getvalue())
+    win32clipboard.CloseClipboard()
+    buffer.close()
 
 
 if __name__ == '__main__':
