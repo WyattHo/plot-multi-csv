@@ -1,4 +1,5 @@
 import tkinter as tk
+from pathlib import Path
 from tkinter import font
 from tkinter import filedialog
 from tkinter import ttk
@@ -193,6 +194,8 @@ class App:
     def initialize_main_window(self) -> tk.Tk:
         root = tk.Tk()
         root.title('PlotCSV')
+        logopath = Path(__file__).parent.parent.joinpath('img', 'logo.ico')
+        root.iconbitmap(logopath)
         root.columnconfigure(0, weight=1)
         root.columnconfigure(1, weight=1)
         root.columnconfigure(2, weight=1)
