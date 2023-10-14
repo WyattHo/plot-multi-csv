@@ -193,7 +193,7 @@ class App:
 
     def initialize_main_window(self) -> tk.Tk:
         root = tk.Tk()
-        root.title('PlotCSV')
+        root.title('CSViewer')
         logopath = Path(__file__).parent.parent.joinpath('img', 'logo.ico')
         root.iconbitmap(logopath)
         root.columnconfigure(0, weight=1)
