@@ -150,6 +150,16 @@ class ConfigWidgets(TypedDict):
     axis_y: AxisVisualWidgets
 
 
+class Error(Exception):
+    '''Base class for exceptions in this module.'''
+    pass
+
+
+class NoCsvError(Error):
+    '''Exception raised when no csv files were chosen.'''
+    message = 'No CSV file chosen.'
+
+
 class App:
     PADS = {
         'padx': 5, 'pady': 5,
@@ -489,12 +499,15 @@ class App:
         treeview.insert_dataframe(csv_info)
         treeview.adjust_column_width()
 
+    def check_csv_chosen(self):
+        if not self.config_widgets['csv_info'].get_children():
+            raise NoCsvError
+
     def import_csv(self):
         try:
-            if not self.config_widgets['csv_info'].get_children():
-                raise Exception('No CSV file chosen.')
-        except Exception as e:
-            tk.messagebox.showerror(title='Error', message=e)
+            self.check_csv_chosen()
+        except NoCsvError:
+            tk.messagebox.showerror(title='Error', message=NoCsvError.message)
         else:
             treeview_csv_info = self.config_widgets['csv_info']
             notebook_data_pool = self.config_widgets['data_pool']
