@@ -183,7 +183,6 @@ class App:
         self.root = self.initialize_main_window()
         self.font_label = font.Font(family='Helvetica', size=10)
         self.font_button = font.Font(family='Helvetica', size=10)
-        self.config_values = plotting.get_initial_configuration()
         self.config_widgets = self.initialize_configuration_widgets()
         self.create_frame_for_csv_info()
         self.create_frame_for_data_pool()
@@ -633,6 +632,7 @@ class App:
             tk.messagebox.showerror(title='Error', message=e.message)
         else:
             data_send = self.collect_data_send()
+            self.config_values = plotting.get_initial_configuration()
             self.collect_configurations_data()
             self.collect_configurations_figure()
             self.collect_configurations_axes()

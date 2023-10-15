@@ -1,7 +1,7 @@
 import json
 from io import BytesIO
 from pathlib import Path
-from typing import Sequence, Tuple, Dict, TypedDict
+from typing import Callable, Dict, Sequence, Tuple, TypedDict
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -108,7 +108,7 @@ def get_plot_function(config: Config, ax: plt.Axes):
 
 def plot_data(
         config: Config, data_pool: Sequence[pd.DataFrame],
-        plot_function):
+        plot_function: Callable):
 
     fieldnames = config['data']['fieldnames']
     labels = config['data']['labels']
