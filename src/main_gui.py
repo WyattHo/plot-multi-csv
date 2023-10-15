@@ -157,7 +157,12 @@ class Error(Exception):
 
 class NoCsvError(Error):
     '''Exception raised when no csv files were chosen.'''
-    message = 'No CSV file chosen.'
+    message = 'Please choose CSV file first.'
+
+
+class EmptyDataPoolError(Error):
+    '''Exception raised when no csv files were chosen.'''
+    message = 'Please import data first.'
 
 
 class App:
@@ -503,11 +508,18 @@ class App:
         if not self.config_widgets['csv_info'].get_children():
             raise NoCsvError
 
+    def check_data_pool(self):
+        if not hasattr(self, 'data_pool'):
+            raise EmptyDataPoolError
+        else:
+            if self.data_pool == {}:
+                raise EmptyDataPoolError
+
     def import_csv(self):
         try:
             self.check_csv_chosen()
-        except NoCsvError:
-            tk.messagebox.showerror(title='Error', message=NoCsvError.message)
+        except NoCsvError as e:
+            tk.messagebox.showerror(title='Error', message=e.message)
         else:
             treeview_csv_info = self.config_widgets['csv_info']
             notebook_data_pool = self.config_widgets['data_pool']
@@ -526,11 +538,10 @@ class App:
 
     def change_number_of_dataset(self):
         try:
-            self.data_pool
-        except AttributeError:
+            self.check_data_pool()
+        except EmptyDataPoolError as e:
             self.config_widgets['dataset_number'].stringvar.set(1)
-            msg = 'Please import data first.'
-            tk.messagebox.showerror(title='Error', message=msg)
+            tk.messagebox.showerror(title='Error', message=e.message)
         else:
             exist_num = len(self.config_widgets['data_visual'].tabs())
             tgt_num = int(self.config_widgets['dataset_number'].get())
@@ -616,18 +627,22 @@ class App:
             values['lim'] = None
 
     def plot(self):
-        data_send = self.collect_data_send()
-        self.collect_configurations_data()
-        self.collect_configurations_figure()
-        self.collect_configurations_axes()
-        plotting.plot_by_app(self.config_values, data_send)
+        try:
+            self.check_data_pool()
+        except EmptyDataPoolError as e:
+            tk.messagebox.showerror(title='Error', message=e.message)
+        else:
+            data_send = self.collect_data_send()
+            self.collect_configurations_data()
+            self.collect_configurations_figure()
+            self.collect_configurations_axes()
+            plotting.plot_by_app(self.config_values, data_send)
 
     def copy(self):
         try:
             plotting.copy_to_clipboard()
-        except plotting.FigureNumsError:
-            msg = 'No figure to copy.'
-            tk.messagebox.showerror(title='Error', message=msg)
+        except plotting.FigureNumsError as e:
+            tk.messagebox.showerror(title='Error', message=e.message)
 
 
 if __name__ == '__main__':

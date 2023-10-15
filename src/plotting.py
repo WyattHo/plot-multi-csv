@@ -41,7 +41,7 @@ class Error(Exception):
 
 class FigureNumsError(Error):
     '''Exception raised when no existing figure to copy.'''
-    pass
+    message = 'No figure to copy.'
 
 
 def get_initial_configuration():
