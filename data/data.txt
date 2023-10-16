@@ -1,0 +1,7 @@
+The data in this folder is intended for demonstration and testing purposes with this GUI tool.
+It represents the ground acceleration records of the 1940 El Centro earthquake. 
+These classic data were from:
+
+http://www.vibrationdata.com/elcentro.htm
+
+If you have a background in earthquake engineering, you might find this content familiar :)
