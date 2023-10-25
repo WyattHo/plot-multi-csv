@@ -501,8 +501,11 @@ class App:
 
     # actions
     def open_files(self):
-        treeview = self.config_widgets['csv_info']
-        treeview.clear_content()
+        treeview_csv_info = self.config_widgets['csv_info']
+        notebook_data_pool = self.config_widgets['data_pool']
+        notebook_data_visual = self.config_widgets['data_visual']
+        spinbox_dataset = self.config_widgets['dataset_number']
+        treeview_csv_info.clear_content()
         csv_paths = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
@@ -511,8 +514,13 @@ class App:
             [[idx + 1, path] for idx, path in enumerate(csv_paths)],
             columns=['CSV ID', 'CSV Path']
         )
-        treeview.insert_dataframe(csv_info)
-        treeview.adjust_column_width()
+        treeview_csv_info.insert_dataframe(csv_info)
+        treeview_csv_info.adjust_column_width()
+        notebook_data_pool.clear_content()
+        notebook_data_visual.remove_all_tabs()
+        notebook_data_visual.create_new_empty_tab('1')
+        notebook_data_visual.fill_data_visual_widgets('1')
+        spinbox_dataset.stringvar.set(1)
 
     def check_csv_chosen(self):
         if not self.config_widgets['csv_info'].get_children():
@@ -534,6 +542,7 @@ class App:
             treeview_csv_info = self.config_widgets['csv_info']
             notebook_data_pool = self.config_widgets['data_pool']
             notebook_data_visual = self.config_widgets['data_visual']
+            spinbox_dataset = self.config_widgets['dataset_number']
             self.data_pool = treeview_csv_info.collect_data_pool()
             notebook_data_pool.remove_all_tabs()
             notebook_data_pool.present_data_pool(self.data_pool)
@@ -541,6 +550,7 @@ class App:
             notebook_data_visual.create_new_empty_tab('1')
             notebook_data_visual.fill_data_visual_widgets('1')
             notebook_data_visual.initialize_widgets('1', self.data_pool)
+            spinbox_dataset.stringvar.set(1)
 
     def clear_data_pool(self):
         self.data_pool: DataPool = {}
