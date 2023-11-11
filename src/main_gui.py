@@ -195,6 +195,7 @@ class App:
         self.font_label = font.Font(family='Helvetica', size=10)
         self.font_button = font.Font(family='Helvetica', size=10)
         self.config_widgets = self.initialize_configuration_widgets()
+        self.create_menubar()
         self.create_frame_for_csv_info()
         self.create_frame_for_data_pool()
         self.create_frame_for_data_visual()
@@ -231,6 +232,25 @@ class App:
         root.minsize(**App.ROOT_MINSIZE)
         root.configure()
         return root
+
+    def do_something(self):
+        pass
+
+    def create_menubar(self):
+        menubar = tk.Menu(self.root)
+        filemenu = tk.Menu(menubar, tearoff=0)
+        filemenu.add_command(label='New', command=self.do_something)
+        filemenu.add_command(label='Open', command=self.do_something)
+        filemenu.add_command(label='Save', command=self.do_something)
+        filemenu.add_command(label='Save as...', command=self.do_something)
+        filemenu.add_command(label='Close', command=self.do_something)
+        menubar.add_cascade(label='File', menu=filemenu)
+
+        helpmenu = tk.Menu(menubar, tearoff=0)
+        helpmenu.add_command(label='Help Index', command=self.do_something)
+        helpmenu.add_command(label='About...', command=self.do_something)
+        menubar.add_cascade(label='Help', menu=helpmenu)
+        self.root.configure(menu=menubar)
 
     def create_frame_for_csv_info(self):
         frame = tk.LabelFrame(self.root, text='Choose CSV files')
