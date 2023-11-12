@@ -1,5 +1,7 @@
 import csv
 import tkinter as tk
+import os
+import sys
 from pathlib import Path
 from tkinter import font
 from tkinter import filedialog
@@ -233,22 +235,19 @@ class App:
         root.configure()
         return root
 
-    def do_something(self):
-        pass
-
     def create_menubar(self):
         menubar = tk.Menu(self.root)
         filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(label='New', command=self.do_something)
-        filemenu.add_command(label='Open', command=self.do_something)
-        filemenu.add_command(label='Save', command=self.do_something)
-        filemenu.add_command(label='Save as...', command=self.do_something)
-        filemenu.add_command(label='Close', command=self.do_something)
+        filemenu.add_command(label='New', command=self.new)
+        filemenu.add_command(label='Open', command=self.open)
+        filemenu.add_command(label='Save', command=self.save)
+        filemenu.add_command(label='Save as...', command=self.save_as)
+        filemenu.add_command(label='Close', command=self.close)
         menubar.add_cascade(label='File', menu=filemenu)
 
         helpmenu = tk.Menu(menubar, tearoff=0)
-        helpmenu.add_command(label='Help Index', command=self.do_something)
-        helpmenu.add_command(label='About...', command=self.do_something)
+        helpmenu.add_command(label='Help Index', command=lambda *args: None)
+        helpmenu.add_command(label='About...', command=lambda *args: None)
         menubar.add_cascade(label='Help', menu=helpmenu)
         self.root.configure(menu=menubar)
 
@@ -684,6 +683,18 @@ class App:
             plotting.copy_to_clipboard()
         except plotting.FigureNumsError as e:
             tk.messagebox.showerror(title='Error', message=e.message)
+
+    def new(self):
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+    def open(self): ...
+
+    def save(self): ...
+
+    def save_as(self): ...
+
+    def close(self):
+        self.root.destroy()
 
 
 if __name__ == '__main__':
