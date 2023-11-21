@@ -554,6 +554,11 @@ class App:
         entry.config(state='disabled')
         widgets['max'] = entry
 
+
+        # for widget in widgets.values():
+        #     widget.config(state='disabled')
+
+
     def create_frame_for_plot(self):
         frame = tk.LabelFrame(self.root, text='Plot Actions')
         frame.grid(row=3, column=1, columnspan=2, sticky=tk.NSEW, **App.PADS)
@@ -664,6 +669,14 @@ class App:
             widgets['max'].config(state='disabled')
 
         widgets = self.config_widgets['axis_y1']
+        if widgets['assign_range'].get():
+            widgets['min'].config(state='normal')
+            widgets['max'].config(state='normal')
+        else:
+            widgets['min'].config(state='disabled')
+            widgets['max'].config(state='disabled')
+
+        widgets = self.config_widgets['axis_y2']
         if widgets['assign_range'].get():
             widgets['min'].config(state='normal')
             widgets['max'].config(state='normal')
