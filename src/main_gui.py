@@ -158,7 +158,8 @@ class ConfigWidgets(TypedDict):
     dataset_number: Spinbox
     figure_visual: FigureVisualWidgets
     axis_x: AxisVisualWidgets
-    axis_y: AxisVisualWidgets
+    axis_y1: AxisVisualWidgets
+    axis_y2: AxisVisualWidgets
 
 
 class Error(Exception):
@@ -212,7 +213,8 @@ class App:
             'data_visual': None,
             'figure_visual': FigureVisualWidgets(),
             'axis_x': AxisVisualWidgets(),
-            'axis_y': AxisVisualWidgets()
+            'axis_y1': AxisVisualWidgets(),
+            'axis_y2': AxisVisualWidgets()
         }
         return config_widgets
 
@@ -423,25 +425,102 @@ class App:
         widgets['max'] = entry
 
     def create_frame_for_axis_visual_y(self):
-        widgets = self.config_widgets['axis_y']
         frame = tk.LabelFrame(self.root, text='Y-Axis Visualization')
         frame.grid(row=2, column=2, sticky=tk.NSEW, **App.PADS)
+        frame.columnconfigure(0, weight=1)
+        frame.columnconfigure(1, weight=1)
+        frame.rowconfigure(0, weight=1)
+        frame.rowconfigure(1, weight=1)
 
-        label = tk.Label(frame, text='Label: ')
-        entry = tk.Entry(frame, width=28)
+        frame_check = tk.Frame(frame)
+        frame_check.grid(
+            row=0, column=0, columnspan=2,
+            sticky=tk.NSEW, **App.PADS
+        )
+
+        selected = tk.StringVar()
+        r1 = ttk.Radiobutton(frame_check, text='Single', value=0, variable=selected)
+        r2 = ttk.Radiobutton(frame_check, text='Double', value=1, variable=selected)
+        r1.grid(row=0, column=0, sticky=tk.NSEW, **App.PADS)
+        r2.grid(row=0, column=1, sticky=tk.NSEW, **App.PADS)
+
+        frame_y1 = tk.LabelFrame(frame, text='Axis 1')
+        frame_y1.grid(
+            row=1, column=0,
+            sticky=tk.NSEW, **App.PADS
+        )
+
+        widgets = self.config_widgets['axis_y1']
+        label = tk.Label(frame_y1, text='Label: ')
+        entry = tk.Entry(frame_y1, width=28)
         label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
         widgets['label'] = entry
 
-        label = tk.Label(frame, text='Scale: ')
-        combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
+        label = tk.Label(frame_y1, text='Scale: ')
+        combobox = ttk.Combobox(frame_y1, width=App.WIDTH_COMBOBOX)
         label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
         combobox.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         combobox.config(values=['linear', 'log'], state='readonly')
         combobox.current(0)
         widgets['scale'] = combobox
 
-        subframe = tk.Frame(frame)
+        subframe = tk.Frame(frame_y1)
+        subframe.grid(
+            row=2, column=0, columnspan=2,
+            sticky=tk.NSEW, **App.PADS
+        )
+
+        intvar = tk.IntVar()
+        checkbutton = tk.Checkbutton(
+            subframe,
+            text='Assign range',
+            variable=intvar,
+            command=self.active_deactive_range
+        )
+        checkbutton.grid(
+            row=0, column=0,
+            columnspan=2,
+            sticky=tk.W, **App.PADS
+        )
+        widgets['assign_range'] = intvar
+
+        label = tk.Label(subframe, text='Min: ')
+        entry = tk.Entry(subframe, width=8)
+        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
+        entry.config(state='disabled')
+        widgets['min'] = entry
+
+        label = tk.Label(subframe, text='Max: ')
+        entry = tk.Entry(subframe, width=8)
+        label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
+        entry.config(state='disabled')
+        widgets['max'] = entry
+
+        frame_y2 = tk.LabelFrame(frame, text='Axis 2')
+        frame_y2.grid(
+            row=1, column=1,
+            sticky=tk.NSEW, **App.PADS
+        )
+
+        widgets = self.config_widgets['axis_y2']
+        label = tk.Label(frame_y2, text='Label: ')
+        entry = tk.Entry(frame_y2, width=28)
+        label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
+        entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
+        widgets['label'] = entry
+
+        label = tk.Label(frame_y2, text='Scale: ')
+        combobox = ttk.Combobox(frame_y2, width=App.WIDTH_COMBOBOX)
+        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        combobox.grid(row=1, column=1, sticky=tk.W, **App.PADS)
+        combobox.config(values=['linear', 'log'], state='readonly')
+        combobox.current(0)
+        widgets['scale'] = combobox
+
+        subframe = tk.Frame(frame_y2)
         subframe.grid(
             row=2, column=0, columnspan=2,
             sticky=tk.NSEW, **App.PADS
@@ -584,7 +663,7 @@ class App:
             widgets['min'].config(state='disabled')
             widgets['max'].config(state='disabled')
 
-        widgets = self.config_widgets['axis_y']
+        widgets = self.config_widgets['axis_y1']
         if widgets['assign_range'].get():
             widgets['min'].config(state='normal')
             widgets['max'].config(state='normal')
@@ -634,8 +713,8 @@ class App:
         else:
             values['lim'] = None
 
-        widgets = self.config_widgets['axis_y']
-        values = self.config_values['axis_y']
+        widgets = self.config_widgets['axis_y1']
+        values = self.config_values['axis_y1']
         values['scale'] = widgets['scale'].get()
         values['label'] = widgets['label'].get()
         if widgets['assign_range'].get():
