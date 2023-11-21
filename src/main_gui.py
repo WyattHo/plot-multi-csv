@@ -158,6 +158,7 @@ class ConfigWidgets(TypedDict):
     dataset_number: Spinbox
     figure_visual: FigureVisualWidgets
     axis_x: AxisVisualWidgets
+    double_y: tk.IntVar
     axis_y1: AxisVisualWidgets
     axis_y2: AxisVisualWidgets
 
@@ -213,6 +214,7 @@ class App:
             'data_visual': None,
             'figure_visual': FigureVisualWidgets(),
             'axis_x': AxisVisualWidgets(),
+            'double_y': None,
             'axis_y1': AxisVisualWidgets(),
             'axis_y2': AxisVisualWidgets()
         }
@@ -438,11 +440,13 @@ class App:
             sticky=tk.NSEW, **App.PADS
         )
 
-        selected = tk.StringVar()
-        r1 = ttk.Radiobutton(frame_check, text='Single', value=0, variable=selected)
-        r2 = ttk.Radiobutton(frame_check, text='Double', value=1, variable=selected)
+        intvar = tk.IntVar()
+        r1 = ttk.Radiobutton(frame_check, text='Single', value=0, variable=intvar, command=self.check_double_y_axis)
+        r2 = ttk.Radiobutton(frame_check, text='Double', value=1, variable=intvar, command=self.check_double_y_axis)
         r1.grid(row=0, column=0, sticky=tk.NSEW, **App.PADS)
         r2.grid(row=0, column=1, sticky=tk.NSEW, **App.PADS)
+        r1.config(state=True)
+        self.config_widgets['double_y'] = intvar
 
         frame_y1 = tk.LabelFrame(frame, text='Axis 1')
         frame_y1.grid(
@@ -658,6 +662,10 @@ class App:
             elif tgt_num < exist_num:
                 tabname = str(exist_num)
                 notebook.remove_tab(tabname)
+
+    def check_double_y_axis(self):
+        widget = self.config_widgets['double_y']
+        double = widget.get()
 
     def active_deactive_range(self):
         widgets = self.config_widgets['axis_x']
