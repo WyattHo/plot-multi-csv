@@ -1,7 +1,8 @@
 import csv
-import tkinter as tk
+import json
 import os
 import sys
+import tkinter as tk
 from pathlib import Path
 from tkinter import font
 from tkinter import filedialog
@@ -268,7 +269,7 @@ class App:
         button = tk.Button(
             subframe,
             text='Choose',
-            command=lambda: self.open_files(),
+            command=lambda: self.open_csvs(),
             width=6
         )
         button.grid(row=0, column=0, **App.PADS)
@@ -519,7 +520,7 @@ class App:
         button['font'] = self.font_button
 
     # actions
-    def open_files(self):
+    def open_csvs(self):
         treeview_csv_info = self.config_widgets['csv_info']
         notebook_data_pool = self.config_widgets['data_pool']
         notebook_data_visual = self.config_widgets['data_visual']
@@ -691,7 +692,18 @@ class App:
 
     def save(self): ...
 
-    def save_as(self): ...
+    def save_as(self):
+        self.config_values = plotting.get_initial_configuration()
+        self.collect_configurations_data()
+        self.collect_configurations_figure()
+        self.collect_configurations_axes()
+        files = [('JSON File', '*.json'), ]
+        file = filedialog.asksaveasfile(
+            filetypes=files,
+            defaultextension=files
+        )
+        json.dump(self.config_values, file, indent=4)
+        file.close()
 
     def close(self):
         self.root.destroy()
