@@ -8,6 +8,11 @@ import pandas as pd
 import win32clipboard
 
 
+class CsvsConfig(TypedDict):
+    indices: Sequence[int]
+    paths: Sequence[str]
+
+
 class DataConfig(TypedDict):
     directory: str  # no use in "plot_by_app"
     csv_indices: Sequence[int]  # only for open and save in gui
@@ -29,6 +34,7 @@ class AxisConfig(TypedDict):
 
 
 class Config(TypedDict):
+    csvs: CsvsConfig
     data: DataConfig
     figure: FigureConfig
     axis_x: AxisConfig
@@ -47,6 +53,10 @@ class FigureNumsError(Error):
 
 def get_initial_configuration():
     config_ini: Config = {
+        'csvs': {
+            'indices': [],
+            'paths': []
+        },
         'data': {
             'directory': '',
             'csv_indices': [],

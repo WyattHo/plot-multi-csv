@@ -210,7 +210,7 @@ class App:
 
     def initialize_configuration_widgets(self) -> ConfigWidgets:
         config_widgets: ConfigWidgets = {
-            'csv_info': None,
+            'csv_info': CsvInfoTreeview,
             'data_pool': None,
             'dataset_number': None,
             'data_visual': None,
@@ -620,6 +620,11 @@ class App:
             data_send.append(self.data_pool[csv_idx])
         return data_send
 
+    def collect_configurations_csvs(self):
+        csv_info = self.config_widgets['csv_info'].get_dataframe()
+        self.config_values['csvs']['indices'] = csv_info['CSV ID'].to_list()
+        self.config_values['csvs']['paths'] = csv_info['CSV Path'].to_list()
+
     def collect_configurations_data(self):
         csv_indices = self.config_values['data']['csv_indices']
         labels = self.config_values['data']['labels']
@@ -676,6 +681,7 @@ class App:
         else:
             data_send = self.collect_data_send()
             self.config_values = plotting.get_initial_configuration()
+            self.collect_configurations_csvs()
             self.collect_configurations_data()
             self.collect_configurations_figure()
             self.collect_configurations_axes()
@@ -696,6 +702,7 @@ class App:
 
     def save_as(self):
         self.config_values = plotting.get_initial_configuration()
+        self.collect_configurations_csvs()
         self.collect_configurations_data()
         self.collect_configurations_figure()
         self.collect_configurations_axes()
