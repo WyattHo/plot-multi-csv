@@ -9,7 +9,8 @@ import win32clipboard
 
 
 class DataConfig(TypedDict):
-    directory: str
+    directory: str  # no use in "plot_by_app"
+    csv_indices: Sequence[int]  # only for open and save in gui
     labels: Sequence[str]
     fieldnames: Sequence[Dict[str, str]]
 
@@ -48,6 +49,7 @@ def get_initial_configuration():
     config_ini: Config = {
         'data': {
             'directory': '',
+            'csv_indices': [],
             'labels': [],
             'fieldnames': []
         },

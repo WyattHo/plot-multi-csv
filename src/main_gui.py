@@ -621,9 +621,11 @@ class App:
         return data_send
 
     def collect_configurations_data(self):
+        csv_indices = self.config_values['data']['csv_indices']
         labels = self.config_values['data']['labels']
         fieldnames = self.config_values['data']['fieldnames']
         for tab in self.config_widgets['data_visual'].tabs_.values():
+            csv_indices.append(tab.widgets['csv_idx'].get())
             labels.append(tab.widgets['label'].get())
             fieldnames.append({
                 'x': tab.widgets['field_x'].get(),
