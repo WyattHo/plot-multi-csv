@@ -520,12 +520,21 @@ class App:
         button['font'] = self.font_button
 
     # actions
-    def open_csvs(self):
+    def update_csv_info(self, csv_info: pd.DataFrame):
         treeview_csv_info = self.config_widgets['csv_info']
         notebook_data_pool = self.config_widgets['data_pool']
         notebook_data_visual = self.config_widgets['data_visual']
         spinbox_dataset = self.config_widgets['dataset_number']
         treeview_csv_info.clear_content()
+        treeview_csv_info.insert_dataframe(csv_info)
+        treeview_csv_info.adjust_column_width()
+        notebook_data_pool.clear_content()
+        notebook_data_visual.remove_all_tabs()
+        notebook_data_visual.create_new_empty_tab('1')
+        notebook_data_visual.fill_data_visual_widgets('1')
+        spinbox_dataset.stringvar.set(1)
+
+    def open_csvs(self):
         csv_paths = filedialog.askopenfilenames(
             title='Choose csv files',
             filetypes=[('csv files', '*.csv')]
@@ -534,13 +543,7 @@ class App:
             [[idx + 1, path] for idx, path in enumerate(csv_paths)],
             columns=['CSV ID', 'CSV Path']
         )
-        treeview_csv_info.insert_dataframe(csv_info)
-        treeview_csv_info.adjust_column_width()
-        notebook_data_pool.clear_content()
-        notebook_data_visual.remove_all_tabs()
-        notebook_data_visual.create_new_empty_tab('1')
-        notebook_data_visual.fill_data_visual_widgets('1')
-        spinbox_dataset.stringvar.set(1)
+        self.update_csv_info(csv_info)        
 
     def check_csv_chosen(self):
         if not self.config_widgets['csv_info'].get_children():
@@ -696,7 +699,29 @@ class App:
     def new(self):
         os.execl(sys.executable, sys.executable, *sys.argv)
 
-    def open(self): ...
+    def open(self):
+        # Read configs
+        files = [('JSON File', '*.json'), ]
+        file = filedialog.askopenfile(
+            filetypes=files,
+            defaultextension=files
+        )
+        configs = json.load(file)
+        
+        # Update csv info
+        indices = configs['csvs']['indices']
+        paths = configs['csvs']['paths']
+        csv_info = pd.DataFrame(
+            data=[[idx, path] for idx, path in zip(indices, paths)],
+            columns=['CSV ID', 'CSV Path']
+            )
+        self.update_csv_info(csv_info)
+
+        # Update data pool
+        # Update data visual
+        # Update figure visual
+        # Update axis visual - x
+        # Update axis visual - y
 
     def save(self): ...
 
