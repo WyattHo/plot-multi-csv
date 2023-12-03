@@ -737,6 +737,17 @@ class App:
             tab.widgets['field_y'].set(field_name['y'])
         
         # Update figure visual
+        title = configs['figure']['title']
+        size = configs['figure']['size']
+        grid_visible = configs['figure']['grid_visible']
+        legend_visible = configs['figure']['legend_visible']
+        widgets = self.config_widgets['figure_visual']
+        widgets['title'].insert(0, title)
+        widgets['width'].set(size[0])
+        widgets['height'].set(size[1])
+        widgets['grid_visible'].set(grid_visible)
+        widgets['legend_visible'].set(legend_visible)
+
         # Update axis visual - x
         # Update axis visual - y
 
