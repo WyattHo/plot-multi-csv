@@ -708,7 +708,7 @@ class App:
         )
         configs = json.load(file)
         
-        # Update csv info
+        # Update csv info & data pool
         indices = configs['csvs']['indices']
         paths = configs['csvs']['paths']
         csv_info = pd.DataFrame(
@@ -716,8 +716,8 @@ class App:
             columns=['CSV ID', 'CSV Path']
             )
         self.update_csv_info(csv_info)
+        self.import_csv()
 
-        # Update data pool
         # Update data visual
         # Update figure visual
         # Update axis visual - x
