@@ -579,6 +579,18 @@ class App:
         self.data_pool: DataPool = {}
         self.config_widgets['data_pool'].clear_content()
 
+    def modify_data_visual_tabs(self, tgt_num: int):
+        notebook = self.config_widgets['data_visual']
+        exist_num = len(self.config_widgets['data_visual'].tabs())
+        if tgt_num > exist_num:
+            tabname = str(tgt_num)
+            notebook.create_new_empty_tab(tabname)
+            notebook.fill_data_visual_widgets(tabname)
+            notebook.initialize_widgets(tabname, self.data_pool)
+        elif tgt_num < exist_num:
+            tabname = str(exist_num)
+            notebook.remove_tab(tabname)
+
     def change_number_of_dataset(self):
         try:
             self.check_data_pool()
@@ -586,17 +598,8 @@ class App:
             self.config_widgets['dataset_number'].stringvar.set(1)
             tk.messagebox.showerror(title='Error', message=e.message)
         else:
-            exist_num = len(self.config_widgets['data_visual'].tabs())
             tgt_num = int(self.config_widgets['dataset_number'].get())
-            notebook = self.config_widgets['data_visual']
-            if tgt_num > exist_num:
-                tabname = str(tgt_num)
-                notebook.create_new_empty_tab(tabname)
-                notebook.fill_data_visual_widgets(tabname)
-                notebook.initialize_widgets(tabname, self.data_pool)
-            elif tgt_num < exist_num:
-                tabname = str(exist_num)
-                notebook.remove_tab(tabname)
+            self.modify_data_visual_tabs(tgt_num)
 
     def active_deactive_range(self):
         widgets = self.config_widgets['axis_x']
@@ -719,6 +722,20 @@ class App:
         self.import_csv()
 
         # Update data visual
+        dataset_num = len(configs['data']['csv_indices'])
+        notebook = self.config_widgets['data_visual']
+        for idx in range(dataset_num):
+            tgt_num = idx + 1
+            csv_idx = configs['data']['csv_indices'][idx]
+            label = configs['data']['labels'][idx]
+            field_name = configs['data']['fieldnames'][idx]
+            self.modify_data_visual_tabs(tgt_num)
+            tab = notebook.tabs_[str(tgt_num)]
+            tab.widgets['csv_idx'].set(csv_idx)
+            tab.widgets['label'].insert(0, label)
+            tab.widgets['field_x'].set(field_name['x'])
+            tab.widgets['field_y'].set(field_name['y'])
+        
         # Update figure visual
         # Update axis visual - x
         # Update axis visual - y
