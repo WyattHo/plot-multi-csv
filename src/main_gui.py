@@ -749,7 +749,40 @@ class App:
         widgets['legend_visible'].set(legend_visible)
 
         # Update axis visual - x
+        label = configs['axis_x']['label']
+        scale = configs['axis_x']['scale']
+        
+        widgets = self.config_widgets['axis_x']
+        widgets['label'].insert(0, label)
+        widgets['scale'].set(scale)
+
+        if configs['axis_x'].get('lim'):
+            lim_min, lim_max = configs['axis_x']['lim']
+            widgets['assign_range'].set(1)
+            self.active_deactive_range()
+            widgets['min'].insert(0, lim_min)
+            widgets['max'].insert(0, lim_max)
+        else:
+            widgets['assign_range'].set(0)
+            self.active_deactive_range()
+
         # Update axis visual - y
+        label = configs['axis_y']['label']
+        scale = configs['axis_y']['scale']
+        
+        widgets = self.config_widgets['axis_y']
+        widgets['label'].insert(0, label)
+        widgets['scale'].set(scale)
+
+        if configs['axis_y'].get('lim'):
+            lim_min, lim_max = configs['axis_y']['lim']
+            widgets['assign_range'].set(1)
+            self.active_deactive_range()
+            widgets['min'].insert(0, lim_min)
+            widgets['max'].insert(0, lim_max)
+        else:
+            widgets['assign_range'].set(0)
+            self.active_deactive_range()
 
     def save(self): ...
 

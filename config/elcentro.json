@@ -42,7 +42,7 @@
         "title": "El Centro Seismic History",
         "size": [
             4.8,
-            2.4
+            3.2
         ],
         "grid_visible": 1,
         "legend_visible": 1
@@ -55,6 +55,9 @@
     "axis_y": {
         "label": "Acceleration, g",
         "scale": "linear",
-        "lim": null
+        "lim": [
+            -0.4,
+            0.4
+        ]
     }
 }
