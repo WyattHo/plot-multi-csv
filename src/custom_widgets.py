@@ -101,4 +101,13 @@ class Spinbox(tk.Spinbox):
 
 
 class LabelEntry(tk.Entry):
-    ...
+    def __init__(self, frame: Union[tk.Frame, ttk.Frame], text: str,
+                 variable: Union[tk.DoubleVar, tk.StringVar, tk.IntVar]):
+        self.label = tk.Label(frame, text=text)
+        super().__init__(frame)
+        self.variable = variable
+
+    def align(self, row: int, pads: dict, width: int, state: str):
+        self.label.grid(row=row, column=0, sticky=tk.W, **pads)
+        self.grid(row=row, column=1, sticky=tk.W, **pads)
+        self.config(width=width, textvariable=self.variable, state=state)

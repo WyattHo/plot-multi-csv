@@ -430,21 +430,13 @@ class App:
         )
         widgets['assign_range'] = intvar
 
-        doublevar = tk.DoubleVar()
-        label = tk.Label(subframe, text='Min: ')
-        entry = tk.Entry(subframe, width=8, textvariable=doublevar)
-        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
-        entry.config(state='disabled')
-        widgets['min'] = doublevar
+        label_entry = LabelEntry(subframe, 'Min: ', tk.DoubleVar())
+        label_entry.align(1, App.PADS, 8, 'disabled')
+        widgets['min'] = label_entry
 
-        doublevar = tk.DoubleVar()
-        label = tk.Label(subframe, text='Max: ')
-        entry = tk.Entry(subframe, width=8, textvariable=doublevar)
-        label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
-        entry.config(state='disabled')
-        widgets['max'] = doublevar
+        label_entry = LabelEntry(subframe, 'Max: ', tk.DoubleVar())
+        label_entry.align(2, App.PADS, 8, 'disabled')
+        widgets['max'] = label_entry
 
     def create_frame_for_axis_visual_y(self):
         widgets = self.config_widgets['axis_y']
@@ -486,21 +478,13 @@ class App:
         )
         widgets['assign_range'] = intvar
 
-        doublevar = tk.DoubleVar()
-        label = tk.Label(subframe, text='Min: ')
-        entry = tk.Entry(subframe, width=8, textvariable=doublevar)
-        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
-        entry.config(state='disabled')
-        widgets['min'] = doublevar
+        label_entry = LabelEntry(subframe, 'Min: ', tk.DoubleVar())
+        label_entry.align(1, App.PADS, 8, 'disabled')
+        widgets['min'] = label_entry
 
-        doublevar = tk.DoubleVar()
-        label = tk.Label(subframe, text='Max: ')
-        entry = tk.Entry(subframe, width=8, textvariable=doublevar)
-        label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
-        entry.config(state='disabled')
-        widgets['max'] = doublevar
+        label_entry = LabelEntry(subframe, 'Max: ', tk.DoubleVar())
+        label_entry.align(2, App.PADS, 8, 'disabled')
+        widgets['max'] = label_entry
 
     def create_frame_for_plot(self):
         frame = tk.LabelFrame(self.root, text='Plot Actions')
@@ -550,7 +534,7 @@ class App:
             [[idx + 1, path] for idx, path in enumerate(csv_paths)],
             columns=['CSV ID', 'CSV Path']
         )
-        self.update_csv_info(csv_info)        
+        self.update_csv_info(csv_info)
 
     def check_csv_chosen(self):
         if not self.config_widgets['csv_info'].get_children():
@@ -717,14 +701,14 @@ class App:
             defaultextension=files
         )
         configs = json.load(file)
-        
+
         # Update csv info & data pool
         indices = configs['csvs']['indices']
         paths = configs['csvs']['paths']
         csv_info = pd.DataFrame(
             data=[[idx, path] for idx, path in zip(indices, paths)],
             columns=['CSV ID', 'CSV Path']
-            )
+        )
         self.update_csv_info(csv_info)
         self.import_csv()
 
@@ -742,7 +726,7 @@ class App:
             tab.widgets['label'].insert(0, label)
             tab.widgets['field_x'].set(field_name['x'])
             tab.widgets['field_y'].set(field_name['y'])
-        
+
         # Update figure visual
         title = configs['figure']['title']
         size = configs['figure']['size']
@@ -758,7 +742,7 @@ class App:
         # Update axis visual - x
         label = configs['axis_x']['label']
         scale = configs['axis_x']['scale']
-        
+
         widgets = self.config_widgets['axis_x']
         widgets['label'].set(label)
         widgets['scale'].set(scale)
@@ -767,8 +751,8 @@ class App:
             lim_min, lim_max = configs['axis_x']['lim']
             widgets['assign_range'].set(1)
             self.active_deactive_range()
-            widgets['min'].set(lim_min)
-            widgets['max'].set(lim_max)
+            widgets['min'].variable.set(lim_min)
+            widgets['max'].variable.set(lim_max)
         else:
             widgets['assign_range'].set(0)
             self.active_deactive_range()
@@ -776,7 +760,7 @@ class App:
         # Update axis visual - y
         label = configs['axis_y']['label']
         scale = configs['axis_y']['scale']
-        
+
         widgets = self.config_widgets['axis_y']
         widgets['label'].set(label)
         widgets['scale'].set(scale)
@@ -785,8 +769,8 @@ class App:
             lim_min, lim_max = configs['axis_y']['lim']
             widgets['assign_range'].set(1)
             self.active_deactive_range()
-            widgets['min'].set(lim_min)
-            widgets['max'].set(lim_max)
+            widgets['min'].variable.set(lim_min)
+            widgets['max'].variable.set(lim_max)
         else:
             widgets['assign_range'].set(0)
             self.active_deactive_range()
