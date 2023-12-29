@@ -19,8 +19,8 @@ class AxisVisualWidgets(TypedDict):
     label: tk.StringVar
     scale: ttk.Combobox
     assign_range: tk.IntVar
-    min: tk.DoubleVar
-    max: tk.DoubleVar
+    min: LabelEntry
+    max: LabelEntry
 
 
 class FigureVisualWidgets(TypedDict):
@@ -430,12 +430,16 @@ class App:
         )
         widgets['assign_range'] = intvar
 
-        label_entry = LabelEntry(subframe, 'Min: ', tk.DoubleVar())
-        label_entry.align(1, App.PADS, 8, 'disabled')
+        label_entry = LabelEntry(subframe, 'Min: ', 8, tk.DoubleVar())
+        label_entry.label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
+        label_entry.entry.config(state='disabled')
         widgets['min'] = label_entry
 
-        label_entry = LabelEntry(subframe, 'Max: ', tk.DoubleVar())
-        label_entry.align(2, App.PADS, 8, 'disabled')
+        label_entry = LabelEntry(subframe, 'Max: ', 8, tk.DoubleVar())
+        label_entry.label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
+        label_entry.entry.config(state='disabled')
         widgets['max'] = label_entry
 
     def create_frame_for_axis_visual_y(self):
@@ -478,12 +482,16 @@ class App:
         )
         widgets['assign_range'] = intvar
 
-        label_entry = LabelEntry(subframe, 'Min: ', tk.DoubleVar())
-        label_entry.align(1, App.PADS, 8, 'disabled')
+        label_entry = LabelEntry(subframe, 'Min: ', 8, tk.DoubleVar())
+        label_entry.label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
+        label_entry.entry.config(state='disabled')
         widgets['min'] = label_entry
 
-        label_entry = LabelEntry(subframe, 'Max: ', tk.DoubleVar())
-        label_entry.align(2, App.PADS, 8, 'disabled')
+        label_entry = LabelEntry(subframe, 'Max: ', 8, tk.DoubleVar())
+        label_entry.label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
+        label_entry.entry.config(state='disabled')
         widgets['max'] = label_entry
 
     def create_frame_for_plot(self):
@@ -595,19 +603,19 @@ class App:
     def active_deactive_range(self):
         widgets = self.config_widgets['axis_x']
         if widgets['assign_range'].get():
-            widgets['min'].config(state='normal')
-            widgets['max'].config(state='normal')
+            widgets['min'].entry.config(state='normal')
+            widgets['max'].entry.config(state='normal')
         else:
-            widgets['min'].config(state='disabled')
-            widgets['max'].config(state='disabled')
+            widgets['min'].entry.config(state='disabled')
+            widgets['max'].entry.config(state='disabled')
 
         widgets = self.config_widgets['axis_y']
         if widgets['assign_range'].get():
-            widgets['min'].config(state='normal')
-            widgets['max'].config(state='normal')
+            widgets['min'].entry.config(state='normal')
+            widgets['max'].entry.config(state='normal')
         else:
-            widgets['min'].config(state='disabled')
-            widgets['max'].config(state='disabled')
+            widgets['min'].entry.config(state='disabled')
+            widgets['max'].entry.config(state='disabled')
 
     def collect_data_send(self) -> Sequence[pd.DataFrame]:
         data_send = []
