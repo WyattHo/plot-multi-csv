@@ -16,7 +16,7 @@ from custom_widgets import *
 
 
 class AxisVisualWidgets(TypedDict):
-    label: tk.StringVar
+    label: LabelEntry
     scale: ttk.Combobox
     assign_range: tk.IntVar
     min: LabelEntry
@@ -24,9 +24,9 @@ class AxisVisualWidgets(TypedDict):
 
 
 class FigureVisualWidgets(TypedDict):
-    title: tk.StringVar
-    width: tk.DoubleVar
-    height: tk.DoubleVar
+    title: LabelEntry
+    width: LabelEntry
+    height: LabelEntry
     grid_visible: tk.IntVar
     legend_visible: tk.IntVar
 
@@ -35,7 +35,7 @@ class DataVisualWidgets(TypedDict):
     csv_idx: ttk.Combobox
     field_x: ttk.Combobox
     field_y: ttk.Combobox
-    label: tk.Entry
+    label: LabelEntry
 
 
 TabName = str
@@ -80,11 +80,10 @@ class DataVisualNotebook(Notebook):
         combobox.config(state='readonly')
         widgets['field_y'] = combobox
 
-        label = tk.Label(tab, text='Label: ')
-        entry = tk.Entry(tab, width=App.WIDTH_ENTRY)
-        label.grid(row=3, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=3, column=1, sticky=tk.W, **App.PADS)
-        widgets['label'] = entry
+        label_entry = LabelEntry(tab, 'Label: ', App.WIDTH_ENTRY, tk.StringVar())
+        label_entry.label.grid(row=3, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=3, column=1, sticky=tk.W, **App.PADS)
+        widgets['label'] = label_entry
         tab.widgets = widgets
 
     def update_fieldname_options(self, tabname: TabName, data_pool: DataPool):
@@ -341,28 +340,22 @@ class App:
         frame = tk.LabelFrame(self.root, text='Figure Visualization')
         frame.grid(row=2, column=1, sticky=tk.NSEW, **App.PADS)
 
-        stringvar = tk.StringVar()
-        label = tk.Label(frame, text='Title: ')
-        entry = tk.Entry(frame, width=28, textvariable=stringvar)
-        label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=0, column=1, columnspan=3, sticky=tk.W, **App.PADS)
-        widgets['title'] = stringvar
+        label_entry = LabelEntry(frame, 'Title: ', 28, tk.StringVar())
+        label_entry.label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=0, column=1, columnspan=3, sticky=tk.W, **App.PADS)
+        widgets['title'] = label_entry
 
-        doublevar = tk.DoubleVar()
-        label = tk.Label(frame, text='Width: ')
-        entry = tk.Entry(frame, width=8, textvariable=doublevar)
-        label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
-        doublevar.set(4.8)
-        widgets['width'] = doublevar
+        label_entry = LabelEntry(frame, 'Width: ', 8, tk.DoubleVar())
+        label_entry.label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
+        label_entry.variable.set(4.8)
+        widgets['width'] = label_entry
 
-        doublevar = tk.DoubleVar()
-        label = tk.Label(frame, text='Height: ')
-        entry = tk.Entry(frame, width=8, textvariable=doublevar)
-        label.grid(row=1, column=2, sticky=tk.W, **App.PADS)
-        entry.grid(row=1, column=3, sticky=tk.W, **App.PADS)
-        doublevar.set(2.4)
-        widgets['height'] = doublevar
+        label_entry = LabelEntry(frame, 'Height: ', 8, tk.DoubleVar())
+        label_entry.label.grid(row=1, column=2, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=1, column=3, sticky=tk.W, **App.PADS)
+        label_entry.variable.set(2.4)
+        widgets['height'] = label_entry
 
         intvar = tk.IntVar()
         checkbutton = tk.Checkbutton(
@@ -395,12 +388,10 @@ class App:
         frame = tk.LabelFrame(self.root, text='X-Axis Visualization')
         frame.grid(row=1, column=2, sticky=tk.NSEW, **App.PADS)
 
-        stringvar = tk.StringVar()
-        label = tk.Label(frame, text='Label: ')
-        entry = tk.Entry(frame, width=28, textvariable=stringvar)
-        label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
-        widgets['label'] = stringvar
+        label_entry = LabelEntry(frame, 'Label: ', 28, tk.StringVar())
+        label_entry.label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
+        widgets['label'] = label_entry
 
         label = tk.Label(frame, text='Scale: ')
         combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
@@ -447,12 +438,10 @@ class App:
         frame = tk.LabelFrame(self.root, text='Y-Axis Visualization')
         frame.grid(row=2, column=2, sticky=tk.NSEW, **App.PADS)
 
-        stringvar = tk.StringVar()
-        label = tk.Label(frame, text='Label: ')
-        entry = tk.Entry(frame, width=28, textvariable=stringvar)
-        label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
-        entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
-        widgets['label'] = stringvar
+        label_entry = LabelEntry(frame, 'Label: ', 28, tk.StringVar())
+        label_entry.label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
+        label_entry.entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
+        widgets['label'] = label_entry
 
         label = tk.Label(frame, text='Scale: ')
         combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
@@ -636,7 +625,7 @@ class App:
         fieldnames = self.config_values['data']['fieldnames']
         for tab in self.config_widgets['data_visual'].tabs_.values():
             csv_indices.append(tab.widgets['csv_idx'].get())
-            labels.append(tab.widgets['label'].get())
+            labels.append(tab.widgets['label'].variable.get())
             fieldnames.append({
                 'x': tab.widgets['field_x'].get(),
                 'y': tab.widgets['field_y'].get()
@@ -645,10 +634,10 @@ class App:
     def collect_configurations_figure(self):
         widgets = self.config_widgets['figure_visual']
         values = self.config_values['figure']
-        values['title'] = widgets['title'].get()
+        values['title'] = widgets['title'].variable.get()
         values['size'] = [
-            float(widgets['width'].get()),
-            float(widgets['height'].get())
+            widgets['width'].variable.get(),
+            widgets['height'].variable.get()
         ]
         values['grid_visible'] = widgets['grid_visible'].get()
         values['legend_visible'] = widgets['legend_visible'].get()
@@ -657,7 +646,7 @@ class App:
         widgets = self.config_widgets['axis_x']
         values = self.config_values['axis_x']
         values['scale'] = widgets['scale'].get()
-        values['label'] = widgets['label'].get()
+        values['label'] = widgets['label'].variable.get()
         if widgets['assign_range'].get():
             values['lim'] = [
                 float(widgets['min'].get()),
@@ -669,11 +658,11 @@ class App:
         widgets = self.config_widgets['axis_y']
         values = self.config_values['axis_y']
         values['scale'] = widgets['scale'].get()
-        values['label'] = widgets['label'].get()
+        values['label'] = widgets['label'].variable.get()
         if widgets['assign_range'].get():
             values['lim'] = [
-                float(widgets['min'].get()),
-                float(widgets['max'].get())
+                widgets['min'].variable.get(),
+                widgets['max'].variable.get()
             ]
         else:
             values['lim'] = None
@@ -731,7 +720,7 @@ class App:
             self.modify_data_visual_tabs(tgt_num)
             tab = notebook.tabs_[str(tgt_num)]
             tab.widgets['csv_idx'].set(csv_idx)
-            tab.widgets['label'].insert(0, label)
+            tab.widgets['label'].variable.set(label)
             tab.widgets['field_x'].set(field_name['x'])
             tab.widgets['field_y'].set(field_name['y'])
 
@@ -741,9 +730,9 @@ class App:
         grid_visible = configs['figure']['grid_visible']
         legend_visible = configs['figure']['legend_visible']
         widgets = self.config_widgets['figure_visual']
-        widgets['title'].set(title)
-        widgets['width'].set(size[0])
-        widgets['height'].set(size[1])
+        widgets['title'].variable.set(title)
+        widgets['width'].variable.set(size[0])
+        widgets['height'].variable.set(size[1])
         widgets['grid_visible'].set(grid_visible)
         widgets['legend_visible'].set(legend_visible)
 
@@ -752,7 +741,7 @@ class App:
         scale = configs['axis_x']['scale']
 
         widgets = self.config_widgets['axis_x']
-        widgets['label'].set(label)
+        widgets['label'].variable.set(label)
         widgets['scale'].set(scale)
 
         if configs['axis_x'].get('lim'):
@@ -770,7 +759,7 @@ class App:
         scale = configs['axis_y']['scale']
 
         widgets = self.config_widgets['axis_y']
-        widgets['label'].set(label)
+        widgets['label'].variable.set(label)
         widgets['scale'].set(scale)
 
         if configs['axis_y'].get('lim'):
