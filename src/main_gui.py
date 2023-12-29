@@ -16,15 +16,15 @@ from custom_widgets import *
 
 
 class AxisVisualWidgets(TypedDict):
-    label: tk.Entry
+    label: tk.StringVar
     scale: ttk.Combobox
     assign_range: tk.IntVar
-    min: tk.Entry
-    max: tk.Entry
+    min: tk.DoubleVar
+    max: tk.DoubleVar
 
 
 class FigureVisualWidgets(TypedDict):
-    title: tk.Entry
+    title: tk.StringVar
     width: tk.DoubleVar
     height: tk.DoubleVar
     grid_visible: tk.IntVar
@@ -341,11 +341,12 @@ class App:
         frame = tk.LabelFrame(self.root, text='Figure Visualization')
         frame.grid(row=2, column=1, sticky=tk.NSEW, **App.PADS)
 
+        stringvar = tk.StringVar()
         label = tk.Label(frame, text='Title: ')
-        entry = tk.Entry(frame, width=28)
+        entry = tk.Entry(frame, width=28, textvariable=stringvar)
         label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=0, column=1, columnspan=3, sticky=tk.W, **App.PADS)
-        widgets['title'] = entry
+        widgets['title'] = stringvar
 
         doublevar = tk.DoubleVar()
         label = tk.Label(frame, text='Width: ')
@@ -394,11 +395,12 @@ class App:
         frame = tk.LabelFrame(self.root, text='X-Axis Visualization')
         frame.grid(row=1, column=2, sticky=tk.NSEW, **App.PADS)
 
+        stringvar = tk.StringVar()
         label = tk.Label(frame, text='Label: ')
-        entry = tk.Entry(frame, width=28)
+        entry = tk.Entry(frame, width=28, textvariable=stringvar)
         label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
-        widgets['label'] = entry
+        widgets['label'] = stringvar
 
         label = tk.Label(frame, text='Scale: ')
         combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
@@ -428,30 +430,33 @@ class App:
         )
         widgets['assign_range'] = intvar
 
+        doublevar = tk.DoubleVar()
         label = tk.Label(subframe, text='Min: ')
-        entry = tk.Entry(subframe, width=8)
+        entry = tk.Entry(subframe, width=8, textvariable=doublevar)
         label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         entry.config(state='disabled')
-        widgets['min'] = entry
+        widgets['min'] = doublevar
 
+        doublevar = tk.DoubleVar()
         label = tk.Label(subframe, text='Max: ')
-        entry = tk.Entry(subframe, width=8)
+        entry = tk.Entry(subframe, width=8, textvariable=doublevar)
         label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
         entry.config(state='disabled')
-        widgets['max'] = entry
+        widgets['max'] = doublevar
 
     def create_frame_for_axis_visual_y(self):
         widgets = self.config_widgets['axis_y']
         frame = tk.LabelFrame(self.root, text='Y-Axis Visualization')
         frame.grid(row=2, column=2, sticky=tk.NSEW, **App.PADS)
 
+        stringvar = tk.StringVar()
         label = tk.Label(frame, text='Label: ')
-        entry = tk.Entry(frame, width=28)
+        entry = tk.Entry(frame, width=28, textvariable=stringvar)
         label.grid(row=0, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=0, column=1, sticky=tk.W, **App.PADS)
-        widgets['label'] = entry
+        widgets['label'] = stringvar
 
         label = tk.Label(frame, text='Scale: ')
         combobox = ttk.Combobox(frame, width=App.WIDTH_COMBOBOX)
@@ -481,19 +486,21 @@ class App:
         )
         widgets['assign_range'] = intvar
 
+        doublevar = tk.DoubleVar()
         label = tk.Label(subframe, text='Min: ')
-        entry = tk.Entry(subframe, width=8)
+        entry = tk.Entry(subframe, width=8, textvariable=doublevar)
         label.grid(row=1, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=1, column=1, sticky=tk.W, **App.PADS)
         entry.config(state='disabled')
-        widgets['min'] = entry
+        widgets['min'] = doublevar
 
+        doublevar = tk.DoubleVar()
         label = tk.Label(subframe, text='Max: ')
-        entry = tk.Entry(subframe, width=8)
+        entry = tk.Entry(subframe, width=8, textvariable=doublevar)
         label.grid(row=2, column=0, sticky=tk.W, **App.PADS)
         entry.grid(row=2, column=1, sticky=tk.W, **App.PADS)
         entry.config(state='disabled')
-        widgets['max'] = entry
+        widgets['max'] = doublevar
 
     def create_frame_for_plot(self):
         frame = tk.LabelFrame(self.root, text='Plot Actions')
@@ -742,7 +749,7 @@ class App:
         grid_visible = configs['figure']['grid_visible']
         legend_visible = configs['figure']['legend_visible']
         widgets = self.config_widgets['figure_visual']
-        widgets['title'].insert(0, title)
+        widgets['title'].set(title)
         widgets['width'].set(size[0])
         widgets['height'].set(size[1])
         widgets['grid_visible'].set(grid_visible)
@@ -753,15 +760,15 @@ class App:
         scale = configs['axis_x']['scale']
         
         widgets = self.config_widgets['axis_x']
-        widgets['label'].insert(0, label)
+        widgets['label'].set(label)
         widgets['scale'].set(scale)
 
         if configs['axis_x'].get('lim'):
             lim_min, lim_max = configs['axis_x']['lim']
             widgets['assign_range'].set(1)
             self.active_deactive_range()
-            widgets['min'].insert(0, lim_min)
-            widgets['max'].insert(0, lim_max)
+            widgets['min'].set(lim_min)
+            widgets['max'].set(lim_max)
         else:
             widgets['assign_range'].set(0)
             self.active_deactive_range()
@@ -771,15 +778,15 @@ class App:
         scale = configs['axis_y']['scale']
         
         widgets = self.config_widgets['axis_y']
-        widgets['label'].insert(0, label)
+        widgets['label'].set(label)
         widgets['scale'].set(scale)
 
         if configs['axis_y'].get('lim'):
             lim_min, lim_max = configs['axis_y']['lim']
             widgets['assign_range'].set(1)
             self.active_deactive_range()
-            widgets['min'].insert(0, lim_min)
-            widgets['max'].insert(0, lim_max)
+            widgets['min'].set(lim_min)
+            widgets['max'].set(lim_max)
         else:
             widgets['assign_range'].set(0)
             self.active_deactive_range()

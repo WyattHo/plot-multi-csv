@@ -98,3 +98,7 @@ class Spinbox(tk.Spinbox):
         self.stringvar = tk.StringVar()
         self.stringvar.set(1)
         self.config(textvariable=self.stringvar, state='readonly')
+
+
+class LabelEntry(tk.Entry):
+    ...
