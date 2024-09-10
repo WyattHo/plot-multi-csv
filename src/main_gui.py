@@ -649,8 +649,8 @@ class App:
         values['label'] = widgets['label'].variable.get()
         if widgets['assign_range'].get():
             values['lim'] = [
-                float(widgets['min'].get()),
-                float(widgets['max'].get())
+                float(widgets['min'].variable.get()),
+                float(widgets['max'].variable.get())
             ]
         else:
             values['lim'] = None
