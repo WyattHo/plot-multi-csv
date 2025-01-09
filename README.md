@@ -21,7 +21,7 @@ py -m venv env
 
 Activate the virtual environment and install required dependencies. 
 For PowerShell, follow these steps:
-```bush
+```bash
 
 # HINT: If the current PowerShell execution policy prevents 
 #       activating the environment, run the following command
@@ -31,6 +31,11 @@ For PowerShell, follow these steps:
 
 .\env\Scripts\Activate.ps1
 pip install -r .\requirements.txt
+```
+
+After installation, deactivate the environment:
+```bash
+deactivate
 ```
 
 ## Running the Project
