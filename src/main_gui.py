@@ -222,7 +222,7 @@ class App:
     def initialize_main_window(self) -> tk.Tk:
         root = tk.Tk()
         root.title('CSViewer')
-        logopath = Path(__file__).parent.parent.joinpath('img', 'logo.ico')
+        logopath = Path(__file__).parent.parent.joinpath('img', 'favicon.ico')
         root.iconbitmap(logopath)
         root.columnconfigure(0, weight=1)
         root.columnconfigure(1, weight=1)
